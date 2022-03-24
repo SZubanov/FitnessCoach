@@ -11,37 +11,10 @@ class UserListColumns implements UserListsColumns
 {
     public function __invoke(): DataCollection
     {
-        $id = [
-            'data'        => 'id',
-            'column_name' => 'id',
-            'name'        => 'id',
-            'sortable'    => false,
-        ];
-
-        $name = [
-            'data'        => 'name',
-            'column_name' => 'name',
-            'name'        => 'name',
-            'sortable'    => false,
-        ];
-
-        $email = [
-            'data'        => 'email',
-            'column_name' => 'email',
-            'name'        => 'email',
-            'sortable'    => false,
-        ];
-
-        $action = [
-            'data'        => 'action',
-            'column_name' => 'action',
-            'name'        => 'action',
-            'sortable'    => false,
-            'searchable'  => false,
-            'width'       => '5%',
-        ];
-
-
+        $id = new DatatableColumnDto('id', __('users.datatable.id'), 'id', true, false, null);
+        $name = new DatatableColumnDto('name', __('users.datatable.name'), 'name', true, true, null);
+        $email = new DatatableColumnDto('email', __('users.datatable.email'), 'email', false, true, null);
+        $action = new DatatableColumnDto('action', __('users.datatable.action'), 'action', false, false, '5%');
         return DatatableColumnDto::collection([$id, $name, $email, $action]);
     }
 }

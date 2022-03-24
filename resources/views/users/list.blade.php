@@ -53,7 +53,7 @@
     <script>
         let dtListelements = $('#listelement-table').DataTable(Object.assign({
             ajax: {
-                url: "{{ route('users.list') }}",
+                url: "{{ route('web.users.data.list') }}",
                 data: function (d) {
                 },
                 error: function (data) {
