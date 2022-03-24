@@ -13,6 +13,10 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                            <button type="button" class="btn btn-success"
+                                    onclick="Main.createRecord('{{ route('web.users.create.form') }}')">
+                                Создать
+                            </button>
                         </div>
                         <div class="form-group col-xs-12 col-sm-12 col-md-4 col-lg-4">
                             <div class="input-group">

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\Users\UserCreateFormController;
 use App\Http\Controllers\Web\Users\UserDataListController;
 use App\Http\Controllers\Web\Users\UserPageListController;
 use Illuminate\Support\Facades\Route;
@@ -22,7 +23,10 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [\App\Http\Controllers\Web\HomeController::class, 'index'])->name('home');
-Route::get('/admin/users', UserPageListController::class)->name('web.users.page.list');
-Route::get('/admin/users/list', UserDataListController::class)->name('web.users.data.list');
+Route::group(['prefix' => 'admin/users'], static function() {
+    Route::get('/', UserPageListController::class)->name('web.users.page.list');
+    Route::get('/list', UserDataListController::class)->name('web.users.data.list');
+    Route::get('/create', UserCreateFormController::class)->name('web.users.create.form');
+});
 
 
