@@ -44,6 +44,7 @@
         @endif
 
     </div>
+    @include('layouts.modal')
 @stop
 
 @section('adminlte_js')

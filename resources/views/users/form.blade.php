@@ -2,21 +2,37 @@
     @csrf
     <div class="modal-body">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="form-group">
-{{--                    <label>{{ __('articles.datatable.title') }}<sup class="text-danger">*</sup></label>--}}
-{{--                    <input name="{{$language}}[title]" type="text" maxlength="255" class="form-control" required--}}
-{{--                           value="{{ isset($article) ? $article->translate($language)->title ?? '' : old($language.'title') }}"--}}
-{{--                    >--}}
+                    <label>Имя<sup class="text-danger">*</sup></label>
+                    <input name="name" type="text" maxlength="255" class="form-control" required
+                           value="{{ isset($user) ? $user->name ?? '' : old('name') }}"
+                    >
+                </div>
+                <div class="form-group">
+                    <label>Email<sup class="text-danger">*</sup></label>
+                    <input name="email" type="email" maxlength="255" class="form-control" required
+                           value="{{ isset($user) ? $user->email ?? '' : old('email') }}"
+                    >
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Пароль<sup class="text-danger">*</sup></label>
+                    <input name="password" type="password" maxlength="255" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Повторите пароль<sup class="text-danger">*</sup></label>
+                    <input name="password_confirmation" type="password" maxlength="255" class="form-control" required>
                 </div>
             </div>
         </div>
     </div>
-    {{--    <div class="modal-footer">--}}
-    {{--        <button class="btn btn-success modal-button-form"--}}
-    {{--                @if(isset($article)) onclick="Main.updateRecord('{{ route('admin.articles.update', $article->id) }}')"--}}
-    {{--                @else onclick="Main.storeRecord('{{ route('admin.articles.store') }}')" @endif--}}
-    {{--        >{{ __('articles.create.button') }}</button>--}}
-    {{--        <button type="button" class="btn btn-danger" onclick="Main.dissmissModal('#form')">{{ __('articles.create.cancel') }}</button>--}}
-    {{--    </div>--}}
+        <div class="modal-footer">
+            <button class="btn btn-success modal-button-form"
+                    @if(isset($user)) onclick="Main.updateRecord('{{ route('web.users.update.form', $user->id) }}')"
+                    @else onclick="Main.storeRecord('{{ route('web.users.store.form') }}')" @endif
+            >Создать</button>
+            <button type="button" class="btn btn-danger" onclick="Main.dissmissModal('#form')">Отмена</button>
+        </div>
 </form>

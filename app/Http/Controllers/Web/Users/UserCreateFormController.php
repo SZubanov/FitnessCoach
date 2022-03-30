@@ -16,7 +16,7 @@ class UserCreateFormController extends Controller
             'action'    => 'success',
             'html'      => view('users.form')->with($with)->render(),
             'title'     => $title,
-            'button'    => __('users.button'),
+            'button'    => __('users.create.button'),
         ]);
     }
 }

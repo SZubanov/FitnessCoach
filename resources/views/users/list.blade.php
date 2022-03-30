@@ -3,7 +3,7 @@
 @section('title', 'Fitness Coach')
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Dashboard</h1>
+    <h1 class="m-0 text-dark">Пользователи</h1>
 @stop
 
 @section('content')
@@ -30,7 +30,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-12 col-md-4 col-lg-4 col-form-label text-right">
+                        <div class="form-group col-xs-12 col-sm-12 col-md-4 col-lg-4 text-right">
                             <button class="btn btn-primary" onclick="Main.dropFilter()">Сброс</button>
                         </div>
                     </div>
