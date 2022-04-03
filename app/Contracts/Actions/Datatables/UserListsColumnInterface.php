@@ -5,7 +5,7 @@ namespace App\Contracts\Actions\Datatables;
 
 use Spatie\LaravelData\DataCollection;
 
-interface UserListsColumns
+interface UserListsColumnInterface
 {
     public function __invoke(): DataCollection;
 }

@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace App\Actions\Datatables;
 
-use App\Contracts\Actions\Datatables\UserListsColumns;
+use App\Contracts\Actions\Datatables\UserListsColumnInterface;
 use App\Dto\Web\DatatableColumnDto;
 use Spatie\LaravelData\DataCollection;
 
-class UserListColumns implements UserListsColumns
+class UserListColumn implements UserListsColumnInterface
 {
     public function __invoke(): DataCollection
     {

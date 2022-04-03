@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace App\Actions\Users;
 
-use App\Contracts\Actions\Users\GetListsUsers;
+use App\Contracts\Actions\Users\GetListUserInterface;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 
-class GetListUsers implements GetListsUsers
+class GetListUsers implements GetListUserInterface
 {
     public function __invoke(): Collection
     {

@@ -30,8 +30,8 @@
     </div>
         <div class="modal-footer">
             <button class="btn btn-success modal-button-form"
-                    @if(isset($user)) onclick="Main.updateRecord('{{ route('web.users.update.form', $user->id) }}')"
-                    @else onclick="Main.storeRecord('{{ route('web.users.store.form') }}')" @endif
+                    @if(isset($user)) onclick="Main.updateRecord('{{ route('web.users.update', $user->id) }}')"
+                    @else onclick="Main.storeRecord('{{ route('web.users.store') }}')" @endif
             >Создать</button>
             <button type="button" class="btn btn-danger" onclick="Main.dissmissModal('#form')">Отмена</button>
         </div>

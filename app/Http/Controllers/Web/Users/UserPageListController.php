@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Web\Users;
 
-use App\Actions\Datatables\UserListColumns;
+use App\Contracts\Actions\Datatables\UserListsColumnInterface;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use JsonException;
@@ -12,7 +12,7 @@ class UserPageListController extends Controller
     /**
      * @throws JsonException
      */
-    public function __invoke(UserListColumns $columns): View
+    public function __invoke(UserListsColumnInterface $columns): View
     {
         $cols = $columns()->toArray();
         $with = [

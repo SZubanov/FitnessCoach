@@ -5,7 +5,7 @@ namespace App\Contracts\Actions\Users;
 
 use Illuminate\Database\Eloquent\Collection;
 
-interface GetListsUsers
+interface GetListUserInterface
 {
     public function __invoke(): Collection;
 }

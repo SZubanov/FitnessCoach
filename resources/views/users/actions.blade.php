@@ -1,6 +1,6 @@
 <div class="d-flex m-button">
     <button type="button" class="btn btn-info btn-sm mr-1"
-{{--            onclick="Main.editRecord('{{ route('user.edit', $id) }}')"--}}
+            onclick="Main.editRecord('{{ route('web.users.update.form', $id) }}')"
     >
         <i class="fas fa-pencil-alt"></i>
     </button>
