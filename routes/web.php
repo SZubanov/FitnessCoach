@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Web\Auth\ConfirmPasswordController;
+use App\Http\Controllers\Web\Auth\LoginController;
+use App\Http\Controllers\Web\Auth\ResetPasswordController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\Users\UserCreateFormController;
 use App\Http\Controllers\Web\Users\UserDataListController;
@@ -22,10 +26,21 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('home');
 });
 
-Auth::routes();
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [LoginController::class, 'login']);
+Route::post('logout', [LoginController::class, 'logout']);
+Route::group(['prefix' => 'password'], static function() {
+    Route::get('/confirm', [ConfirmPasswordController::class, 'showConfirmForm'])->name('password.confirm');
+    Route::post('/confirm', [ConfirmPasswordController::class, 'confirm']);
+    Route::post('/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+    Route::get('/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+});
+
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::group(['middleware' => ['auth'], 'prefix' => 'admin/users'], static function() {
