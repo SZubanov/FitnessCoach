@@ -6,7 +6,7 @@
     </button>
 
     <a
-{{--        onclick="Main.deleteDataTable('{{ route('user.destroy', $id) }}')" href="javascript:void(0);"--}}
+        onclick="Main.deleteDataTable('{{ route('web.users.delete', $id) }}')" href="javascript:void(0);"
        class="btn btn-sm btn-danger">
         <i class="fas fa-trash-alt"></i>
     </a>

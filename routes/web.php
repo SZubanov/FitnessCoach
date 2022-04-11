@@ -3,6 +3,7 @@
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\Users\UserCreateFormController;
 use App\Http\Controllers\Web\Users\UserDataListController;
+use App\Http\Controllers\Web\Users\UserDeleteController;
 use App\Http\Controllers\Web\Users\UserPageListController;
 use App\Http\Controllers\Web\Users\UserStoreController;
 use App\Http\Controllers\Web\Users\UserUpdateController;
@@ -34,6 +35,7 @@ Route::group(['prefix' => 'admin/users'], static function() {
     Route::get('/{user}', UserUpdateFormController::class)->name('web.users.update.form');
     Route::post('/', UserStoreController::class)->name('web.users.store');
     Route::patch('/{user}', UserUpdateController::class)->name('web.users.update');
+    Route::delete('/{user}', UserDeleteController::class)->name('web.users.delete');
 });
 
 
