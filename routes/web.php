@@ -28,7 +28,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-Route::group(['prefix' => 'admin/users'], static function() {
+Route::group(['middleware' => ['auth'], 'prefix' => 'admin/users'], static function() {
     Route::get('/', UserPageListController::class)->name('web.users.page.list');
     Route::get('/list', UserDataListController::class)->name('web.users.data.list');
     Route::get('/create', UserCreateFormController::class)->name('web.users.create.form');
