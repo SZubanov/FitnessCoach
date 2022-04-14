@@ -31,3 +31,5 @@ Homestead.json
 docker-compose.override.yml
 /.idea
 /.vscode
+/docker/dbdata
+.bash_history

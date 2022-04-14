@@ -188,7 +188,7 @@ return [
     */
 
     'use_route_url' => false,
-    'dashboard_url' => 'admin/users',
+    'dashboard_url' => 'home',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => false,
@@ -233,18 +233,19 @@ return [
 
         // Sidebar items:
         [
-            'text' => 'blog',
-            'url'  => 'admin/blog',
-            'can'  => 'manage-blog',
+            'text' => 'dashboard',
+            'url'  => 'home',
+            'icon' => 'fas fa-fw fa-heartbeat',
         ],
         [
             'text'        => 'users',
             'url'         => 'admin/users',
             'icon'        => 'fas fa-fw fa-user',
+            'can'         => 'show-users',
         ],
         [
             'text' => 'settings',
-            'url'  => 'admin/settings',
+            'url'  => 'settings',
             'icon' => 'fas fa-fw fa-cogs',
         ],
     ],

@@ -13,6 +13,7 @@ class UserElements implements ResponseElementsInterface
     public function __invoke(Collection $queryResult): JsonResponse
     {
         return DataTables::of($queryResult)
+            ->addColumn('role', fn($user) => $user->roles->first()?->name)
             ->addColumn('action', 'users.actions')
             ->rawColumns(['action'])
             ->make(true);

@@ -16,6 +16,7 @@ return [
         'id'     => 'ID',
         'name'   => 'Имя',
         'email'  => 'Email',
-        'action' => 'Действие'
+        'action' => 'Действие',
+        'role'   => 'Роль'
     ]
 ];

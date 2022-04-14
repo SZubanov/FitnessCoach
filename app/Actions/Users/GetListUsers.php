@@ -11,6 +11,8 @@ class GetListUsers implements GetListUserInterface
 {
     public function __invoke(): Collection
     {
-        return User::select('id','name', 'email', 'created_at')->get();
+        return User::select('id','name', 'email', 'created_at')
+            ->with('roles')
+            ->get();
     }
 }

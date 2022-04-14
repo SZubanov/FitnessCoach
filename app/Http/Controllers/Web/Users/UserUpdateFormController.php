@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Web\Users;
 
+use App\Contracts\Actions\Users\GetListRolesInterface;
 use App\Dto\Web\FormDto;
-use App\Dto\Web\UserFormDto;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
 class UserUpdateFormController extends Controller
 {
-    public function __invoke(User $user): JsonResponse
+    public function __invoke(User $user, GetListRolesInterface $getListRoles): JsonResponse
     {
         $with['method'] = 'update';
-        $with['user'] = $user;
+        $with['user'] = $user->load('roles');
+        $with['roles'] =  $getListRoles();
 
         $response = FormDto::from([
                 'action' => 'success',

@@ -15,6 +15,23 @@
                            value="{{ isset($user) ? $user->email ?? '' : old('email') }}"
                     >
                 </div>
+                <div class="form-group">
+                    <label>Роль<sup class="text-danger">*</sup></label>
+                    <select name="role" class="form-control" required>
+                        @if($roles->isNotEmpty())
+                            @foreach($roles as $role)
+                                <option value="{{ $role->id }}"
+                                        @if((old('role') and old('role') == $role->id)
+                                            || (isset($user) and $user->roles->first()?->id == $role->id))
+                                        selected
+                                    @endif
+                                >
+                                    {{ $role->name }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
@@ -28,11 +45,12 @@
             </div>
         </div>
     </div>
-        <div class="modal-footer">
-            <button class="btn btn-success modal-button-form"
-                    @if(isset($user)) onclick="Main.updateRecord('{{ route('web.users.update', $user->id) }}')"
-                    @else onclick="Main.storeRecord('{{ route('web.users.store') }}')" @endif
-            >Создать</button>
-            <button type="button" class="btn btn-danger" onclick="Main.dissmissModal('#form')">Отмена</button>
-        </div>
+    <div class="modal-footer">
+        <button class="btn btn-success modal-button-form"
+                @if(isset($user)) onclick="Main.updateRecord('{{ route('web.users.update', $user->id) }}')"
+                @else onclick="Main.storeRecord('{{ route('web.users.store') }}')" @endif
+        >Создать
+        </button>
+        <button type="button" class="btn btn-danger" onclick="Main.dissmissModal('#form')">Отмена</button>
+    </div>
 </form>
