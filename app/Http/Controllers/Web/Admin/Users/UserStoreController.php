@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Web\Users;
+namespace App\Http\Controllers\Web\Admin\Users;
 
-use App\Actions\Users\StoreUser;
 use App\Contracts\Actions\Users\StoreUserInterface;
 use App\Dto\Web\DatatableErrorResponse;
 use App\Dto\Web\DatatableSuccessResponse;

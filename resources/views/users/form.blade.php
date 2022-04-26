@@ -35,20 +35,20 @@
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    <label>Пароль<sup class="text-danger">*</sup></label>
-                    <input name="password" type="password" maxlength="255" class="form-control" required>
+                    <label>Пароль @if($method == 'create')<sup class="text-danger">*</sup>@endif</label>
+                    <input name="password" type="password" maxlength="255" class="form-control" @if($method == 'create') required @endif>
                 </div>
                 <div class="form-group">
-                    <label>Повторите пароль<sup class="text-danger">*</sup></label>
-                    <input name="password_confirmation" type="password" maxlength="255" class="form-control" required>
+                    <label>Повторите пароль@if($method == 'create')<sup class="text-danger">*</sup>@endif</label>
+                    <input name="password_confirmation" type="password" maxlength="255" class="form-control" @if($method == 'create') required @endif>
                 </div>
             </div>
         </div>
     </div>
     <div class="modal-footer">
         <button class="btn btn-success modal-button-form"
-                @if(isset($user)) onclick="Main.updateRecord('{{ route('web.users.update', $user->id) }}')"
-                @else onclick="Main.storeRecord('{{ route('web.users.store') }}')" @endif
+                @if(isset($user)) onclick="Main.updateRecord('{{ route('web.admin.users.update', $user->id) }}')"
+                @else onclick="Main.storeRecord('{{ route('web.admin.users.store') }}')" @endif
         >Создать
         </button>
         <button type="button" class="btn btn-danger" onclick="Main.dissmissModal('#form')">Отмена</button>

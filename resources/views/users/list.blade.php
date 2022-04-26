@@ -14,7 +14,7 @@
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-12 col-md-4 col-lg-4">
                             <button type="button" class="btn btn-success"
-                                    onclick="Main.createRecord('{{ route('web.users.create.form') }}')">
+                                    onclick="Main.createRecord('{{ route('web.admin.users.create.form') }}')">
                                 Создать
                             </button>
                         </div>
@@ -57,7 +57,7 @@
     <script>
         let dtListelements = $('#listelement-table').DataTable(Object.assign({
             ajax: {
-                url: "{{ route('web.users.data.list') }}",
+                url: "{{ route('web.admin.users.data.list') }}",
                 data: function (d) {
                 },
                 error: function (data) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Web\Users;
+namespace App\Http\Controllers\Web\Admin\Users;
 
 use App\Contracts\Actions\Users\UpdateUserInterface;
 use App\Dto\Web\DatatableErrorResponse;

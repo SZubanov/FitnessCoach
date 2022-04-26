@@ -238,15 +238,15 @@ return [
             'icon' => 'fas fa-fw fa-heartbeat',
         ],
         [
+            'text' => 'settings',
+            'url'  => 'settings',
+            'icon' => 'fas fa-fw fa-cogs',
+        ],
+        [
             'text'        => 'users',
             'url'         => 'admin/users',
             'icon'        => 'fas fa-fw fa-user',
             'can'         => 'show-users',
-        ],
-        [
-            'text' => 'settings',
-            'url'  => 'settings',
-            'icon' => 'fas fa-fw fa-cogs',
         ],
     ],
 

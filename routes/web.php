@@ -1,17 +1,19 @@
 <?php
 
-use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Web\Admin\Users\UserCreateFormController as AdminUserCreateFormController;
+use App\Http\Controllers\Web\Admin\Users\UserDataListController as AdminUserDataListController;
+use App\Http\Controllers\Web\Admin\Users\UserDeleteController as AdminUserDeleteController;
+use App\Http\Controllers\Web\Admin\Users\UserPageListController as AdminUserPageListController;
+use App\Http\Controllers\Web\Admin\Users\UserStoreController as AdminUserStoreController;
+use App\Http\Controllers\Web\Admin\Users\UserUpdateController as AdminUserUpdateController;
+use App\Http\Controllers\Web\Admin\Users\UserUpdateFormController as AdminUserUpdateFormController;
 use App\Http\Controllers\Web\Auth\ConfirmPasswordController;
+use App\Http\Controllers\Web\Auth\ForgotPasswordController;
 use App\Http\Controllers\Web\Auth\LoginController;
 use App\Http\Controllers\Web\Auth\ResetPasswordController;
 use App\Http\Controllers\Web\HomeController;
-use App\Http\Controllers\Web\Users\UserCreateFormController;
-use App\Http\Controllers\Web\Users\UserDataListController;
-use App\Http\Controllers\Web\Users\UserDeleteController;
-use App\Http\Controllers\Web\Users\UserPageListController;
-use App\Http\Controllers\Web\Users\UserStoreController;
-use App\Http\Controllers\Web\Users\UserUpdateController;
-use App\Http\Controllers\Web\Users\UserUpdateFormController;
+use App\Http\Controllers\Web\SettingsController;
+use App\Http\Controllers\Web\UserUpdateController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,14 +45,19 @@ Route::group(['prefix' => 'password'], static function() {
 
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-Route::group(['middleware' => ['auth'], 'prefix' => 'admin/users'], static function() {
-    Route::get('/', UserPageListController::class)->name('web.users.page.list');
-    Route::get('/list', UserDataListController::class)->name('web.users.data.list');
-    Route::get('/create', UserCreateFormController::class)->name('web.users.create.form');
-    Route::get('/{user}', UserUpdateFormController::class)->name('web.users.update.form');
-    Route::post('/', UserStoreController::class)->name('web.users.store');
-    Route::patch('/{user}', UserUpdateController::class)->name('web.users.update');
-    Route::delete('/{user}', UserDeleteController::class)->name('web.users.delete');
+Route::group(['middleware' => 'auth'], static function() {
+    Route::get('/settings', SettingsController::class)->name('settings');
+    Route::group(['prefix' => 'admin/users'], static function () {
+        Route::get('/', AdminUserPageListController::class)->name('web.admin.users.page.list');
+        Route::get('/list', AdminUserDataListController::class)->name('web.admin.users.data.list');
+        Route::get('/create', AdminUserCreateFormController::class)->name('web.admin.users.create.form');
+        Route::get('/{user}', AdminUserUpdateFormController::class)->name('web.admin.users.update.form');
+        Route::post('/', AdminUserStoreController::class)->name('web.admin.users.store');
+        Route::patch('/{user}', AdminUserUpdateController::class)->name('web.admin.users.update');
+        Route::delete('/{user}', AdminUserDeleteController::class)->name('web.admin.users.delete');
+    });
+
+    Route::patch('/users/{user}', UserUpdateController::class)->name('web.users.update');
 });
 
 

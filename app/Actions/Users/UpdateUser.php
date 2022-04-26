@@ -18,12 +18,14 @@ class UpdateUser implements UpdateUserInterface
      */
     public function __invoke(User $user, UserUpdateDto $dto): User
     {
-        $this->setPassword($dto);
-
         DB::beginTransaction();
         try {
-            $user->update($dto->toArray());
-            $user->syncRoles($dto->role);
+            $user->update($this->prepareData($dto));
+
+            if (!is_null($dto->role)) {
+                $user->syncRoles($dto->role);
+            }
+
             DB::commit();
         } catch (Throwable $e) {
             DB::rollBack();
@@ -33,12 +35,16 @@ class UpdateUser implements UpdateUserInterface
         return $user;
     }
 
-    private function setPassword(UserUpdateDto $dto): void
+    private function prepareData(UserUpdateDto $dto): array
     {
-        if (is_null($dto->password)) {
-            unset($dto->password);
+        $data = $dto->toArray();
+        unset($data['role']);
+        if (is_null($data['password'])) {
+            unset($data['password']);
         } else {
-            $dto->password = Hash::make($dto->password);
+            $data['password'] = Hash::make($data['password']);
         }
+
+        return $data;
     }
 }
