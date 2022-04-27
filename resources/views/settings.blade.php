@@ -78,16 +78,15 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    <form id="create" method="POST" enctype="multipart/form-data" role="form"
-                          action="{{route('web.admin.users.update', 1) }}">
+                    <form id="fatsecrettoken" method="POST" enctype="multipart/form-data" role="form"
+                          action="{{route('web.users.fatsecret.token', $user->id) }}">
                         @csrf
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label>Код fatsecret<sup class="text-danger"></sup></label>
-                                        <input name="fatsecret_code" type="text" maxlength="255" class="form-control"
-                                               required>
+                                        <input name="fatsecret_code" type="text" maxlength="255" class="form-control">
                                     </div>
                                 </div>
                                 <div class="col-md-1 d-flex align-content-end flex-wrap">

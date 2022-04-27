@@ -30,4 +30,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'fatsecret' => [
+        'key' => env('FATSECRET_KEY'),
+        'secret' => env('FATSECRET_SECRET')
+    ]
+
 ];
