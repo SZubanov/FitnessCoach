@@ -16,6 +16,7 @@ class UserSetFatsecretTokenController extends Controller
             'callback_uri' => "oob",
         ]);
         $temporaryCredentials = $fs->getTemporaryCredentials();
-         dd($temporaryCredentials);
+            return redirect($fs->urlAuthorization() . "?oauth_token=" . $temporaryCredentials->getIdentifier());
+//         dd($temporaryCredentials->getIdentifier());
     }
 }
