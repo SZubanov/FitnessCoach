@@ -18,7 +18,7 @@ services:
             - ./local/config/fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
             - ./local/config/fpm/php.ini:/usr/local/etc/php/php.ini
             - ./local/config/fpm/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-        environment: &fpm-env
+        environment:
             PHP_IDE_CONFIG: serverName=docker-${PROJECT_NAME}
             REMOTE_HOST: host.docker.internal
             DB_HOST: postgres
@@ -71,7 +71,17 @@ services:
         <<: *app-container
         restart: always
         container_name: ${PROJECT_NAME}_cron
+        networks:
+            - default
         user: root
         entrypoint: [ "crond", "-f" ]
+        depends_on:
+            - fpm
+
+    redis:
+        image: redis:alpine
+        container_name: ${PROJECT_NAME}_redis
+        networks:
+            - default
         depends_on:
             - fpm

@@ -13,7 +13,7 @@ use App\Http\Controllers\Web\Auth\LoginController;
 use App\Http\Controllers\Web\Auth\ResetPasswordController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\SettingsController;
-use App\Http\Controllers\Web\UserSetFatsecretTokenController;
+use App\Http\Controllers\Web\UserSetFatSecretTokenController;
 use App\Http\Controllers\Web\UserUpdateController;
 use Illuminate\Support\Facades\Route;
 
@@ -59,7 +59,8 @@ Route::group(['middleware' => 'auth'], static function() {
     });
 
     Route::patch('/users/{user}', UserUpdateController::class)->name('web.users.update');
-    Route::post('/fatsecret/{user}/token', UserSetFatsecretTokenController::class)->name('web.users.fatsecret.token');
+    Route::post('/fatsecret/{user}/token', UserSetFatSecretTokenController::class)->name('web.users.fatsecret.token');
+    Route::get('/fatsecret/token/callback', \App\Http\Controllers\Web\UserSetFatSecretTokenCallbackController::class)->name('web.users.fatsecret.token.callback');
 });
 
 

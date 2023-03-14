@@ -32,7 +32,8 @@ return [
 
     'fatsecret' => [
         'key' => env('FATSECRET_KEY'),
-        'secret' => env('FATSECRET_SECRET')
+        'secret' => env('FATSECRET_SECRET'),
+        'callback_uri' => env('FATSECRET_CALLBACK')
     ]
 
 ];

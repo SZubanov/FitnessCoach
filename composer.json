@@ -13,9 +13,11 @@
         "laravel/tinker": "^2.7",
         "laravel/ui": "^3.4",
         "league/oauth1-client": "^1.10",
+        "predis/predis": "^2.0",
         "spatie/laravel-data": "^1.4",
         "spatie/laravel-permission": "^5.5",
-        "yajra/laravel-datatables-oracle": "^9.19"
+        "yajra/laravel-datatables-oracle": "^9.19",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.12",
@@ -25,7 +27,8 @@
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.1",
         "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "spatie/laravel-ignition": "^1.0",
+        "roave/security-advisories" :"dev-latest"
     },
     "autoload": {
         "psr-4": {
