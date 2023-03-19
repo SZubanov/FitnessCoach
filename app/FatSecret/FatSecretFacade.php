@@ -7,7 +7,7 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class FatSecretFacade
 {
-    public function __construct(public FatSecretService $fatSecretService)
+    public function __construct(public FatSecretServiceLoggerRepository $fatSecretService)
     {
 
     }
@@ -15,8 +15,8 @@ class FatSecretFacade
 
     /**
      * @return void
-     * @throws FatSecretException
      * @throws GuzzleException
+     * @throws \League\OAuth1\Client\Credentials\CredentialsException
      */
     public function getRequestToken(): void
     {
@@ -32,5 +32,15 @@ class FatSecretFacade
     public function getAccessToken(OAuth1CallbackDto $auth1CallbackDto): void
     {
         $this->fatSecretService->getAccessToken($auth1CallbackDto);
+    }
+
+    /**
+     * @param int $date
+     * @return array
+     * @throws \Exception
+     */
+    public function getMonthWeights(int $date): array
+    {
+      return $this->fatSecretService->getMonthWeights($date);
     }
 }

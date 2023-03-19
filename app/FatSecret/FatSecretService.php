@@ -6,32 +6,27 @@ use App\Dto\OAuth1CallbackDto;
 use Auth;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use League\OAuth1\Client\Credentials\CredentialsException;
 use Log;
 
 class FatSecretService
 {
     public function __construct(
         private FatSecretAuth $fatSecretAuth,
-        private FatSecretRepository $fatSecretRepository
+        private FatSecretRepository $fatSecretRepository,
+        private FatSecret $fatSecret,
+        private Client $client
     ) {
-
     }
-
 
     /**
      * @return void
-     * @throws FatSecretException
      * @throws GuzzleException
+     * @throws CredentialsException
      */
     public function getRequestToken(): void
     {
-        try {
-            $temporaryCredentials = $this->fatSecretAuth->getTemporaryCredentials();
-        } catch (\Exception $exception) {
-            Log::error($exception->getMessage(), $exception);
-            throw new FatSecretException('Error while getting temporary credentials');
-        }
-
+        $temporaryCredentials = $this->fatSecretAuth->getTemporaryCredentials();
         $this->fatSecretRepository->storeTemporaryCredentials($temporaryCredentials, Auth::id());
         $this->fatSecretAuth->authorize($temporaryCredentials);
     }
@@ -49,15 +44,24 @@ class FatSecretService
             throw new FatSecretException('Temporary credentials is expired');
         }
 
-        try {
-            [
-                $userOAuthToken,
-                $userOAuthSecret
-            ] = $this->fatSecretAuth->getAccessToken($temporaryCredentials['temporaryCredentials'], $oAuth1CallbackDto);
-        } catch (\Exception $exception) {
-            Log::error($exception->getMessage(), $exception);
-            throw new FatSecretException('Error while getting access token');
-        }
-        $this->fatSecretRepository->updateAccessToken($temporaryCredentials['userId'], $userOAuthToken, $userOAuthSecret);
+        [$userOAuthToken, $userOAuthSecret] = $this->fatSecretAuth
+            ->getAccessToken($temporaryCredentials['temporaryCredentials'], $oAuth1CallbackDto);
+
+        $this->fatSecretRepository
+            ->updateAccessToken($temporaryCredentials['userId'], $userOAuthToken, $userOAuthSecret);
+    }
+
+    /**
+     * @param int $date
+     * @return array
+     * @throws GuzzleException
+     * @throws \JsonException
+     */
+    public function getMonthWeights(int $date)
+    {
+        $parameters = $this->fatSecret->buildRequestParameters(['date' => $date, 'method' => 'weights.get_month']);
+        $parameters['oauth_signature'] = $this->fatSecret->signRequest($parameters);
+        $response = $this->client->get(FatSecret::FATSECRET_URL . "?" . http_build_query($parameters));
+        return json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
     }
 }
