@@ -3,11 +3,12 @@
 namespace App\FatSecret;
 
 use App\Dto\OAuth1CallbackDto;
+use App\FatSecret\Exceptions\FatSecretException;
+use App\FatSecret\Exceptions\CredentialsException;
 use Auth;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use League\OAuth1\Client\Credentials\CredentialsException;
-use Log;
+use League\OAuth1\Client\Credentials\CredentialsException as LeagueCredentialsException;
 
 class FatSecretService
 {
@@ -22,7 +23,7 @@ class FatSecretService
     /**
      * @return void
      * @throws GuzzleException
-     * @throws CredentialsException
+     * @throws LeagueCredentialsException
      */
     public function getRequestToken(): void
     {
@@ -34,14 +35,13 @@ class FatSecretService
     /**
      * @param OAuth1CallbackDto $oAuth1CallbackDto
      * @return void
-     * @throws FatSecretException
-     * @throws GuzzleException
+     * @throws GuzzleException|CredentialsException
      */
     public function getAccessToken(OAuth1CallbackDto $oAuth1CallbackDto): void
     {
         $temporaryCredentials = $this->fatSecretRepository->getTemporaryCredentials($oAuth1CallbackDto->oauth_token);
         if ($temporaryCredentials === null) {
-            throw new FatSecretException('Temporary credentials is expired');
+            throw new CredentialsException('Temporary credentials is expired');
         }
 
         [$userOAuthToken, $userOAuthSecret] = $this->fatSecretAuth

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\FatSecret;
+namespace App\FatSecret\Exceptions;
 
 use Exception;
 
-class FatSecretException extends Exception
+abstract class FatSecretException extends Exception
 {
-    private const DEFAULT_CODE = 400,
-         DEFAULT_MESSAGE = 'FatSecret error';
+    private const    DEFAULT_MESSAGE = 'FatSecret error';
+    private const DEFAULT_CODE = 400;
 
     public function __construct(string $message = self::DEFAULT_MESSAGE, $code = self::DEFAULT_CODE)
     {

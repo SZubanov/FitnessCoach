@@ -3,7 +3,7 @@
 namespace App\FatSecret;
 
 use App\Dto\OAuth1CallbackDto;
-use GuzzleHttp\Exception\GuzzleException;
+use App\FatSecret\Exceptions\FatSecretException;
 
 class FatSecretFacade
 {
@@ -12,11 +12,9 @@ class FatSecretFacade
 
     }
 
-
     /**
      * @return void
-     * @throws GuzzleException
-     * @throws \League\OAuth1\Client\Credentials\CredentialsException
+     * @throws FatSecretException
      */
     public function getRequestToken(): void
     {
@@ -27,7 +25,6 @@ class FatSecretFacade
      * @param OAuth1CallbackDto $auth1CallbackDto
      * @return void
      * @throws FatSecretException
-     * @throws GuzzleException
      */
     public function getAccessToken(OAuth1CallbackDto $auth1CallbackDto): void
     {
@@ -37,7 +34,7 @@ class FatSecretFacade
     /**
      * @param int $date
      * @return array
-     * @throws \Exception
+     * @throws FatSecretException
      */
     public function getMonthWeights(int $date): array
     {
