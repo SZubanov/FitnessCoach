@@ -40,4 +40,14 @@ class FatSecretFacade
     {
       return $this->fatSecretService->getMonthWeights($date);
     }
+
+    /**
+     * @param int $date
+     * @return array
+     * @throws FatSecretException
+     */
+    public function getFoodEntry(int $date): array
+    {
+        return $this->fatSecretService->getFoodEntry($date);
+    }
 }

@@ -66,4 +66,23 @@ class FatSecretServiceLoggerRepository
             throw new ResponseDecodeException();
         }
     }
+
+    /**
+     * @param int $date
+     * @return array
+     * @throws RequestErrorException
+     * @throws ResponseDecodeException
+     */
+    public function getFoodEntry(int $date)
+    {
+        try {
+            return $this->fatSecretService->getFoodEntry($date);
+        } catch (GuzzleException $exception) {
+            Log::error($exception->getMessage(), $exception);
+            throw new RequestErrorException();
+        } catch (\JsonException $exception) {
+            Log::error($exception->getMessage(), $exception);
+            throw new ResponseDecodeException();
+        }
+    }
 }

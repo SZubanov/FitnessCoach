@@ -57,9 +57,30 @@ class FatSecretService
      * @throws GuzzleException
      * @throws \JsonException
      */
-    public function getMonthWeights(int $date)
+    public function getMonthWeights(int $date): array
     {
-        $parameters = $this->fatSecret->buildRequestParameters(['date' => $date, 'method' => 'weights.get_month']);
+        $parameters = $this->fatSecret->buildRequestParameters(
+            [
+                'date' => $date,
+                'method' => FatSecret::GET_MONTH_WEIGHT_METHOD
+            ]);
+        $parameters['oauth_signature'] = $this->fatSecret->signRequest($parameters);
+        $response = $this->client->get(FatSecret::FATSECRET_URL . "?" . http_build_query($parameters));
+        return json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * @param int $date
+     * @return array
+     * @throws GuzzleException
+     * @throws \JsonException
+     */
+    public function getFoodEntry(int $date): array
+    {
+        $parameters = $this->fatSecret->buildRequestParameters([
+            'date' => $date,
+            'method' => FatSecret::GET_FOOD_ENTRY_METHOD
+        ]);
         $parameters['oauth_signature'] = $this->fatSecret->signRequest($parameters);
         $response = $this->client->get(FatSecret::FATSECRET_URL . "?" . http_build_query($parameters));
         return json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
