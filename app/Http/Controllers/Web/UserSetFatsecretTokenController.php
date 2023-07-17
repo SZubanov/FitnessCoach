@@ -5,14 +5,18 @@ namespace App\Http\Controllers\Web;
 use App\FatSecret\FatSecretFacade;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 
 class UserSetFatSecretTokenController extends Controller
 {
     /**
-     * @throws GuzzleException
+     * @param User $user
+     * @param FatSecretFacade $fatSecretFacade
+     * @return Application|Factory|View
      */
-    public function __invoke(User $user, FatSecretFacade $fatSecretFacade)
+    public function __invoke(User $user, FatSecretFacade $fatSecretFacade): View|Factory|Application
     {
         try {
             $fatSecretFacade->getRequestToken();

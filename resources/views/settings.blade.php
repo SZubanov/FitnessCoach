@@ -24,7 +24,8 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Имя<sup class="text-danger">*</sup></label>
-                                        <input name="name" type="text" maxlength="255" class="form-control @error('name') is-invalid @enderror" required
+                                        <input name="name" type="text" maxlength="255"
+                                               class="form-control @error('name') is-invalid @enderror" required
                                                value="{{ isset($user) ? $user->name ?? '' : old('name') }}"
                                         >
                                         @error('name')
@@ -35,7 +36,8 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Email<sup class="text-danger">*</sup></label>
-                                        <input name="email" type="email" maxlength="255" class="form-control @error('email') is-invalid @enderror" required
+                                        <input name="email" type="email" maxlength="255"
+                                               class="form-control @error('email') is-invalid @enderror" required
                                                value="{{ isset($user) ? $user->email ?? '' : old('email') }}"
                                         >
                                         @error('email')
@@ -48,7 +50,8 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Пароль</label>
-                                        <input name="password" type="password" maxlength="255" class="form-control @error('password') is-invalid @enderror">
+                                        <input name="password" type="password" maxlength="255"
+                                               class="form-control @error('password') is-invalid @enderror">
                                         @error('password')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -76,26 +79,19 @@
                     </form>
                 </div>
             </div>
-            <div class="card">
-                <div class="card-body">
+            <div class="card bg-light mb-2" style="max-width: 18rem;">
+                <div class="card-header text-center">FatSecret</div>
+                <div class="card-body text-center">
                     <form id="fatsecrettoken" method="POST" enctype="multipart/form-data" role="form"
                           action="{{route('web.users.fatsecret.token', $user->id) }}">
                         @csrf
                         <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>Код fatsecret<sup class="text-danger"></sup></label>
-                                        <input name="fatsecret_code" type="text" maxlength="255" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-md-1 d-flex align-content-end flex-wrap">
+                            <div class="row justify-content-center">
                                     <div class="form-group">
                                         <button class="btn btn-success modal-button-form">
-                                            Обновить
+                                            Connect
                                         </button>
                                     </div>
-                                </div>
                             </div>
                         </div>
                     </form>

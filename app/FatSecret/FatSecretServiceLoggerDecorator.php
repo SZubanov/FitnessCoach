@@ -3,6 +3,7 @@
 namespace App\FatSecret;
 
 use App\Dto\OAuth1CallbackDto;
+use App\FatSecret\Dto\OAuthTokenDTO;
 use App\FatSecret\Exceptions\FatSecretException;
 use App\FatSecret\Exceptions\RequestErrorException;
 use App\FatSecret\Exceptions\CredentialsException;
@@ -11,16 +12,15 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Log;
 use League\OAuth1\Client\Credentials\CredentialsException as LeagueCredentialsException;
 
-class FatSecretServiceLoggerRepository
+class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
 {
-    public function __construct(private FatSecretService $fatSecretService)
+    public function __construct(private FatSecretServiceInterface $fatSecretService)
     {
 
     }
 
     /**
-     * @return void
-     * @throws RequestErrorException|Exceptions\CredentialsException
+     * @inheritDoc
      */
     public function getRequestToken(): void
     {
@@ -36,7 +36,7 @@ class FatSecretServiceLoggerRepository
     }
 
     /**
-     * @throws FatSecretException
+     * @inheritDoc
      */
     public function getAccessToken(OAuth1CallbackDto $oAuth1CallbackDto): void
     {
@@ -49,15 +49,12 @@ class FatSecretServiceLoggerRepository
     }
 
     /**
-     * @param int $date
-     * @return array
-     * @throws RequestErrorException
-     * @throws ResponseDecodeException
+     * @inheritDoc
      */
-    public function getMonthWeights(int $date): array
+    public function getMonthWeights(OAuthTokenDTO $authTokenDTO, int $date): array
     {
         try {
-          return  $this->fatSecretService->getMonthWeights($date);
+          return  $this->fatSecretService->getMonthWeights($authTokenDTO, $date);
         } catch (GuzzleException $exception) {
             Log::error($exception->getMessage(), $exception);
             throw new RequestErrorException();
@@ -68,15 +65,12 @@ class FatSecretServiceLoggerRepository
     }
 
     /**
-     * @param int $date
-     * @return array
-     * @throws RequestErrorException
-     * @throws ResponseDecodeException
+     * @inheritDoc
      */
-    public function getFoodEntry(int $date)
+    public function getFoodEntry(OAuthTokenDTO $authTokenDTO, int $date): array
     {
         try {
-            return $this->fatSecretService->getFoodEntry($date);
+            return $this->fatSecretService->getFoodEntry($authTokenDTO, $date);
         } catch (GuzzleException $exception) {
             Log::error($exception->getMessage(), $exception);
             throw new RequestErrorException();

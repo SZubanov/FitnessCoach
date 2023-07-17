@@ -2,18 +2,18 @@
 
 namespace App\Services;
 
+use App\FatSecret\Dto\OAuthTokenDTO;
+use App\FatSecret\FatSecretFacade;
+
 class UserReportService
 {
-    public function __construct()
+    public function __construct(protected FatSecretFacade $fatSecretFacade)
     {
 
     }
 
-    /**
-     * @return int
-     */
-    private function getNumberDateFromStart(): int
+    public function updateFoodEntry(OAuthTokenDTO $authTokenDTO, int $date)
     {
-        return (int)floor(time() / 86400) - 1; // 19416
+       return $this->fatSecretFacade->getFoodEntry($authTokenDTO, $date);
     }
 }

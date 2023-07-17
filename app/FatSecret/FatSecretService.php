@@ -3,20 +3,19 @@
 namespace App\FatSecret;
 
 use App\Dto\OAuth1CallbackDto;
-use App\FatSecret\Exceptions\FatSecretException;
+use App\FatSecret\Dto\OAuthTokenDTO;
 use App\FatSecret\Exceptions\CredentialsException;
 use Auth;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use JsonException;
 use League\OAuth1\Client\Credentials\CredentialsException as LeagueCredentialsException;
 
-class FatSecretService
+class FatSecretService implements FatSecretServiceInterface
 {
     public function __construct(
         private FatSecretAuth $fatSecretAuth,
         private FatSecretRepository $fatSecretRepository,
-        private FatSecret $fatSecret,
-        private Client $client
+        private FatSecretClient $fatSecretClient
     ) {
     }
 
@@ -52,37 +51,36 @@ class FatSecretService
     }
 
     /**
+     * @param OAuthTokenDTO $authTokenDTO
      * @param int $date
      * @return array
      * @throws GuzzleException
-     * @throws \JsonException
+     * @throws JsonException
      */
-    public function getMonthWeights(int $date): array
+    public function getMonthWeights(OAuthTokenDTO $authTokenDTO, int $date): array
     {
-        $parameters = $this->fatSecret->buildRequestParameters(
+        return $this->fatSecretClient->get(
+            $authTokenDTO,
             [
                 'date' => $date,
                 'method' => FatSecret::GET_MONTH_WEIGHT_METHOD
             ]);
-        $parameters['oauth_signature'] = $this->fatSecret->signRequest($parameters);
-        $response = $this->client->get(FatSecret::FATSECRET_URL . "?" . http_build_query($parameters));
-        return json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
+     * @param OAuthTokenDTO $authTokenDTO
      * @param int $date
      * @return array
      * @throws GuzzleException
-     * @throws \JsonException
+     * @throws JsonException
      */
-    public function getFoodEntry(int $date): array
+    public function getFoodEntry(OAuthTokenDTO $authTokenDTO, int $date): array
     {
-        $parameters = $this->fatSecret->buildRequestParameters([
-            'date' => $date,
-            'method' => FatSecret::GET_FOOD_ENTRY_METHOD
-        ]);
-        $parameters['oauth_signature'] = $this->fatSecret->signRequest($parameters);
-        $response = $this->client->get(FatSecret::FATSECRET_URL . "?" . http_build_query($parameters));
-        return json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        return $this->fatSecretClient->get(
+            $authTokenDTO,
+            [
+                'date' => $date,
+                'method' => FatSecret::GET_FOOD_ENTRY_METHOD
+            ]);
     }
 }

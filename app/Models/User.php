@@ -25,7 +25,6 @@ class User extends Authenticatable
         'password',
         'oauth_token_secret',
         'oauth_token',
-        'oauth_verifier'
     ];
 
     /**
