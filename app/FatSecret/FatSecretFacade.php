@@ -3,8 +3,9 @@
 namespace App\FatSecret;
 
 use App\Dto\OAuth1CallbackDto;
-use App\FatSecret\Dto\OAuthTokenDTO;
+use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Exceptions\FatSecretException;
+use Illuminate\Support\Collection;
 
 class FatSecretFacade
 {
@@ -33,23 +34,23 @@ class FatSecretFacade
     }
 
     /**
-     * @param OAuthTokenDTO $authTokenDTO
+     * @param OAuthTokenDto $authTokenDTO
      * @param int $date
      * @return array
      * @throws FatSecretException
      */
-    public function getMonthWeights(OAuthTokenDTO $authTokenDTO, int $date): array
+    public function getMonthWeights(OAuthTokenDto $authTokenDTO, int $date): array
     {
       return $this->fatSecretService->getMonthWeights($authTokenDTO, $date);
     }
 
     /**
-     * @param OAuthTokenDTO $authTokenDTO
+     * @param OAuthTokenDto $authTokenDTO
      * @param int $date
-     * @return array
+     * @return Collection
      * @throws FatSecretException
      */
-    public function getFoodEntry(OAuthTokenDTO $authTokenDTO, int $date): array
+    public function getFoodEntry(OAuthTokenDto $authTokenDTO, int $date): Collection
     {
         return $this->fatSecretService->getFoodEntry($authTokenDTO, $date);
     }

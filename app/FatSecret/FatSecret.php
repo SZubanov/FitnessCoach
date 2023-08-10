@@ -2,14 +2,14 @@
 
 namespace App\FatSecret;
 
-use App\FatSecret\Dto\OAuthTokenDTO;
+use App\FatSecret\Dto\OAuthTokenDto;
 
 class FatSecret
 {
     public const FATSECRET_URL = 'https://platform.fatsecret.com/rest/server.api';
 
     public const GET_MONTH_WEIGHT_METHOD = 'weights.get_month',
-        GET_FOOD_ENTRY_METHOD = 'food_entries.get';
+        GET_FOOD_ENTRY_METHOD = 'food_entries.get.v2';
 
     /**
      * @var string

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\FatSecret\Dto\OAuthTokenDTO;
+use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\FatSecretFacade;
 
 class UserReportService
@@ -12,7 +12,7 @@ class UserReportService
 
     }
 
-    public function updateFoodEntry(OAuthTokenDTO $authTokenDTO, int $date)
+    public function updateFoodEntry(OAuthTokenDto $authTokenDTO, int $date)
     {
        return $this->fatSecretFacade->getFoodEntry($authTokenDTO, $date);
     }

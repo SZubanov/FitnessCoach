@@ -3,10 +3,11 @@
 namespace App\FatSecret;
 
 use App\Dto\OAuth1CallbackDto;
-use App\FatSecret\Dto\OAuthTokenDTO;
+use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Exceptions\FatSecretException;
 use App\FatSecret\Exceptions\RequestErrorException;
 use App\FatSecret\Exceptions\ResponseDecodeException;
+use Illuminate\Support\Collection;
 
 interface FatSecretServiceInterface
 {
@@ -23,20 +24,20 @@ interface FatSecretServiceInterface
     public function getAccessToken(OAuth1CallbackDto $oAuth1CallbackDto): void;
 
     /**
-     * @param OAuthTokenDTO $authTokenDTO
+     * @param OAuthTokenDto $authTokenDTO
      * @param int $date
      * @return array
      * @throws RequestErrorException
      * @throws ResponseDecodeException
      */
-    public function getMonthWeights(OAuthTokenDTO $authTokenDTO, int $date): array;
+    public function getMonthWeights(OAuthTokenDto $authTokenDTO, int $date): array;
 
     /**
-     * @param OAuthTokenDTO $authTokenDTO
+     * @param OAuthTokenDto $authTokenDTO
      * @param int $date
-     * @return array
+     * @return Collection
      * @throws RequestErrorException
      * @throws ResponseDecodeException
      */
-    public function getFoodEntry(OAuthTokenDTO $authTokenDTO, int $date): array;
+    public function getFoodEntry(OAuthTokenDto $authTokenDTO, int $date): Collection;
 }

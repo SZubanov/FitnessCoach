@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\FatSecret\Dto\OAuthTokenDTO;
-use App\FatSecret\FatSecretFacade;
+use App\FatSecret\Dto\DtoFactory;
+use App\FatSecret\Dto\OAuthTokenDto;
 use App\Services\UserReportService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -31,7 +31,7 @@ class GetFatSecretFoodEntryUser extends Command
      *
      * @return int
      */
-    public function handle(UserReportService $userReportService)
+    public function handle(UserReportService $userReportService, DtoFactory $factory)
     {
         $userId = $this->argument('userId');
         $date = $this->argument('date');
@@ -46,7 +46,7 @@ class GetFatSecretFoodEntryUser extends Command
 
         $user = \Auth::user();
 
-        $authTokenDTO = new OAuthTokenDTO($user->oauth_token, $user->oauth_token_secret);
+        $authTokenDTO = $factory->createOAuthTokenDto($user->oauth_token, $user->oauth_token_secret);
         $date = Carbon::make($date);
 
        $data = $userReportService->updateFoodEntry($authTokenDTO, (int)floor($date->unix() / 86400));

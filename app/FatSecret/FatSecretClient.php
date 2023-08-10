@@ -2,7 +2,7 @@
 
 namespace App\FatSecret;
 
-use App\FatSecret\Dto\OAuthTokenDTO;
+use App\FatSecret\Dto\OAuthTokenDto;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
@@ -15,13 +15,13 @@ class FatSecretClient
     }
 
     /**
-     * @param OAuthTokenDTO $authTokenDTO
+     * @param OAuthTokenDto $authTokenDTO
      * @param array $parameters
      * @return mixed
      * @throws GuzzleException
      * @throws \JsonException
      */
-    public function get(OAuthTokenDTO $authTokenDTO, array $parameters): array
+    public function get(OAuthTokenDto $authTokenDTO, array $parameters): array
     {
         $this->buildCredentials($authTokenDTO);
         $parameters = $this->buildRequestParameters($parameters);
@@ -31,10 +31,10 @@ class FatSecretClient
     }
 
     /**
-     * @param OAuthTokenDTO $authTokenDTO
+     * @param OAuthTokenDto $authTokenDTO
      * @return void
      */
-    private function buildCredentials(OAuthTokenDTO $authTokenDTO): void
+    private function buildCredentials(OAuthTokenDto $authTokenDTO): void
     {
         $this->fatSecret->setUserToken($authTokenDTO->getOAuthToken());
         $this->fatSecret->setUserSecret($authTokenDTO->getOAuthTokenSecret());

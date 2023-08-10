@@ -3,10 +3,12 @@
 namespace App\FatSecret;
 
 use App\Dto\OAuth1CallbackDto;
-use App\FatSecret\Dto\OAuthTokenDTO;
+use App\FatSecret\Dto\DtoFactory;
+use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Exceptions\CredentialsException;
 use Auth;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Collection;
 use JsonException;
 use League\OAuth1\Client\Credentials\CredentialsException as LeagueCredentialsException;
 
@@ -15,7 +17,8 @@ class FatSecretService implements FatSecretServiceInterface
     public function __construct(
         private FatSecretAuth $fatSecretAuth,
         private FatSecretRepository $fatSecretRepository,
-        private FatSecretClient $fatSecretClient
+        private FatSecretClient $fatSecretClient,
+        private DtoFactory $dtoFactory
     ) {
     }
 
@@ -51,13 +54,13 @@ class FatSecretService implements FatSecretServiceInterface
     }
 
     /**
-     * @param OAuthTokenDTO $authTokenDTO
+     * @param OAuthTokenDto $authTokenDTO
      * @param int $date
      * @return array
      * @throws GuzzleException
      * @throws JsonException
      */
-    public function getMonthWeights(OAuthTokenDTO $authTokenDTO, int $date): array
+    public function getMonthWeights(OAuthTokenDto $authTokenDTO, int $date): array
     {
         return $this->fatSecretClient->get(
             $authTokenDTO,
@@ -68,19 +71,22 @@ class FatSecretService implements FatSecretServiceInterface
     }
 
     /**
-     * @param OAuthTokenDTO $authTokenDTO
+     * @param OAuthTokenDto $authTokenDTO
      * @param int $date
-     * @return array
+     * @return Collection
      * @throws GuzzleException
      * @throws JsonException
      */
-    public function getFoodEntry(OAuthTokenDTO $authTokenDTO, int $date): array
+    public function getFoodEntry(OAuthTokenDto $authTokenDTO, int $date):Collection
     {
-        return $this->fatSecretClient->get(
+        $foodEntry = $this->fatSecretClient->get(
             $authTokenDTO,
             [
                 'date' => $date,
                 'method' => FatSecret::GET_FOOD_ENTRY_METHOD
             ]);
+
+        return $this->dtoFactory
+            ->createFoodEntryDtoCollection($foodEntry['food_entries']['food_entry']);
     }
 }

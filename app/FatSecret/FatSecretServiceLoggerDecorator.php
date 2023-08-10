@@ -3,12 +3,13 @@
 namespace App\FatSecret;
 
 use App\Dto\OAuth1CallbackDto;
-use App\FatSecret\Dto\OAuthTokenDTO;
+use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Exceptions\FatSecretException;
 use App\FatSecret\Exceptions\RequestErrorException;
 use App\FatSecret\Exceptions\CredentialsException;
 use App\FatSecret\Exceptions\ResponseDecodeException;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use League\OAuth1\Client\Credentials\CredentialsException as LeagueCredentialsException;
 
@@ -51,7 +52,7 @@ class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
     /**
      * @inheritDoc
      */
-    public function getMonthWeights(OAuthTokenDTO $authTokenDTO, int $date): array
+    public function getMonthWeights(OAuthTokenDto $authTokenDTO, int $date): array
     {
         try {
           return  $this->fatSecretService->getMonthWeights($authTokenDTO, $date);
@@ -67,7 +68,7 @@ class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
     /**
      * @inheritDoc
      */
-    public function getFoodEntry(OAuthTokenDTO $authTokenDTO, int $date): array
+    public function getFoodEntry(OAuthTokenDto $authTokenDTO, int $date): Collection
     {
         try {
             return $this->fatSecretService->getFoodEntry($authTokenDTO, $date);

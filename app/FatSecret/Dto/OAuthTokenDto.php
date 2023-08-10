@@ -2,7 +2,7 @@
 
 namespace App\FatSecret\Dto;
 
-class OAuthTokenDTO
+class OAuthTokenDto
 {
     public function __construct(
         private string $oauthToken,
