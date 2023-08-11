@@ -7,6 +7,7 @@ use App\FatSecret\Dto\DtoFactory;
 use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Exceptions\CredentialsException;
 use Auth;
+use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
 use JsonException;
@@ -55,38 +56,43 @@ class FatSecretService implements FatSecretServiceInterface
 
     /**
      * @param OAuthTokenDto $authTokenDTO
-     * @param int $date
+     * @param Carbon $date
      * @return array
      * @throws GuzzleException
      * @throws JsonException
      */
-    public function getMonthWeights(OAuthTokenDto $authTokenDTO, int $date): array
+    public function getMonthWeights(OAuthTokenDto $authTokenDTO, Carbon $date): array
     {
         return $this->fatSecretClient->get(
             $authTokenDTO,
             [
-                'date' => $date,
+                'date' => $this->getCountDateFromStartUnixEpoch($date),
                 'method' => FatSecret::GET_MONTH_WEIGHT_METHOD
             ]);
     }
 
     /**
      * @param OAuthTokenDto $authTokenDTO
-     * @param int $date
+     * @param Carbon $date
      * @return Collection
      * @throws GuzzleException
      * @throws JsonException
      */
-    public function getFoodEntry(OAuthTokenDto $authTokenDTO, int $date):Collection
+    public function getFoodEntry(OAuthTokenDto $authTokenDTO, Carbon $date):Collection
     {
         $foodEntry = $this->fatSecretClient->get(
             $authTokenDTO,
             [
-                'date' => $date,
+                'date' => $this->getCountDateFromStartUnixEpoch($date),
                 'method' => FatSecret::GET_FOOD_ENTRY_METHOD
             ]);
 
         return $this->dtoFactory
             ->createFoodEntryDtoCollection($foodEntry['food_entries']['food_entry']);
+    }
+
+    private function getCountDateFromStartUnixEpoch(Carbon $date) : int
+    {
+        return (int)floor($date->unix() / 86400);
     }
 }

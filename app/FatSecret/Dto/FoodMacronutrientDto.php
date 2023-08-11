@@ -2,7 +2,7 @@
 
 namespace App\FatSecret\Dto;
 
-class FoodDto
+class FoodMacronutrientDto
 {
     public function __construct(
         private int $calories,

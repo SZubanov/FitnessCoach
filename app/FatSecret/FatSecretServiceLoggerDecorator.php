@@ -8,6 +8,7 @@ use App\FatSecret\Exceptions\FatSecretException;
 use App\FatSecret\Exceptions\RequestErrorException;
 use App\FatSecret\Exceptions\CredentialsException;
 use App\FatSecret\Exceptions\ResponseDecodeException;
+use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -52,7 +53,7 @@ class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
     /**
      * @inheritDoc
      */
-    public function getMonthWeights(OAuthTokenDto $authTokenDTO, int $date): array
+    public function getMonthWeights(OAuthTokenDto $authTokenDTO, Carbon $date): array
     {
         try {
           return  $this->fatSecretService->getMonthWeights($authTokenDTO, $date);
@@ -68,7 +69,7 @@ class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
     /**
      * @inheritDoc
      */
-    public function getFoodEntry(OAuthTokenDto $authTokenDTO, int $date): Collection
+    public function getFoodEntry(OAuthTokenDto $authTokenDTO, Carbon $date): Collection
     {
         try {
             return $this->fatSecretService->getFoodEntry($authTokenDTO, $date);

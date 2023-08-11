@@ -33,11 +33,11 @@ class DtoFactory
 
     /**
      * @param array $row
-     * @return FoodDto
+     * @return FoodMacronutrientDto
      */
-    public function createFoodEntryDto(array $row): FoodDto
+    public function createFoodEntryDto(array $row): FoodMacronutrientDto
     {
-        return new FoodDto(
+        return new FoodMacronutrientDto(
             $row['calories'],
             $row['protein'],
             $row['fat'],

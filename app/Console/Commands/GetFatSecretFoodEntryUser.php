@@ -49,7 +49,7 @@ class GetFatSecretFoodEntryUser extends Command
         $authTokenDTO = $factory->createOAuthTokenDto($user->oauth_token, $user->oauth_token_secret);
         $date = Carbon::make($date);
 
-       $data = $userReportService->updateFoodEntry($authTokenDTO, (int)floor($date->unix() / 86400));
+       $userReportService->updateUserReport($user->id, $authTokenDTO, $date);
 
         return Command::SUCCESS;
     }

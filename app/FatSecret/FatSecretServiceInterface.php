@@ -7,6 +7,7 @@ use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Exceptions\FatSecretException;
 use App\FatSecret\Exceptions\RequestErrorException;
 use App\FatSecret\Exceptions\ResponseDecodeException;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 interface FatSecretServiceInterface
@@ -25,19 +26,19 @@ interface FatSecretServiceInterface
 
     /**
      * @param OAuthTokenDto $authTokenDTO
-     * @param int $date
+     * @param Carbon $date
      * @return array
      * @throws RequestErrorException
      * @throws ResponseDecodeException
      */
-    public function getMonthWeights(OAuthTokenDto $authTokenDTO, int $date): array;
+    public function getMonthWeights(OAuthTokenDto $authTokenDTO, Carbon $date): array;
 
     /**
      * @param OAuthTokenDto $authTokenDTO
-     * @param int $date
+     * @param Carbon $date
      * @return Collection
      * @throws RequestErrorException
      * @throws ResponseDecodeException
      */
-    public function getFoodEntry(OAuthTokenDto $authTokenDTO, int $date): Collection;
+    public function getFoodEntry(OAuthTokenDto $authTokenDTO, Carbon $date): Collection;
 }
