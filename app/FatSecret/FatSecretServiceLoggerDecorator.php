@@ -5,13 +5,12 @@ namespace App\FatSecret;
 use App\Dto\OAuth1CallbackDto;
 use App\FatSecret\Dto\FoodEntryDto;
 use App\FatSecret\Dto\OAuthTokenDto;
-use App\FatSecret\Exceptions\FatSecretException;
+use App\FatSecret\Dto\WeightDto;
 use App\FatSecret\Exceptions\RequestErrorException;
 use App\FatSecret\Exceptions\CredentialsException;
 use App\FatSecret\Exceptions\ResponseDecodeException;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use League\OAuth1\Client\Credentials\CredentialsException as LeagueCredentialsException;
 
@@ -54,10 +53,10 @@ class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
     /**
      * @inheritDoc
      */
-    public function getMonthWeights(OAuthTokenDto $authTokenDTO, Carbon $date): array
+    public function getWeightByDate(OAuthTokenDto $authTokenDTO, Carbon $date): WeightDto
     {
         try {
-          return  $this->fatSecretService->getMonthWeights($authTokenDTO, $date);
+          return  $this->fatSecretService->getWeightByDate($authTokenDTO, $date);
         } catch (GuzzleException $exception) {
             Log::error($exception->getMessage(), $exception);
             throw new RequestErrorException();
@@ -70,10 +69,10 @@ class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
     /**
      * @inheritDoc
      */
-    public function getFoodEntry(OAuthTokenDto $authTokenDTO, Carbon $date): FoodEntryDto
+    public function getFoodEntryByDate(OAuthTokenDto $authTokenDTO, Carbon $date): FoodEntryDto
     {
         try {
-            return $this->fatSecretService->getFoodEntry($authTokenDTO, $date);
+            return $this->fatSecretService->getFoodEntryByDate($authTokenDTO, $date);
         } catch (GuzzleException $exception) {
             Log::error($exception->getMessage(), $exception);
             throw new RequestErrorException();

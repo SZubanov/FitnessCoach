@@ -49,7 +49,8 @@ class GetFatSecretFoodEntryUser extends Command
         $authTokenDTO = $factory->createOAuthTokenDto($user->oauth_token, $user->oauth_token_secret);
         $date = Carbon::make($date);
 
-       $userReportService->updateUserReport($user->id, $authTokenDTO, $date);
+//       $userReportService->updateUserFoodEntry($user->id, $authTokenDTO, $date);
+       $userReportService->updateUserWeight($user->id, $authTokenDTO, $date);
 
         return Command::SUCCESS;
     }

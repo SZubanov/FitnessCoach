@@ -5,7 +5,10 @@ namespace App\FatSecret;
 use App\Dto\OAuth1CallbackDto;
 use App\FatSecret\Dto\FoodEntryDto;
 use App\FatSecret\Dto\OAuthTokenDto;
+use App\FatSecret\Dto\WeightDto;
 use App\FatSecret\Exceptions\FatSecretException;
+use App\FatSecret\Exceptions\RequestErrorException;
+use App\FatSecret\Exceptions\ResponseDecodeException;
 use Carbon\Carbon;
 
 class FatSecretFacade
@@ -37,12 +40,13 @@ class FatSecretFacade
     /**
      * @param OAuthTokenDto $authTokenDTO
      * @param Carbon $date
-     * @return array
-     * @throws FatSecretException
+     * @return WeightDto
+     * @throws RequestErrorException
+     * @throws ResponseDecodeException
      */
-    public function getMonthWeights(OAuthTokenDto $authTokenDTO, Carbon $date): array
+    public function getWeightByDate(OAuthTokenDto $authTokenDTO, Carbon $date): WeightDto
     {
-      return $this->fatSecretService->getMonthWeights($authTokenDTO, $date);
+      return $this->fatSecretService->getWeightByDate($authTokenDTO, $date);
     }
 
     /**
@@ -53,6 +57,6 @@ class FatSecretFacade
      */
     public function getFoodEntry(OAuthTokenDto $authTokenDTO, Carbon $date): FoodEntryDto
     {
-        return $this->fatSecretService->getFoodEntry($authTokenDTO, $date);
+        return $this->fatSecretService->getFoodEntryByDate($authTokenDTO, $date);
     }
 }

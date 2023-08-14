@@ -8,7 +8,7 @@ class FatSecret
 {
     public const FATSECRET_URL = 'https://platform.fatsecret.com/rest/server.api';
 
-    public const GET_MONTH_WEIGHT_METHOD = 'weights.get_month',
+    public const GET_MONTH_WEIGHT_METHOD = 'weights.get_month.v2',
         GET_FOOD_ENTRY_METHOD = 'food_entries.get.v2';
 
     /**

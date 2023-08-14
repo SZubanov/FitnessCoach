@@ -26,11 +26,16 @@ class UserReportService
      * @return void
      * @throws FatSecretException
      */
-    public function updateUserReport(int $userId, OAuthTokenDto $authTokenDTO, Carbon $date): void
+    public function updateUserFoodEntry(int $userId, OAuthTokenDto $authTokenDTO, Carbon $date): void
     {
        $foodEntry = $this->fatSecretFacade->getFoodEntry($authTokenDTO, $date);
        $userReportDto = $this->foodEntryDtoFactory->createUserReportDto($userId, $date, $foodEntry);
 
        $this->userReportRepository->createUserReport($userReportDto);
+    }
+
+    public function updateUserWeight(int $userId, OAuthTokenDto $authTokenDTO, Carbon $date)
+    {
+        $weight = $this->fatSecretFacade->getWeightByDate($authTokenDTO, $date);
     }
 }

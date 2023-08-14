@@ -6,11 +6,11 @@ use App\Dto\OAuth1CallbackDto;
 use App\FatSecret\Dto\DtoFactory;
 use App\FatSecret\Dto\FoodEntryDto;
 use App\FatSecret\Dto\OAuthTokenDto;
+use App\FatSecret\Dto\WeightDto;
 use App\FatSecret\Exceptions\CredentialsException;
 use Auth;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Support\Collection;
 use JsonException;
 use League\OAuth1\Client\Credentials\CredentialsException as LeagueCredentialsException;
 
@@ -58,18 +58,24 @@ class FatSecretService implements FatSecretServiceInterface
     /**
      * @param OAuthTokenDto $authTokenDTO
      * @param Carbon $date
-     * @return array
+     * @return WeightDto
      * @throws GuzzleException
      * @throws JsonException
      */
-    public function getMonthWeights(OAuthTokenDto $authTokenDTO, Carbon $date): array
+    public function getWeightByDate(OAuthTokenDto $authTokenDTO, Carbon $date): WeightDto
     {
-        return $this->fatSecretClient->get(
+        $intDate = $this->getCountDateFromStartUnixEpoch($date);
+
+        $weight = $this->fatSecretClient->get(
             $authTokenDTO,
             [
-                'date' => $this->getCountDateFromStartUnixEpoch($date),
+                'date' => $intDate,
                 'method' => FatSecret::GET_MONTH_WEIGHT_METHOD
             ]);
+
+        return isset($weight['month']['day'])
+            ? $this->dtoFactory->createWeightDto($weight['month']['day'], $intDate)
+            : $this->dtoFactory->createEmptyWeightDto();
     }
 
     /**
@@ -79,7 +85,7 @@ class FatSecretService implements FatSecretServiceInterface
      * @throws GuzzleException
      * @throws JsonException
      */
-    public function getFoodEntry(OAuthTokenDto $authTokenDTO, Carbon $date): FoodEntryDto
+    public function getFoodEntryByDate(OAuthTokenDto $authTokenDTO, Carbon $date): FoodEntryDto
     {
         $foodEntry = $this->fatSecretClient->get(
             $authTokenDTO,
