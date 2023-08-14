@@ -3,9 +3,9 @@
 namespace App\Repositories;
 
 use App\Dto\UserReport\UserReportDto;
-use App\Models\UserReport;
+use App\Models\FoodEntry;
 
-class UserReportRepository
+class FoodEntryRepository
 {
     /**
      * @param UserReportDto $dto
@@ -13,7 +13,7 @@ class UserReportRepository
      */
     public function createUserReport(UserReportDto $dto): void
     {
-       UserReport::updateOrCreate(
+       FoodEntry::updateOrCreate(
             [
                 'user_id' => $dto->getUserId(),
                 'date' => $dto->getDate()
