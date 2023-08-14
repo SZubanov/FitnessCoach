@@ -11,7 +11,6 @@ class FoodEntryDto
         private Collection $foodMacronutrientDto,
         private string $weightUnit = WeightUnit::G
     ) {
-
     }
 
     /**

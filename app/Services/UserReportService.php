@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Dto\UserReport\DtoFactory;
 use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Exceptions\FatSecretException;
+use App\FatSecret\Exceptions\RequestErrorException;
+use App\FatSecret\Exceptions\ResponseDecodeException;
 use App\FatSecret\FatSecretFacade;
 use App\Repositories\FoodEntryRepository;
 use Carbon\Carbon;
@@ -29,13 +31,23 @@ class UserReportService
     public function updateUserFoodEntry(int $userId, OAuthTokenDto $authTokenDTO, Carbon $date): void
     {
        $foodEntry = $this->fatSecretFacade->getFoodEntry($authTokenDTO, $date);
-       $userReportDto = $this->foodEntryDtoFactory->createUserReportDto($userId, $date, $foodEntry);
+       $userFoodEntry = $this->foodEntryDtoFactory->createUserFoodEntry($userId, $date, $foodEntry);
 
-       $this->userReportRepository->createUserReport($userReportDto);
+       $this->userReportRepository->createUserFoodEntry($userFoodEntry);
     }
 
-    public function updateUserWeight(int $userId, OAuthTokenDto $authTokenDTO, Carbon $date)
+    /**
+     * @param int $userId
+     * @param OAuthTokenDto $authTokenDTO
+     * @param Carbon $date
+     * @return void
+     * @throws FatSecretException
+     */
+    public function updateUserWeight(int $userId, OAuthTokenDto $authTokenDTO, Carbon $date): void
     {
         $weight = $this->fatSecretFacade->getWeightByDate($authTokenDTO, $date);
+        $userWeight = $this->foodEntryDtoFactory->createUserWeightDto($userId, $date, $weight);
+
+        $this->userReportRepository->createUserWeight($userWeight);
     }
 }

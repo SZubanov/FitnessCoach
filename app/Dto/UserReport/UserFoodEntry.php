@@ -4,7 +4,7 @@ namespace App\Dto\UserReport;
 
 use Carbon\Carbon;
 
-class UserReportDto
+class UserFoodEntry
 {
     public function __construct(
         private int $userId,
@@ -15,7 +15,6 @@ class UserReportDto
         private string $unit,
         private Carbon $date
     ) {
-
     }
 
     /**

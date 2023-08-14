@@ -13,13 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('food_entries', function (Blueprint $table) {
+        Schema::create('user_weights', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_id');
-            $table->integer('calories');
-            $table->decimal('protein', 5);
-            $table->decimal('fat', 5);
-            $table->decimal('carbohydrate', 5);
+            $table->decimal('weight');
             $table->string('unit', 3);
             $table->date('date');
             $table->timestamps();
@@ -35,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('food_entries');
+        Schema::dropIfExists('user_weights');
     }
 };
