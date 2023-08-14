@@ -3,12 +3,10 @@
 namespace App\FatSecret;
 
 use App\Dto\OAuth1CallbackDto;
+use App\FatSecret\Dto\FoodEntryDto;
 use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Exceptions\FatSecretException;
-use App\FatSecret\Exceptions\RequestErrorException;
-use App\FatSecret\Exceptions\ResponseDecodeException;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 
 class FatSecretFacade
 {
@@ -50,10 +48,10 @@ class FatSecretFacade
     /**
      * @param OAuthTokenDto $authTokenDTO
      * @param Carbon $date
-     * @return Collection
+     * @return FoodEntryDto
      * @throws FatSecretException
      */
-    public function getFoodEntry(OAuthTokenDto $authTokenDTO, Carbon $date): Collection
+    public function getFoodEntry(OAuthTokenDto $authTokenDTO, Carbon $date): FoodEntryDto
     {
         return $this->fatSecretService->getFoodEntry($authTokenDTO, $date);
     }

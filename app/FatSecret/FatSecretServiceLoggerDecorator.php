@@ -3,6 +3,7 @@
 namespace App\FatSecret;
 
 use App\Dto\OAuth1CallbackDto;
+use App\FatSecret\Dto\FoodEntryDto;
 use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Exceptions\FatSecretException;
 use App\FatSecret\Exceptions\RequestErrorException;
@@ -69,7 +70,7 @@ class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
     /**
      * @inheritDoc
      */
-    public function getFoodEntry(OAuthTokenDto $authTokenDTO, Carbon $date): Collection
+    public function getFoodEntry(OAuthTokenDto $authTokenDTO, Carbon $date): FoodEntryDto
     {
         try {
             return $this->fatSecretService->getFoodEntry($authTokenDTO, $date);

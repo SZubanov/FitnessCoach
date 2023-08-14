@@ -16,6 +16,7 @@ class UserReport extends Model
         'protein',
         'fat',
         'carbohydrate',
+        'unit',
         'date'
     ];
 }

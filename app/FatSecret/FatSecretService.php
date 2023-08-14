@@ -4,6 +4,7 @@ namespace App\FatSecret;
 
 use App\Dto\OAuth1CallbackDto;
 use App\FatSecret\Dto\DtoFactory;
+use App\FatSecret\Dto\FoodEntryDto;
 use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Exceptions\CredentialsException;
 use Auth;
@@ -74,11 +75,11 @@ class FatSecretService implements FatSecretServiceInterface
     /**
      * @param OAuthTokenDto $authTokenDTO
      * @param Carbon $date
-     * @return Collection
+     * @return FoodEntryDto
      * @throws GuzzleException
      * @throws JsonException
      */
-    public function getFoodEntry(OAuthTokenDto $authTokenDTO, Carbon $date):Collection
+    public function getFoodEntry(OAuthTokenDto $authTokenDTO, Carbon $date): FoodEntryDto
     {
         $foodEntry = $this->fatSecretClient->get(
             $authTokenDTO,
@@ -88,10 +89,10 @@ class FatSecretService implements FatSecretServiceInterface
             ]);
 
         return $this->dtoFactory
-            ->createFoodEntryDtoCollection($foodEntry['food_entries']['food_entry']);
+            ->createFoodEntryDto($foodEntry['food_entries']['food_entry']);
     }
 
-    private function getCountDateFromStartUnixEpoch(Carbon $date) : int
+    private function getCountDateFromStartUnixEpoch(Carbon $date): int
     {
         return (int)floor($date->unix() / 86400);
     }

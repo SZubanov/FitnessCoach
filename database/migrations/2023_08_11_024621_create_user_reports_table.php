@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('protein', 5);
             $table->decimal('fat', 5);
             $table->decimal('carbohydrate', 5);
+            $table->string('unit', 3);
             $table->date('date');
             $table->timestamps();
 

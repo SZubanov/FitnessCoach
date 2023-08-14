@@ -22,7 +22,8 @@ class UserReportRepository
                 'calories' => $dto->getCalories(),
                 'protein' => $dto->getProtein(),
                 'fat' => $dto->getFat(),
-                'carbohydrate' => $dto->getCarbohydrate()
+                'carbohydrate' => $dto->getCarbohydrate(),
+                'unit' => $dto->getUnit()
             ]
         );
     }

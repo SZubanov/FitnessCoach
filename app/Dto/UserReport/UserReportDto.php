@@ -12,6 +12,7 @@ class UserReportDto
         private float $protein,
         private float $fat,
         private float $carbohydrate,
+        private string $unit,
         private Carbon $date
     ) {
 
@@ -55,6 +56,14 @@ class UserReportDto
     public function getCarbohydrate(): float
     {
         return $this->carbohydrate;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUnit(): string
+    {
+        return $this->unit;
     }
 
     /**

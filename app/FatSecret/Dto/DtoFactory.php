@@ -18,14 +18,25 @@ class DtoFactory
 
     /**
      * @param array $rows
+     * @return FoodEntryDto
+     */
+    public function createFoodEntryDto(array $rows): FoodEntryDto
+    {
+        return new FoodEntryDto(
+            $this->createFoodMacronutrientDtoCollection($rows)
+        );
+    }
+
+    /**
+     * @param array $rows
      * @return Collection
      */
-    public function createFoodEntryDtoCollection(array $rows): Collection
+    public function createFoodMacronutrientDtoCollection(array $rows): Collection
     {
         return new Collection(
             array_map(
                 function (array $row) {
-                    return $this->createFoodEntryDto($row);
+                    return $this->createFoodMacronutrientDto($row);
                 },
                 $rows
             ));
@@ -35,7 +46,7 @@ class DtoFactory
      * @param array $row
      * @return FoodMacronutrientDto
      */
-    public function createFoodEntryDto(array $row): FoodMacronutrientDto
+    public function createFoodMacronutrientDto(array $row): FoodMacronutrientDto
     {
         return new FoodMacronutrientDto(
             $row['calories'],

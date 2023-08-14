@@ -2,21 +2,22 @@
 
 namespace App\Dto\UserReport;
 
+use App\FatSecret\Dto\FoodEntryDto;
 use App\FatSecret\Dto\FoodMacronutrientDto;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 
 class DtoFactory
 {
-    public function createUserReportDto(int $userId, Carbon $date, Collection $foodMacronutrients)
+    public function createUserReportDto(int $userId, Carbon $date, FoodEntryDto $foodEntry): UserReportDto
     {
         /** @var FoodMacronutrientDto $foodMacronutrient */
         return new UserReportDto(
             $userId,
-            $foodMacronutrients->sum(fn ($foodMacronutrient) => $foodMacronutrient->getCalories()),
-            $foodMacronutrients->sum(fn ($foodMacronutrient) => $foodMacronutrient->getProtein()),
-            $foodMacronutrients->sum(fn ($foodMacronutrient) => $foodMacronutrient->getFat()),
-            $foodMacronutrients->sum(fn ($foodMacronutrient) => $foodMacronutrient->getCarbohydrate()),
+            $foodEntry->getFoodMacronutrientDto()->sum(fn ($foodMacronutrient) => $foodMacronutrient->getCalories()),
+            $foodEntry->getFoodMacronutrientDto()->sum(fn ($foodMacronutrient) => $foodMacronutrient->getProtein()),
+            $foodEntry->getFoodMacronutrientDto()->sum(fn ($foodMacronutrient) => $foodMacronutrient->getFat()),
+            $foodEntry->getFoodMacronutrientDto()->sum(fn ($foodMacronutrient) => $foodMacronutrient->getCarbohydrate()),
+            $foodEntry->getWeightUnit(),
             $date
         );
     }
