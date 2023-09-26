@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'oauth_token_secret',
         'oauth_token',
+        'default_measure_system'
     ];
 
     /**

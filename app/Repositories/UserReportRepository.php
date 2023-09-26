@@ -7,7 +7,7 @@ use App\Dto\UserReport\UserWeightDto;
 use App\Models\FoodEntry;
 use App\Models\UserWeight;
 
-class FoodEntryRepository
+class UserReportRepository
 {
     /**
      * @param UserFoodEntry $dto

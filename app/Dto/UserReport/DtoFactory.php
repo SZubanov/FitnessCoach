@@ -15,7 +15,7 @@ class DtoFactory
      * @param FoodEntryDto $foodEntry
      * @return UserFoodEntry
      */
-    public function createUserFoodEntry(int $userId, Carbon $date, FoodEntryDto $foodEntry): UserFoodEntry
+    public function createUserFoodEntryFromFoodEntry(int $userId, Carbon $date, FoodEntryDto $foodEntry): UserFoodEntry
     {
         $foodMacronutrientCollection = $foodEntry->getFoodMacronutrientDto();
         /** @var FoodMacronutrientDto $foodMacronutrient */

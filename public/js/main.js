@@ -8,6 +8,7 @@ $(document).ready(function($) {
     });
     // Инициализация инпутов для фильтров
     Main.initDefaultSelect2();
+    DatetimepickerHelper.datePickerInit();
     DatetimepickerHelper.dateRangePickerInit();
     DatetimepickerHelper.dateTimesRangePickerInit();
     Main.summernote();
@@ -321,12 +322,12 @@ var Main = {
 
         let data = new FormData($('#create')[0]);
         let success = function (data) {
+            toastr.success(data['success']);
             if (data.action == 'reload_table') {
-                toastr.success(data['success']);
                 dtListelements.ajax.reload(null, false);
-                $('#form').modal('hide');
-                $('#create').remove();
             }
+            $('#form').modal('hide');
+            $('#create').remove();
         };
 
         let error = function (data) {

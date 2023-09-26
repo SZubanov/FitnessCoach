@@ -238,6 +238,11 @@ return [
             'icon' => 'fas fa-fw fa-heartbeat',
         ],
         [
+            'text' => 'diary',
+            'url'  => 'diary',
+            'icon' => 'fas fa-fw fa-list',
+        ],
+        [
             'text' => 'settings',
             'url'  => 'settings',
             'icon' => 'fas fa-fw fa-cogs',
@@ -335,6 +340,17 @@ return [
                     'location' => '/vendor/toastr/toastr.min.js',
                 ],
             ],
+        ],
+        [
+            'name' => 'Moment',
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => true,
+                    'location' => '/vendor/moment/moment-with-locales.min.js'
+                ],
+            ]
         ],
         [
             'name' => 'Daterangepicker',

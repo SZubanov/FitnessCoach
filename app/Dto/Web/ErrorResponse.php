@@ -5,9 +5,10 @@ namespace App\Dto\Web;
 
 use Spatie\LaravelData\Data;
 
-class DatatableErrorResponse extends Data
+class ErrorResponse extends Data
 {
     public string $error;
+    public int $code;
 
     public function __construct($code = 500)
     {

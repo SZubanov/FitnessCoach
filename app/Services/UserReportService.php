@@ -5,10 +5,8 @@ namespace App\Services;
 use App\Dto\UserReport\DtoFactory;
 use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Exceptions\FatSecretException;
-use App\FatSecret\Exceptions\RequestErrorException;
-use App\FatSecret\Exceptions\ResponseDecodeException;
 use App\FatSecret\FatSecretFacade;
-use App\Repositories\FoodEntryRepository;
+use App\Repositories\UserReportRepository;
 use Carbon\Carbon;
 
 class UserReportService
@@ -16,7 +14,7 @@ class UserReportService
     public function __construct(
         protected FatSecretFacade $fatSecretFacade,
         protected DtoFactory $foodEntryDtoFactory,
-        protected FoodEntryRepository $userReportRepository
+        protected UserReportRepository $userReportRepository
     ) {
 
     }
@@ -31,7 +29,7 @@ class UserReportService
     public function updateUserFoodEntry(int $userId, OAuthTokenDto $authTokenDTO, Carbon $date): void
     {
        $foodEntry = $this->fatSecretFacade->getFoodEntry($authTokenDTO, $date);
-       $userFoodEntry = $this->foodEntryDtoFactory->createUserFoodEntry($userId, $date, $foodEntry);
+       $userFoodEntry = $this->foodEntryDtoFactory->createUserFoodEntryFromFoodEntry($userId, $date, $foodEntry);
 
        $this->userReportRepository->createUserFoodEntry($userFoodEntry);
     }

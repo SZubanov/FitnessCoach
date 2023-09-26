@@ -11,6 +11,11 @@ use App\Http\Controllers\Web\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Web\Auth\ForgotPasswordController;
 use App\Http\Controllers\Web\Auth\LoginController;
 use App\Http\Controllers\Web\Auth\ResetPasswordController;
+use App\Http\Controllers\Web\Diary\UserDiaryMacrosStoreController;
+use App\Http\Controllers\Web\Diary\UserDiaryPageController;
+use App\Http\Controllers\Web\Diary\UserDiaryMacrosFormController;
+use App\Http\Controllers\Web\Diary\UserDiaryStepsController;
+use App\Http\Controllers\Web\Diary\UserDiaryWeightController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\SettingsController;
 use App\Http\Controllers\Web\UserSetFatSecretTokenController;
@@ -46,6 +51,7 @@ Route::group(['prefix' => 'password'], static function() {
 
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+
 Route::group(['middleware' => 'auth'], static function() {
     Route::get('/settings', SettingsController::class)->name('settings');
     Route::group(['prefix' => 'admin/users'], static function () {
@@ -56,6 +62,24 @@ Route::group(['middleware' => 'auth'], static function() {
         Route::post('/', AdminUserStoreController::class)->name('web.admin.users.store');
         Route::patch('/{user}', AdminUserUpdateController::class)->name('web.admin.users.update');
         Route::delete('/{user}', AdminUserDeleteController::class)->name('web.admin.users.delete');
+    });
+
+    Route::group(['prefix' => 'diary'], static function() {
+        Route::get('/', UserDiaryPageController::class)->name('web.users.diary.index');
+
+        Route::group(['prefix' => 'macros'], static function() {
+            Route::get('/create', UserDiaryMacrosFormController::class)->name('web.users.diary.create.form.macros');
+            Route::post('/', UserDiaryMacrosStoreController::class)->name('web.users.diary.store.macros');
+        });
+
+        Route::group(['prefix' => 'weight'], static function() {
+            Route::get('/create', [UserDiaryWeightController::class, 'create'])->name('web.users.diary.create.form.weight');
+        });
+
+        Route::group(['prefix' => 'steps'], static function() {
+            Route::get('/create', [UserDiaryStepsController::class, 'create'])->name('web.users.diary.create.form.steps');
+        });
+
     });
 
     Route::patch('/users/{user}', UserUpdateController::class)->name('web.users.update');
