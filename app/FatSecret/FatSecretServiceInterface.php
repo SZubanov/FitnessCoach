@@ -7,6 +7,7 @@ use App\FatSecret\Dto\FoodEntryDto;
 use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Dto\WeightDto;
 use App\FatSecret\Exceptions\FatSecretException;
+use App\FatSecret\Exceptions\RecordNotFoundException;
 use App\FatSecret\Exceptions\RequestErrorException;
 use App\FatSecret\Exceptions\ResponseDecodeException;
 use Carbon\Carbon;
@@ -31,6 +32,7 @@ interface FatSecretServiceInterface
      * @return WeightDto
      * @throws RequestErrorException
      * @throws ResponseDecodeException
+     * @throws RecordNotFoundException
      */
     public function getWeightByDate(OAuthTokenDto $authTokenDTO, Carbon $date): WeightDto;
 
@@ -40,6 +42,7 @@ interface FatSecretServiceInterface
      * @return FoodEntryDto
      * @throws RequestErrorException
      * @throws ResponseDecodeException
+     * @throws RecordNotFoundException
      */
     public function getFoodEntryByDate(OAuthTokenDto $authTokenDTO, Carbon $date): FoodEntryDto;
 }

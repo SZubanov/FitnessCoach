@@ -41,8 +41,7 @@ class FatSecretFacade
      * @param OAuthTokenDto $authTokenDTO
      * @param Carbon $date
      * @return WeightDto
-     * @throws RequestErrorException
-     * @throws ResponseDecodeException
+     * @throws FatSecretException
      */
     public function getWeightByDate(OAuthTokenDto $authTokenDTO, Carbon $date): WeightDto
     {

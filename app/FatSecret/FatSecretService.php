@@ -8,6 +8,7 @@ use App\FatSecret\Dto\FoodEntryDto;
 use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Dto\WeightDto;
 use App\FatSecret\Exceptions\CredentialsException;
+use App\FatSecret\Exceptions\RecordNotFoundException;
 use Auth;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
@@ -61,6 +62,7 @@ class FatSecretService implements FatSecretServiceInterface
      * @return WeightDto
      * @throws GuzzleException
      * @throws JsonException
+     * @throws RecordNotFoundException
      */
     public function getWeightByDate(OAuthTokenDto $authTokenDTO, Carbon $date): WeightDto
     {
@@ -75,7 +77,7 @@ class FatSecretService implements FatSecretServiceInterface
 
         return isset($weight['month']['day'])
             ? $this->dtoFactory->createWeightDto($weight['month']['day'], $intDate)
-            : $this->dtoFactory->createEmptyWeightDto();
+            : throw new RecordNotFoundException();
     }
 
     /**
@@ -83,7 +85,7 @@ class FatSecretService implements FatSecretServiceInterface
      * @param Carbon $date
      * @return FoodEntryDto
      * @throws GuzzleException
-     * @throws JsonException
+     * @throws JsonException|RecordNotFoundException
      */
     public function getFoodEntryByDate(OAuthTokenDto $authTokenDTO, Carbon $date): FoodEntryDto
     {
@@ -94,8 +96,9 @@ class FatSecretService implements FatSecretServiceInterface
                 'method' => FatSecret::GET_FOOD_ENTRY_METHOD
             ]);
 
-        return $this->dtoFactory
-            ->createFoodEntryDto($foodEntry['food_entries']['food_entry']);
+        return $foodEntry['food_entries']
+            ? $this->dtoFactory->createFoodEntryDto($foodEntry['food_entries']['food_entry'])
+            : throw new RecordNotFoundException();
     }
 
     private function getCountDateFromStartUnixEpoch(Carbon $date): int

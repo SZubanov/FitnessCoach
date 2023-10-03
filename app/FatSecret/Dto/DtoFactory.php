@@ -59,9 +59,9 @@ class DtoFactory
     /**
      * @param array|null $rows
      * @param int $date
-     * @return WeightDto
+     * @return ?WeightDto
      */
-    public function createWeightDto(?array $rows, int $date): WeightDto
+    public function createWeightDto(?array $rows, int $date): ?WeightDto
     {
         foreach ($rows as $row) {
             if ((int)$row['date_int'] === $date) {
@@ -69,14 +69,6 @@ class DtoFactory
             }
         }
 
-        return $this->createEmptyWeightDto();
-    }
-
-    /**
-     * @return WeightDto
-     */
-    public function createEmptyWeightDto(): WeightDto
-    {
-        return new WeightDto(0);
+        return null;
     }
 }

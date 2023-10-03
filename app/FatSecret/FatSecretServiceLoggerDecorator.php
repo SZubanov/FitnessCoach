@@ -16,7 +16,7 @@ use League\OAuth1\Client\Credentials\CredentialsException as LeagueCredentialsEx
 
 class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
 {
-    public function __construct(private FatSecretServiceInterface $fatSecretService)
+    public function __construct(private readonly FatSecretServiceInterface $fatSecretService)
     {
 
     }
