@@ -38,4 +38,17 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $e)
+    {
+        if ($e instanceof NotFoundException) {
+            return $e->render();
+        }
+
+        if ($e instanceof ServerException) {
+            return $e->render();
+        }
+
+        return parent::render($request, $e);
+    }
 }

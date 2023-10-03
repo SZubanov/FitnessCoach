@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Web\Auth\ForgotPasswordController;
 use App\Http\Controllers\Web\Auth\LoginController;
 use App\Http\Controllers\Web\Auth\ResetPasswordController;
+use App\Http\Controllers\Web\Diary\UserDiaryMacrosFatSecretController;
 use App\Http\Controllers\Web\Diary\UserDiaryMacrosStoreController;
 use App\Http\Controllers\Web\Diary\UserDiaryPageController;
 use App\Http\Controllers\Web\Diary\UserDiaryMacrosFormController;
@@ -70,6 +71,7 @@ Route::group(['middleware' => 'auth'], static function() {
         Route::group(['prefix' => 'macros'], static function() {
             Route::get('/create', UserDiaryMacrosFormController::class)->name('web.users.diary.create.form.macros');
             Route::post('/', UserDiaryMacrosStoreController::class)->name('web.users.diary.store.macros');
+            Route::post('/fatsecret', UserDiaryMacrosFatSecretController::class)->name('web.users.diary.fatsecret.macros');
         });
 
         Route::group(['prefix' => 'weight'], static function() {

@@ -6,6 +6,7 @@ namespace App\Providers;
 use App\Actions\Datatables\UserElements;
 use App\Actions\Datatables\UserListColumn;
 use App\Actions\Diary\GetDiaryUser;
+use App\Actions\Diary\GetUserDiaryMacrosWithFatSecret;
 use App\Actions\Diary\StoreUserDiaryMacros;
 use App\Actions\Users\DeleteUser;
 use App\Actions\Users\GetCurrentUser;
@@ -16,6 +17,7 @@ use App\Actions\Users\UpdateUser;
 use App\Contracts\Actions\Datatables\ResponseElementsInterface;
 use App\Contracts\Actions\Datatables\UserListsColumnInterface;
 use App\Contracts\Actions\Diary\GetDiaryUserInterface;
+use App\Contracts\Actions\Diary\GetUserDiaryMacrosWithFatSecretInterface;
 use App\Contracts\Actions\Diary\StoreUserDiaryMacrosInterface;
 use App\Contracts\Actions\Users\DeleteUserInterface;
 use App\Contracts\Actions\Users\GetCurrentUserInterface;
@@ -37,6 +39,7 @@ class ActionServiceProvider extends ServiceProvider
         GetListRolesInterface::class         => GetListRoles::class,
         GetCurrentUserInterface::class       => GetCurrentUser::class,
         GetDiaryUserInterface::class         => GetDiaryUser::class,
-        StoreUserDiaryMacrosInterface::class => StoreUserDiaryMacros::class
+        StoreUserDiaryMacrosInterface::class => StoreUserDiaryMacros::class,
+        GetUserDiaryMacrosWithFatSecretInterface::class => GetUserDiaryMacrosWithFatSecret::class
     ];
 }

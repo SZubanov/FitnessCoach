@@ -7,6 +7,7 @@
 @stop
 
 @section('content')
+    @csrf
     <div class="container">
         <div class="row">
             <div class="col-md-4">
@@ -18,13 +19,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Дата<sup class="text-danger">*</sup></label>
-                                    <input name="date" type="text" maxlength="255" class="form-control" required
+                                    <input name="date-macros-fatsecret" type="text" maxlength="255" class="form-control" required
                                            datepicker data-inputmask>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <button type="button" class="btn btn-success btn-block"
-                                        onclick="Main.createRecord('{{ route('web.users.diary.create.form.macros') }}')">
+                                        onclick="Diary.storeRecord('{{ route('web.users.diary.fatsecret.macros') }}', 'date-macros-fatsecret')">
                                     Получить из FatSecret
                                 </button>
                             </div>
@@ -114,3 +115,7 @@
         </div>
     </div>
 @stop
+
+@push('js')
+    <script src="{{ asset('/js/diary.js') }}"></script>
+@endpush
