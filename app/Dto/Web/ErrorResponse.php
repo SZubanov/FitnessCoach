@@ -10,9 +10,9 @@ class ErrorResponse extends Data
     public string $error;
     public int $code;
 
-    public function __construct($code = 500)
+    public function __construct(string $error, int $code = 400)
     {
         $this->code = $code;
-        $this->error =  __('datatables.store.error');
+        $this->error =  $error;
     }
 }
