@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\FatSecret\Dto\DtoFactory;
 use App\FatSecret\Dto\OAuthTokenDto;
-use App\Services\UserReportService;
+use App\Services\FatSecretUserDiaryService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Validation\ValidationException;
@@ -31,7 +31,7 @@ class GetFatSecretFoodEntryUser extends Command
      *
      * @return int
      */
-    public function handle(UserReportService $userReportService, DtoFactory $factory)
+    public function handle(FatSecretUserDiaryService $userReportService, DtoFactory $factory)
     {
         $userId = $this->argument('userId');
         $date = $this->argument('date');

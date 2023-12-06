@@ -38,7 +38,7 @@
     </div>
     <div class="modal-footer">
         <button class="btn btn-success modal-button-form"
-                @if(isset($diary)) onclick="Main.updateRecord('{{ route('web.admin.users.update', $diary->id) }}')"
+                @if(isset($diary)) onclick="Main.updateRecord('{{ route('web.users.diary.store.macros', $diary->id) }}')" {{-- TODO add a route for update --}}
                 @else onclick="Main.storeRecord('{{ route('web.users.diary.store.macros') }}')" @endif
         >Создать
         </button>

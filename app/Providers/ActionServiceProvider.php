@@ -7,7 +7,9 @@ use App\Actions\Datatables\UserElements;
 use App\Actions\Datatables\UserListColumn;
 use App\Actions\Diary\GetDiaryUser;
 use App\Actions\Diary\GetUserDiaryMacrosWithFatSecret;
+use App\Actions\Diary\GetUserDiaryWeightWithFatSecret;
 use App\Actions\Diary\StoreUserDiaryMacros;
+use App\Actions\Diary\StoreUserDiaryWeight;
 use App\Actions\Users\DeleteUser;
 use App\Actions\Users\GetCurrentUser;
 use App\Actions\Users\GetListRoles;
@@ -18,7 +20,9 @@ use App\Contracts\Actions\Datatables\ResponseElementsInterface;
 use App\Contracts\Actions\Datatables\UserListsColumnInterface;
 use App\Contracts\Actions\Diary\GetDiaryUserInterface;
 use App\Contracts\Actions\Diary\GetUserDiaryMacrosWithFatSecretInterface;
+use App\Contracts\Actions\Diary\GetUserDiaryWeightWithFatSecretInterface;
 use App\Contracts\Actions\Diary\StoreUserDiaryMacrosInterface;
+use App\Contracts\Actions\Diary\StoreUserDiaryWeightInterface;
 use App\Contracts\Actions\Users\DeleteUserInterface;
 use App\Contracts\Actions\Users\GetCurrentUserInterface;
 use App\Contracts\Actions\Users\GetListRolesInterface;
@@ -40,6 +44,8 @@ class ActionServiceProvider extends ServiceProvider
         GetCurrentUserInterface::class       => GetCurrentUser::class,
         GetDiaryUserInterface::class         => GetDiaryUser::class,
         StoreUserDiaryMacrosInterface::class => StoreUserDiaryMacros::class,
-        GetUserDiaryMacrosWithFatSecretInterface::class => GetUserDiaryMacrosWithFatSecret::class
+        GetUserDiaryMacrosWithFatSecretInterface::class => GetUserDiaryMacrosWithFatSecret::class,
+        StoreUserDiaryWeightInterface::class => StoreUserDiaryWeight::class,
+        GetUserDiaryWeightWithFatSecretInterface::class => GetUserDiaryWeightWithFatSecret::class
     ];
 }

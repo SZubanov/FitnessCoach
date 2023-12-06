@@ -9,7 +9,7 @@ use App\FatSecret\FatSecretFacade;
 use App\Repositories\UserReportRepository;
 use Carbon\Carbon;
 
-class UserReportService
+class FatSecretUserDiaryService
 {
     public function __construct(
         protected FatSecretFacade $fatSecretFacade,
@@ -44,7 +44,7 @@ class UserReportService
     public function updateUserWeight(int $userId, OAuthTokenDto $authTokenDTO, Carbon $date): void
     {
         $weight = $this->fatSecretFacade->getWeightByDate($authTokenDTO, $date);
-        $userWeight = $this->foodEntryDtoFactory->createUserWeightDto($userId, $date, $weight);
+        $userWeight = $this->foodEntryDtoFactory->createUserWeightDto($userId, $date, $weight->getWeight(), $weight->getUnit());
 
         $this->userReportRepository->createUserWeight($userWeight);
     }

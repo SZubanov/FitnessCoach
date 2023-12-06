@@ -2,7 +2,7 @@
 
 namespace App\Actions\Diary;
 
-use App\Contracts\Actions\Diary\GetUserDiaryMacrosWithFatSecretInterface;
+use App\Contracts\Actions\Diary\GetUserDiaryWeightWithFatSecretInterface;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\ServerException;
 use App\FatSecret\Dto\DtoFactory;
@@ -11,7 +11,7 @@ use App\FatSecret\Exceptions\RecordNotFoundException as FatRecordNotFoundExcepti
 use App\Services\FatSecretUserDiaryService;
 use Carbon\Carbon;
 
-class GetUserDiaryMacrosWithFatSecret implements GetUserDiaryMacrosWithFatSecretInterface
+class GetUserDiaryWeightWithFatSecret implements GetUserDiaryWeightWithFatSecretInterface
 {
     public function __construct(
         private readonly FatSecretUserDiaryService $userReportService,
@@ -29,7 +29,7 @@ class GetUserDiaryMacrosWithFatSecret implements GetUserDiaryMacrosWithFatSecret
         $oauthDto = $this->dtoFactory->createOAuthTokenDto($authUser->oauth_token, $authUser->oauth_token_secret);
 
         try {
-            $this->userReportService->updateUserFoodEntry($authUser->id, $oauthDto, $date);
+            $this->userReportService->updateUserWeight($authUser->id, $oauthDto, $date);
         } catch (FatSecretException $exception) {
             if ($exception instanceof FatRecordNotFoundException) {
                 throw new NotFoundException();

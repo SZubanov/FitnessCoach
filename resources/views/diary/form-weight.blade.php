@@ -20,8 +20,8 @@
     </div>
     <div class="modal-footer">
         <button class="btn btn-success modal-button-form"
-                @if(isset($diary)) onclick="Main.updateRecord('{{ route('web.admin.users.update', $diary->id) }}')"
-                @else onclick="Main.storeRecord('{{ route('web.admin.users.store') }}')" @endif
+                @if(isset($diary)) onclick="Main.updateRecord('{{ route('web.users.diary.store.weight', $diary->id) }}')" {{-- TODO add a route for update --}}
+                @else onclick="Main.storeRecord('{{ route('web.users.diary.store.weight') }}')" @endif
         >Создать
         </button>
         <button type="button" class="btn btn-danger" onclick="Main.dissmissModal('#form')">Отмена</button>

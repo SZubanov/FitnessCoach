@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Dto\UserReport\UserFoodEntry;
+use App\Dto\UserReport\UserFoodEntryDto;
 use App\Dto\UserReport\UserWeightDto;
 use App\Models\FoodEntry;
 use App\Models\UserWeight;
@@ -10,10 +10,10 @@ use App\Models\UserWeight;
 class UserReportRepository
 {
     /**
-     * @param UserFoodEntry $dto
+     * @param UserFoodEntryDto $dto
      * @return void
      */
-    public function createUserFoodEntry(UserFoodEntry $dto): void
+    public function createUserFoodEntry(UserFoodEntryDto $dto): void
     {
        FoodEntry::updateOrCreate(
             [

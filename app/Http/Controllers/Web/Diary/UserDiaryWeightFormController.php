@@ -5,12 +5,11 @@ namespace App\Http\Controllers\Web\Diary;
 use App\Dto\Web\FormDto;
 use App\Http\Controllers\Controller;
 
-class UserDiaryWeightController extends Controller
+class UserDiaryWeightFormController extends Controller
 {
-    public function create()
+    public function __invoke()
     {
         $with['method'] = 'create';
-
 
         $response = FormDto::from([
                 'action' => 'success',

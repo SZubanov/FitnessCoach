@@ -11,7 +11,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4">
-                <div class="card">
+                <div class="card rounded">
                     <div class="card-header">КБЖУ</div>
                     <div class="card-body">
                         @isset($user)
@@ -46,7 +46,7 @@
 
 
             <div class="col-md-4">
-                <div class="card">
+                <div class="card rounded">
                     <div class="card-header">Вес</div>
                     <div class="card-body">
                         @isset($user)
@@ -54,13 +54,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Дата<sup class="text-danger">*</sup></label>
-                                    <input name="date" type="text" maxlength="255" class="form-control" required
+                                    <input name="date-weight-fatsecret" type="text" maxlength="255" class="form-control" required
                                            datepicker data-inputmask>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <button type="button" class="btn btn-success btn-block"
-                                        onclick="Main.createRecord('{{ route('web.users.diary.create.form.weight') }}')">
+                                        onclick="Diary.storeRecord('{{ route('web.users.diary.fatsecret.weight') }}', 'date-weight-fatsecret')">
                                     Получить из FatSecret
                                 </button>
                             </div>
@@ -80,7 +80,7 @@
             </div>
 
             <div class="col-md-4">
-                <div class="card">
+                <div class="card rounded">
                     <div class="card-header">Шаги</div>
                     <div class="card-body">
                         @isset($user)

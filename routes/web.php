@@ -16,7 +16,9 @@ use App\Http\Controllers\Web\Diary\UserDiaryMacrosStoreController;
 use App\Http\Controllers\Web\Diary\UserDiaryPageController;
 use App\Http\Controllers\Web\Diary\UserDiaryMacrosFormController;
 use App\Http\Controllers\Web\Diary\UserDiaryStepsController;
-use App\Http\Controllers\Web\Diary\UserDiaryWeightController;
+use App\Http\Controllers\Web\Diary\UserDiaryWeightFatSecretController;
+use App\Http\Controllers\Web\Diary\UserDiaryWeightFormController;
+use App\Http\Controllers\Web\Diary\UserDiaryWeightStoreController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\SettingsController;
 use App\Http\Controllers\Web\UserSetFatSecretTokenController;
@@ -75,7 +77,9 @@ Route::group(['middleware' => 'auth'], static function() {
         });
 
         Route::group(['prefix' => 'weight'], static function() {
-            Route::get('/create', [UserDiaryWeightController::class, 'create'])->name('web.users.diary.create.form.weight');
+            Route::get('/create', UserDiaryWeightFormController::class)->name('web.users.diary.create.form.weight');
+            Route::post('/', UserDiaryWeightStoreController::class)->name('web.users.diary.store.weight');
+            Route::post('/fatsecret', UserDiaryWeightFatSecretController::class)->name('web.users.diary.fatsecret.weight');
         });
 
         Route::group(['prefix' => 'steps'], static function() {
