@@ -5,7 +5,8 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label>Дата<sup class="text-danger">*</sup></label>
-                    <input name="date" type="text" maxlength="255" class="form-control" required datepicker data-inputmask
+                    <input name="date" type="text" maxlength="255" class="form-control" required datepicker
+                           data-inputmask
                            value="{{ isset($diary) ? $diary->date ?? '' : old('date') }}"
                     >
                 </div>
@@ -17,28 +18,40 @@
                 </div>
                 <div class="form-group">
                     <label>Белки<sup class="text-danger">*</sup></label>
-                    <input name="protein" type="text" maxlength="255" class="form-control" required
-                           value="{{ isset($diary) ? $diary->protein ?? '' : old('protein') }}"
-                    >
+                    <div class="d-flex align-items-center">
+                        <input name="protein" type="text" maxlength="255" class="form-control" required
+                               value="{{ isset($diary) ? $diary->protein ?? '' : old('protein') }}"
+                        >
+                        <span class="col-md-1 ml-2 text-muted">{{ $unit }}</span>
+                    </div>
                 </div>
                 <div class="form-group">
+
                     <label>Жиры<sup class="text-danger">*</sup></label>
-                    <input name="fat" type="text" maxlength="255" class="form-control" required
-                           value="{{ isset($diary) ? $diary->fat ?? '' : old('fat') }}"
-                    >
+                    <div class="d-flex align-items-center">
+                        <input name="fat" type="text" maxlength="255" class="form-control" required
+                               value="{{ isset($diary) ? $diary->fat ?? '' : old('fat') }}"
+                        >
+                        <span class="col-md-1 ml-2 text-muted">{{ $unit }}</span>
+                    </div>
                 </div>
                 <div class="form-group">
+
                     <label>Углеводы<sup class="text-danger">*</sup></label>
-                    <input name="carbs" type="text" maxlength="255" class="form-control" required
-                           value="{{ isset($diary) ? $diary->carbs ?? '' : old('carbs') }}"
-                    >
+                    <div class="d-flex align-items-center">
+                        <input name="carbs" type="text" maxlength="255" class="form-control" required
+                               value="{{ isset($diary) ? $diary->carbs ?? '' : old('carbs') }}"
+                        >
+                        <span class="col-md-1 ml-2 text-muted">{{ $unit }}</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="modal-footer">
         <button class="btn btn-success modal-button-form"
-                @if(isset($diary)) onclick="Main.updateRecord('{{ route('web.users.diary.store.macros', $diary->id) }}')" {{-- TODO add a route for update --}}
+                @if(isset($diary)) onclick="Main.updateRecord('{{ route('web.users.diary.store.macros', $diary->id) }}')"
+                {{-- TODO add a route for update --}}
                 @else onclick="Main.storeRecord('{{ route('web.users.diary.store.macros') }}')" @endif
         >Создать
         </button>

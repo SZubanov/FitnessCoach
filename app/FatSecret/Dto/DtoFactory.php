@@ -57,12 +57,16 @@ class DtoFactory
     }
 
     /**
-     * @param array|null $rows
+     * @param array $rows
      * @param int $date
      * @return ?WeightDto
      */
-    public function createWeightDto(?array $rows, int $date): ?WeightDto
+    public function createWeightDto(array $rows, int $date): ?WeightDto
     {
+        if (!isset($weight['month']['day'])) {
+            return null;
+        }
+
         foreach ($rows as $row) {
             if ((int)$row['date_int'] === $date) {
                 return new WeightDto($row['weight_kg']);

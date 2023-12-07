@@ -9,7 +9,8 @@ class DiaryWeightStoreDto extends Data
 {
     public function __construct(
         public string $date,
-        public float $weight
+        public float $weight,
+        public string $unit
     ) {
 
     }

@@ -25,7 +25,7 @@ class StoreUserDiaryWeight implements StoreUserDiaryWeightInterface
                 $authUser->id,
                 Carbon::parse($dto->date),
                 $dto->weight,
-                MetricSystem::getDefaultWeightUnitByMetricSystem($authUser->default_measure_system)
+                $dto->unit
             );
 
         $this->reportRepository->createUserWeight($userWeight);

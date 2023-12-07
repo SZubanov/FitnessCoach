@@ -2,10 +2,10 @@
 
 namespace App\Actions\Diary;
 
+use App\Contracts\Actions\Diary\GetDefaultWeightUnitUserInterface;
 use App\Contracts\Actions\Diary\StoreUserDiaryMacrosInterface;
 use App\Dto\UserReport\DtoFactory;
 use App\Dto\Web\Diary\DiaryMacrosStoreDto;
-use App\Helpers\MetricSystem;
 use App\Repositories\UserReportRepository;
 use Carbon\Carbon;
 
@@ -13,7 +13,8 @@ class StoreUserDiaryMacros implements StoreUserDiaryMacrosInterface
 {
     public function __construct(
         private readonly UserReportRepository $reportRepository,
-        private readonly DtoFactory $dtoFactory
+        private readonly DtoFactory $dtoFactory,
+        private readonly GetDefaultWeightUnitUserInterface $defaultWeightUnitUser
     ) {
     }
 
@@ -27,7 +28,7 @@ class StoreUserDiaryMacros implements StoreUserDiaryMacrosInterface
                 $dto->protein,
                 $dto->fat,
                 $dto->carbs,
-                MetricSystem::getDefaultWeightUnitByMetricSystem($authUser->default_measure_system),
+                ($this->defaultWeightUnitUser)(),
                 Carbon::parse($dto->date)
             );
 

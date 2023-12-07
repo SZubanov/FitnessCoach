@@ -3,7 +3,9 @@
 namespace App\Http\Requests\Web\Diary;
 
 use App\Dto\Web\Diary\DiaryWeightStoreDto;
+use App\Helpers\WeightUnit;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Spatie\LaravelData\WithData;
 
 class DiaryWeightStoreRequest extends FormRequest
@@ -21,7 +23,11 @@ class DiaryWeightStoreRequest extends FormRequest
     {
         return [
             'date' => 'required|date',
-            'weight' => 'required|numeric'
+            'weight' => 'required|numeric',
+            'unit' => [
+                'required',
+                Rule::in([WeightUnit::G, WeightUnit::LB, WeightUnit::KG, WeightUnit::OZ])
+            ]
         ];
 
     }

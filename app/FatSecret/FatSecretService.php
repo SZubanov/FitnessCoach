@@ -75,9 +75,7 @@ class FatSecretService implements FatSecretServiceInterface
                 'method' => FatSecret::GET_MONTH_WEIGHT_METHOD
             ]);
 
-        return isset($weight['month']['day'])
-            ? $this->dtoFactory->createWeightDto($weight['month']['day'], $intDate)
-            : throw new RecordNotFoundException();
+        return $this->dtoFactory->createWeightDto($weight, $intDate) ?? throw new RecordNotFoundException();
     }
 
     /**

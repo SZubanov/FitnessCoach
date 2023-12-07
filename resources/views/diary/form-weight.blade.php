@@ -11,9 +11,16 @@
                 </div>
                 <div class="form-group">
                     <label>Вес<sup class="text-danger">*</sup></label>
-                    <input name="weight" type="text" maxlength="255" class="form-control" required
-                           value="{{ isset($diary) ? $diary->weight ?? '' : old('weight') }}"
-                    >
+                    <div class="d-flex align-items-center">
+                        <input name="weight" type="text" maxlength="255" class="form-control" required
+                               value="{{ isset($diary) ? $diary->weight ?? '' : old('weight') }}">
+                        <select name="unit" class="form-control ml-2 col-md-2" required>
+                            <option value="g" selected>g</option>
+                            <option value="lb">lb</option>
+                            <option value="kg">kg</option>
+                            <option value="oz">oz</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
