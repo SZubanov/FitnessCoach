@@ -5,12 +5,11 @@ namespace App\Http\Controllers\Web\Diary;
 use App\Dto\Web\FormDto;
 use App\Http\Controllers\Controller;
 
-class UserDiaryStepsController extends Controller
+class UserDiaryStepsFormController extends Controller
 {
-    public function create()
+    public function __invoke()
     {
         $with['method'] = 'create';
-
 
         $response = FormDto::from([
                 'action' => 'success',

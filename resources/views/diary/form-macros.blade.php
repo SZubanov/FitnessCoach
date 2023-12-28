@@ -26,7 +26,6 @@
                     </div>
                 </div>
                 <div class="form-group">
-
                     <label>Жиры<sup class="text-danger">*</sup></label>
                     <div class="d-flex align-items-center">
                         <input name="fat" type="text" maxlength="255" class="form-control" required
@@ -36,7 +35,6 @@
                     </div>
                 </div>
                 <div class="form-group">
-
                     <label>Углеводы<sup class="text-danger">*</sup></label>
                     <div class="d-flex align-items-center">
                         <input name="carbs" type="text" maxlength="255" class="form-control" required

@@ -1,10 +1,13 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repositories;
 
 use App\Dto\UserReport\UserFoodEntryDto;
+use App\Dto\UserReport\UserStepsDto;
 use App\Dto\UserReport\UserWeightDto;
 use App\Models\FoodEntry;
+use App\Models\UserStep;
 use App\Models\UserWeight;
 
 class UserReportRepository
@@ -44,6 +47,23 @@ class UserReportRepository
             [
                 'weight' => $dto->getWeight(),
                 'unit' => $dto->getUnit()
+            ]
+        );
+    }
+
+    /**
+     * @param UserStepsDto $dto
+     * @return void
+     */
+    public function createUserSteps(UserStepsDto $dto): void
+    {
+        UserStep::updateOrCreate(
+            [
+                'user_id' => $dto->getUserId(),
+                'date' => $dto->getDate()
+            ],
+            [
+                'steps' => $dto->getSteps(),
             ]
         );
     }

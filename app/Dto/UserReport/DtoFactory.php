@@ -84,4 +84,22 @@ class DtoFactory
             $date
         );
     }
+
+    /**
+     * @param int $userId
+     * @param int $steps
+     * @param Carbon $date
+     * @return UserStepsDto
+     */
+    public function createUserStepsDto(
+        int $userId,
+        int $steps,
+        Carbon $date
+    ): UserStepsDto {
+        return new UserStepsDto(
+            $userId,
+            $steps,
+            $date
+        );
+    }
 }
