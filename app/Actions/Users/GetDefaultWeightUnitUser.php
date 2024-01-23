@@ -2,7 +2,7 @@
 
 namespace App\Actions\Users;
 
-use App\Contracts\Actions\Diary\GetDefaultWeightUnitUserInterface;
+use App\Contracts\Actions\Users\GetDefaultWeightUnitUserInterface;
 use App\Helpers\MetricSystem;
 
 class GetDefaultWeightUnitUser implements GetDefaultWeightUnitUserInterface

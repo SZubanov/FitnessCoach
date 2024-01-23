@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Web\Diary;
 
-use App\Contracts\Actions\Diary\GetDefaultWeightUnitUserInterface;
+use App\Contracts\Actions\Users\GetDefaultWeightUnitUserInterface;
 use App\Dto\Web\FormDto;
-use App\Helpers\MetricSystem;
 use App\Http\Controllers\Controller;
 
 class UserDiaryMacrosFormController extends Controller

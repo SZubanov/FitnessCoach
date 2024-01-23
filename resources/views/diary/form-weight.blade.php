@@ -12,7 +12,7 @@
                 <div class="form-group">
                     <label>Вес<sup class="text-danger">*</sup></label>
                     <div class="d-flex align-items-center">
-                        <input name="weight" type="text" maxlength="255" class="form-control" required
+                        <input name="weight" type="text" maxlength="255" class="form-control" required data-float-inputmask
                                value="{{ isset($diary) ? $diary->weight ?? '' : old('weight') }}">
                         <select name="unit" class="form-control ml-2 col-md-2" required>
                             <option value="g" selected>g</option>

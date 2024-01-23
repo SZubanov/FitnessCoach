@@ -39,4 +39,12 @@ class MetricSystem
             default => WeightUnit::G,
         };
     }
+
+    public static function getDefaultSizeUnitByMetricSystem(int $metricSystem): string
+    {
+        return match ($metricSystem) {
+            self::UMS => SizeUnit::IN,
+            default => SizeUnit::SM,
+        };
+    }
 }

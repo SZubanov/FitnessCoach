@@ -106,7 +106,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <button type="button" class="btn btn-success btn-block"
-                                        onclick="Main.createRecord('{{ route('web.users.diary.create.form.steps') }}')">
+                                        onclick="Main.createRecord('{{ route('web.users.diary.create.form.sizes') }}')">
                                     Добавить
                                 </button>
                             </div>

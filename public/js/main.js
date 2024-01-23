@@ -1,17 +1,10 @@
 $(document).ready(function($) {
     // Переинициализация при открытии модального окна
     $('body').on('shown.bs.modal', '.modal', function() {
-        Main.initDefaultSelect2();
-        DatetimepickerHelper.datePickerInit();
-        DatetimepickerHelper.dateTimePickerInit();
-        Main.summernote();
+        Main.init();
     });
     // Инициализация инпутов для фильтров
-    Main.initDefaultSelect2();
-    DatetimepickerHelper.datePickerInit();
-    DatetimepickerHelper.dateRangePickerInit();
-    DatetimepickerHelper.dateTimesRangePickerInit();
-    Main.summernote();
+    Main.init();
 });
 
 
@@ -82,6 +75,15 @@ var Main = {
             "Декабрь"
         ],
         "firstDay": 1
+    },
+
+    init: function () {
+        this.initDefaultSelect2();
+        DatetimepickerHelper.datePickerInit();
+        DatetimepickerHelper.dateTimePickerInit();
+        DatetimepickerHelper.dateTimesRangePickerInit();
+        this.summernote();
+        InputMaskHelper.float();
     },
 
     summernote: function (element = '.summernote') {
@@ -461,7 +463,7 @@ var DatetimepickerHelper = {
         });
 
         // Маска полного времени
-        $('[data-timeinputmask]').inputmask("99.99.9999 99:99");
+       InputMaskHelper.DDMMYYYYHm();
     },
     datePickerInit: function () {
         // Инициализация Datepicker
@@ -474,7 +476,7 @@ var DatetimepickerHelper = {
         }, function(start_date, end_date) {
             this.element.val(start_date.format(Main.confDrp.format)).change();
         });
-        $('[data-inputmask]').inputmask("99.99.9999");
+        InputMaskHelper.DDMMYYYY();
     },
     dateRangePickerInit: function () {
         // Инициализация Daterangepicker
@@ -498,3 +500,17 @@ var DatetimepickerHelper = {
         });
     },
 }
+
+var InputMaskHelper = {
+    DDMMYYYY: function () {
+        $('[data-inputmask]').inputmask("99.99.9999");
+    },
+
+    DDMMYYYYHm: function () {
+        $('[data-timeinputmask]').inputmask("99.99.9999 99:99");
+    },
+
+    float: function () {
+        $('[data-float-inputmask]').inputmask("9{1,3}.9{0,2}");
+    }
+};

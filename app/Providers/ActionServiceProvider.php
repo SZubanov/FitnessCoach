@@ -14,6 +14,7 @@ use App\Actions\Diary\StoreUserDiarySteps;
 use App\Actions\Diary\StoreUserDiaryWeight;
 use App\Actions\Users\DeleteUser;
 use App\Actions\Users\GetCurrentUser;
+use App\Actions\Users\GetDefaultSizeUnitUser;
 use App\Actions\Users\GetDefaultWeightUnitUser;
 use App\Actions\Users\GetListRoles;
 use App\Actions\Users\GetListUsers;
@@ -21,7 +22,6 @@ use App\Actions\Users\StoreUser;
 use App\Actions\Users\UpdateUser;
 use App\Contracts\Actions\Datatables\ResponseElementsInterface;
 use App\Contracts\Actions\Datatables\UserListsColumnInterface;
-use App\Contracts\Actions\Diary\GetDefaultWeightUnitUserInterface;
 use App\Contracts\Actions\Diary\GetDiaryUserInterface;
 use App\Contracts\Actions\Diary\GetUserDiaryMacrosWithFatSecretInterface;
 use App\Contracts\Actions\Diary\GetUserDiaryWeightWithFatSecretInterface;
@@ -30,6 +30,8 @@ use App\Contracts\Actions\Diary\StoreUserDiaryStepsInterface;
 use App\Contracts\Actions\Diary\StoreUserDiaryWeightInterface;
 use App\Contracts\Actions\Users\DeleteUserInterface;
 use App\Contracts\Actions\Users\GetCurrentUserInterface;
+use App\Contracts\Actions\Users\GetDefaultSizeUnitUserInterface;
+use App\Contracts\Actions\Users\GetDefaultWeightUnitUserInterface;
 use App\Contracts\Actions\Users\GetListRolesInterface;
 use App\Contracts\Actions\Users\GetListUserInterface;
 use App\Contracts\Actions\Users\StoreUserInterface;
@@ -53,6 +55,7 @@ class ActionServiceProvider extends ServiceProvider
         StoreUserDiaryWeightInterface::class => StoreUserDiaryWeight::class,
         GetUserDiaryWeightWithFatSecretInterface::class => GetUserDiaryWeightWithFatSecret::class,
         GetDefaultWeightUnitUserInterface::class => GetDefaultWeightUnitUser::class,
+        GetDefaultSizeUnitUserInterface::class => GetDefaultSizeUnitUser::class,
         StoreUserDiaryStepsInterface::class => StoreUserDiarySteps::class
     ];
 }

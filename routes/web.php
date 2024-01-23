@@ -15,13 +15,15 @@ use App\Http\Controllers\Web\Diary\UserDiaryMacrosFatSecretController;
 use App\Http\Controllers\Web\Diary\UserDiaryMacrosStoreController;
 use App\Http\Controllers\Web\Diary\UserDiaryPageController;
 use App\Http\Controllers\Web\Diary\UserDiaryMacrosFormController;
+use App\Http\Controllers\Web\Diary\UserDiarySizesFormController;
 use App\Http\Controllers\Web\Diary\UserDiaryStepsFormController;
-use App\Http\Controllers\Web\Diary\UserDiaryStepsStoreController;
+use App\Http\Controllers\Web\Diary\UserDiarySizesStoreController;
 use App\Http\Controllers\Web\Diary\UserDiaryWeightFatSecretController;
 use App\Http\Controllers\Web\Diary\UserDiaryWeightFormController;
 use App\Http\Controllers\Web\Diary\UserDiaryWeightStoreController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\SettingsController;
+use App\Http\Controllers\Web\UserSetFatSecretTokenCallbackController;
 use App\Http\Controllers\Web\UserSetFatSecretTokenController;
 use App\Http\Controllers\Web\UserUpdateController;
 use Illuminate\Support\Facades\Route;
@@ -85,14 +87,19 @@ Route::group(['middleware' => 'auth'], static function() {
 
         Route::group(['prefix' => 'steps'], static function() {
             Route::get('/create', UserDiaryStepsFormController::class)->name('web.users.diary.create.form.steps');
-            Route::post('/', UserDiaryStepsStoreController::class)->name('web.users.diary.store.steps');
+            Route::post('/', UserDiarySizesStoreController::class)->name('web.users.diary.store.steps');
+        });
+
+        Route::group(['prefix' => 'sizes'], static function () {
+            Route::get('/create', UserDiarySizesFormController::class)->name('web.users.diary.create.form.sizes');
+            Route::post('/', UserDiarySizesStoreController::class)->name('web.users.diary.store.sizes');
         });
 
     });
 
     Route::patch('/users/{user}', UserUpdateController::class)->name('web.users.update');
     Route::post('/fatsecret/{user}/token', UserSetFatSecretTokenController::class)->name('web.users.fatsecret.token');
-    Route::get('/fatsecret/token/callback', \App\Http\Controllers\Web\UserSetFatSecretTokenCallbackController::class)->name('web.users.fatsecret.token.callback');
+    Route::get('/fatsecret/token/callback', UserSetFatSecretTokenCallbackController::class)->name('web.users.fatsecret.token.callback');
 });
 
 

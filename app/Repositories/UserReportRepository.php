@@ -4,9 +4,11 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Dto\UserReport\UserFoodEntryDto;
+use App\Dto\UserReport\UserSizesDto;
 use App\Dto\UserReport\UserStepsDto;
 use App\Dto\UserReport\UserWeightDto;
 use App\Models\FoodEntry;
+use App\Models\UserSize;
 use App\Models\UserStep;
 use App\Models\UserWeight;
 
@@ -64,6 +66,25 @@ class UserReportRepository
             ],
             [
                 'steps' => $dto->getSteps(),
+            ]
+        );
+    }
+
+    public function createUserSize(UserSizesDto $dto): void
+    {
+        UserSize::updateOrCreate(
+            [
+                'user_id' => $dto->getUserId(),
+                'date' => $dto->getDate()
+            ],
+            [
+                'neck' => $dto->getNeck(),
+                'chest' => $dto->getChest(),
+                'waist' => $dto->getWaist(),
+                'biceps' => $dto->getBiceps(),
+                'pelvis' => $dto->getPelvis(),
+                'thigh' => $dto->getThigh(),
+                'tibia' => $dto->getTibia()
             ]
         );
     }

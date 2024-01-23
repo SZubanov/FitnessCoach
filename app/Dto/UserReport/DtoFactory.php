@@ -102,4 +102,43 @@ class DtoFactory
             $date
         );
     }
+
+    /**
+     * @param int $userId
+     * @param float $neck
+     * @param float $chest
+     * @param float $waist
+     * @param float $biceps
+     * @param float $pelvis
+     * @param float $thigh
+     * @param float $tibia
+     * @param string $unit
+     * @param Carbon $date
+     * @return UserSizesDto
+     */
+    public function createUserSizesDto(
+        int $userId,
+        float $neck,
+        float $chest,
+        float $waist,
+        float $biceps,
+        float $pelvis,
+        float $thigh,
+        float $tibia,
+        string $unit,
+        Carbon $date,
+    ): UserSizesDto {
+        return new UserSizesDto(
+            $userId,
+            $neck,
+            $chest,
+            $waist,
+            $biceps,
+            $pelvis,
+            $thigh,
+            $tibia,
+            $unit,
+            $date
+        );
+    }
 }

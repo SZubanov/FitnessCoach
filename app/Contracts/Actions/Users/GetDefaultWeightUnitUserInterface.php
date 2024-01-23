@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Contracts\Actions\Diary;
-
-use App\Helpers\MetricSystem;
+namespace App\Contracts\Actions\Users;
 
 interface GetDefaultWeightUnitUserInterface
 {

@@ -2,8 +2,8 @@
 
 namespace App\Actions\Diary;
 
-use App\Contracts\Actions\Diary\GetDefaultWeightUnitUserInterface;
 use App\Contracts\Actions\Diary\StoreUserDiaryMacrosInterface;
+use App\Contracts\Actions\Users\GetDefaultWeightUnitUserInterface;
 use App\Dto\UserReport\DtoFactory;
 use App\Dto\Web\Diary\DiaryMacrosStoreDto;
 use App\Repositories\UserReportRepository;
