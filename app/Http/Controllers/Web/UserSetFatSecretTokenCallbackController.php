@@ -34,6 +34,6 @@ class UserSetFatSecretTokenCallbackController extends Controller
                 ->withErrors(['error' => $e->getMessage()])
                 ->with($with);
         }
-        return view('settings')->with($with);
+        return redirect('settings')->with($with);
     }
 }

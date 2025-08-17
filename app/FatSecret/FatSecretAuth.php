@@ -13,9 +13,9 @@ use League\OAuth1\Client\Server\Server;
 
 class FatSecretAuth extends Server
 {
-    private const REQUEST_TOKEN_URL = "https://www.fatsecret.com/oauth/request_token",
-        AUTHORIZE_URL = "https://www.fatsecret.com/oauth/authorize",
-        ACCESS_TOKEN_URL = "https://www.fatsecret.com/oauth/access_token";
+    private const REQUEST_TOKEN_URL = "https://authentication.fatsecret.com/oauth/request_token",
+        AUTHORIZE_URL = "https://authentication.fatsecret.com/oauth/authorize",
+        ACCESS_TOKEN_URL = "https://authentication.fatsecret.com/oauth/access_token";
 
     private const SIGNATURE_ACCESS_TOKEN_METHOD = 'POST';
 

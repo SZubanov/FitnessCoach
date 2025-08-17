@@ -9,7 +9,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 
-class UserSetFatSecretTokenController extends Controller
+class UserSetFatsecretTokenController extends Controller
 {
     /**
      * @param User $user

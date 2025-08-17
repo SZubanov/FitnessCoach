@@ -21,7 +21,7 @@ class FatSecretRepository
                 'userId' => $userId,
                 'temporaryCredentials' => $temporaryCredentials,
             ],
-            $seconds = 86400
+            300
         );
     }
 

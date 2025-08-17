@@ -82,6 +82,7 @@
             <div class="card bg-light mb-2" style="max-width: 18rem;">
                 <div class="card-header text-center">FatSecret</div>
                 <div class="card-body text-center">
+                    @if (!$user->isFatSecretAuthorized())
                     <form id="fatsecrettoken" method="POST" enctype="multipart/form-data" role="form"
                           action="{{route('web.users.fatsecret.token', $user->id) }}">
                         @csrf
@@ -95,6 +96,22 @@
                             </div>
                         </div>
                     </form>
+                    @else
+                        <form id="fatsecrettoken" method="POST" enctype="multipart/form-data" role="form"
+                              action="{{route('web.users.fatsecret.logout') }}">
+                            @csrf
+                            @method('PATCH')
+                            <div class="modal-body">
+                                <div class="row justify-content-center">
+                                    <div class="form-group">
+                                        <button class="btn btn-danger modal-button-form">
+                                            Logout
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    @endif
                 </div>
             </div>
         </div>

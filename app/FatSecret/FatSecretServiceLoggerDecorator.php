@@ -29,10 +29,10 @@ class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
         try {
             $this->fatSecretService->getRequestToken();
         } catch (GuzzleException $exception) {
-            Log::error($exception->getMessage(), $exception);
+            Log::error($exception->getMessage(), $exception->getTrace());
             throw new RequestErrorException();
         } catch (LeagueCredentialsException $exception) {
-            Log::error($exception->getMessage(), $exception);
+            Log::error($exception->getMessage(), $exception->getTrace());
             throw new CredentialsException();
         }
     }
@@ -45,7 +45,7 @@ class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
         try {
             $this->fatSecretService->getAccessToken($oAuth1CallbackDto);
         } catch (GuzzleException $exception) {
-            Log::error($exception->getMessage(), $exception);
+            Log::error($exception->getMessage(), $exception->getTrace());
             throw new RequestErrorException();
         }
     }
@@ -58,10 +58,10 @@ class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
         try {
           return  $this->fatSecretService->getWeightByDate($authTokenDTO, $date);
         } catch (GuzzleException $exception) {
-            Log::error($exception->getMessage(), $exception);
+            Log::error($exception->getMessage(), $exception->getTrace());
             throw new RequestErrorException();
         } catch (\JsonException $exception) {
-            Log::error($exception->getMessage(), $exception);
+            Log::error($exception->getMessage(), $exception->getTrace());
             throw new ResponseDecodeException();
         }
     }
@@ -74,10 +74,10 @@ class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
         try {
             return $this->fatSecretService->getFoodEntryByDate($authTokenDTO, $date);
         } catch (GuzzleException $exception) {
-            Log::error($exception->getMessage(), $exception);
+            Log::error($exception->getMessage(), $exception->getTrace());
             throw new RequestErrorException();
         } catch (\JsonException $exception) {
-            Log::error($exception->getMessage(), $exception);
+            Log::error($exception->getMessage(), $exception->getTrace());
             throw new ResponseDecodeException();
         }
     }

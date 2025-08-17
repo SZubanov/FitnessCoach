@@ -46,4 +46,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function isFatSecretAuthorized(): bool
+    {
+        return !empty($this->oauth_token_secret) && !empty($this->oauth_token);
+    }
 }
