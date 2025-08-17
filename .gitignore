@@ -34,3 +34,4 @@ docker-compose.override.yml
 /docker/local/dbdata
 .bash_history
 .composer
+.ash_history
