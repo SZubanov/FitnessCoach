@@ -82,9 +82,9 @@
     </div>
     <div class="modal-footer">
         <button class="btn btn-success modal-button-form"
-                @if(isset($diary)) onclick="Main.updateRecord('{{ route('web.users.diary.store.steps', $diary->id) }}')"
+                @if(isset($diary)) onclick="Main.updateRecord('{{ route('web.users.diary.store.sizes', $diary->id) }}')"
                 {{-- TODO add a route for update --}}
-                @else onclick="Main.storeRecord('{{ route('web.users.diary.store.steps') }}')" @endif
+                @else onclick="Main.storeRecord('{{ route('web.users.diary.store.sizes') }}')" @endif
         >Создать
         </button>
         <button type="button" class="btn btn-danger" onclick="Main.dissmissModal('#form')">Отмена</button>

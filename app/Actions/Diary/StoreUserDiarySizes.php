@@ -24,6 +24,8 @@ class StoreUserDiarySizes implements StoreUserDiarySizesInterface
         $userSize = $this->dtoFactory
             ->createUserSizesDto(
                 $authUser->id,
+                Carbon::parse($dto->date),
+                ($this->defaultSizeUnitUser)(),
                 $dto->neck,
                 $dto->chest,
                 $dto->waist,
@@ -31,8 +33,6 @@ class StoreUserDiarySizes implements StoreUserDiarySizesInterface
                 $dto->pelvis,
                 $dto->thigh,
                 $dto->tibia,
-                ($this->defaultSizeUnitUser)(),
-                 Carbon::parse($dto->date)
             );
 
         $this->reportRepository->createUserSize($userSize);

@@ -16,13 +16,13 @@ return new class extends Migration
         Schema::create('user_sizes', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_id');
-            $table->unsignedDecimal('neck');
-            $table->unsignedDecimal('chest');
-            $table->unsignedDecimal('waist');
-            $table->unsignedDecimal('biceps');
-            $table->unsignedDecimal('pelvis');
-            $table->unsignedDecimal('thigh');
-            $table->unsignedDecimal('tibia');
+            $table->unsignedDecimal('neck')->nullable();
+            $table->unsignedDecimal('chest')->nullable();
+            $table->unsignedDecimal('waist')->nullable();
+            $table->unsignedDecimal('biceps')->nullable();
+            $table->unsignedDecimal('pelvis')->nullable();
+            $table->unsignedDecimal('thigh')->nullable();
+            $table->unsignedDecimal('tibia')->nullable();
             $table->date('date');
             $table->timestamps();
         });

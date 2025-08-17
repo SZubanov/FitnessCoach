@@ -9,15 +9,15 @@ class UserSizesDto
 {
     public function __construct(
         private int $userId,
-        private float $neck,
-        private float $chest,
-        private float $waist,
-        private float $biceps,
-        private float $pelvis,
-        private float $thigh,
-        private float $tibia,
         private string $unit,
         private Carbon $date,
+        private ?float $neck,
+        private ?float $chest,
+        private ?float $waist,
+        private ?float $biceps,
+        private ?float $pelvis,
+        private ?float $thigh,
+        private ?float $tibia
     ) {
     }
 
@@ -26,37 +26,37 @@ class UserSizesDto
         return $this->userId;
     }
 
-    public function getNeck(): float
+    public function getNeck(): ?float
     {
         return $this->neck;
     }
 
-    public function getChest(): float
+    public function getChest(): ?float
     {
         return $this->chest;
     }
 
-    public function getWaist(): float
+    public function getWaist(): ?float
     {
         return $this->waist;
     }
 
-    public function getBiceps(): float
+    public function getBiceps(): ?float
     {
         return $this->biceps;
     }
 
-    public function getPelvis(): float
+    public function getPelvis(): ?float
     {
         return $this->pelvis;
     }
 
-    public function getThigh(): float
+    public function getThigh(): ?float
     {
         return $this->thigh;
     }
 
-    public function getTibia(): float
+    public function getTibia(): ?float
     {
         return $this->tibia;
     }

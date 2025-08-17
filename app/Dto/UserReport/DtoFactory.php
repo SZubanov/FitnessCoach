@@ -105,31 +105,33 @@ class DtoFactory
 
     /**
      * @param int $userId
-     * @param float $neck
-     * @param float $chest
-     * @param float $waist
-     * @param float $biceps
-     * @param float $pelvis
-     * @param float $thigh
-     * @param float $tibia
-     * @param string $unit
      * @param Carbon $date
+     * @param string $unit
+     * @param float|null $neck
+     * @param float|null $chest
+     * @param float|null $waist
+     * @param float|null $biceps
+     * @param float|null $pelvis
+     * @param float|null $thigh
+     * @param float|null $tibia
      * @return UserSizesDto
      */
     public function createUserSizesDto(
         int $userId,
-        float $neck,
-        float $chest,
-        float $waist,
-        float $biceps,
-        float $pelvis,
-        float $thigh,
-        float $tibia,
-        string $unit,
         Carbon $date,
+        string $unit,
+        ?float $neck,
+        ?float $chest,
+        ?float $waist,
+        ?float $biceps,
+        ?float $pelvis,
+        ?float $thigh,
+        ?float $tibia,
     ): UserSizesDto {
         return new UserSizesDto(
             $userId,
+            $unit,
+            $date,
             $neck,
             $chest,
             $waist,
@@ -137,8 +139,6 @@ class DtoFactory
             $pelvis,
             $thigh,
             $tibia,
-            $unit,
-            $date
         );
     }
 }
