@@ -21,10 +21,11 @@ use App\Http\Controllers\Web\Diary\UserDiarySizesStoreController;
 use App\Http\Controllers\Web\Diary\UserDiaryWeightFatSecretController;
 use App\Http\Controllers\Web\Diary\UserDiaryWeightFormController;
 use App\Http\Controllers\Web\Diary\UserDiaryWeightStoreController;
+use App\Http\Controllers\Web\FatSecretLogoutController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\SettingsController;
 use App\Http\Controllers\Web\UserSetFatSecretTokenCallbackController;
-use App\Http\Controllers\Web\UserSetFatSecretTokenController;
+use App\Http\Controllers\Web\UserSetFatsecretTokenController;
 use App\Http\Controllers\Web\UserUpdateController;
 use Illuminate\Support\Facades\Route;
 
@@ -60,6 +61,7 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::group(['middleware' => 'auth'], static function() {
     Route::get('/settings', SettingsController::class)->name('settings');
+    Route::patch('/logout/fatsecret', FatSecretLogoutController::class)->name('web.users.fatsecret.logout');
     Route::group(['prefix' => 'admin/users'], static function () {
         Route::get('/', AdminUserPageListController::class)->name('web.admin.users.page.list');
         Route::get('/list', AdminUserDataListController::class)->name('web.admin.users.data.list');
@@ -98,7 +100,7 @@ Route::group(['middleware' => 'auth'], static function() {
     });
 
     Route::patch('/users/{user}', UserUpdateController::class)->name('web.users.update');
-    Route::post('/fatsecret/{user}/token', UserSetFatSecretTokenController::class)->name('web.users.fatsecret.token');
+    Route::post('/fatsecret/{user}/token', UserSetFatsecretTokenController::class)->name('web.users.fatsecret.token');
     Route::get('/fatsecret/token/callback', UserSetFatSecretTokenCallbackController::class)->name('web.users.fatsecret.token.callback');
 });
 

@@ -13,6 +13,7 @@ use App\Actions\Diary\StoreUserDiaryMacros;
 use App\Actions\Diary\StoreUserDiarySteps;
 use App\Actions\Diary\StoreUserDiaryWeight;
 use App\Actions\Users\DeleteUser;
+use App\Actions\Users\FatSecretLogout;
 use App\Actions\Users\GetCurrentUser;
 use App\Actions\Users\GetDefaultSizeUnitUser;
 use App\Actions\Users\GetDefaultWeightUnitUser;
@@ -29,6 +30,7 @@ use App\Contracts\Actions\Diary\StoreUserDiaryMacrosInterface;
 use App\Contracts\Actions\Diary\StoreUserDiaryStepsInterface;
 use App\Contracts\Actions\Diary\StoreUserDiaryWeightInterface;
 use App\Contracts\Actions\Users\DeleteUserInterface;
+use App\Contracts\Actions\Users\FatSecretLogoutInterface;
 use App\Contracts\Actions\Users\GetCurrentUserInterface;
 use App\Contracts\Actions\Users\GetDefaultSizeUnitUserInterface;
 use App\Contracts\Actions\Users\GetDefaultWeightUnitUserInterface;
@@ -56,6 +58,7 @@ class ActionServiceProvider extends ServiceProvider
         GetUserDiaryWeightWithFatSecretInterface::class => GetUserDiaryWeightWithFatSecret::class,
         GetDefaultWeightUnitUserInterface::class => GetDefaultWeightUnitUser::class,
         GetDefaultSizeUnitUserInterface::class => GetDefaultSizeUnitUser::class,
-        StoreUserDiaryStepsInterface::class => StoreUserDiarySteps::class
+        StoreUserDiaryStepsInterface::class => StoreUserDiarySteps::class,
+        FatSecretLogoutInterface::class => FatSecretLogout::class,
     ];
 }
