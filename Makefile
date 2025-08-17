@@ -1,5 +1,5 @@
 #!make
-SERVICES=docker compose -f ./docker/docker-compose.yml
+SERVICES=docker compose -f ./docker-compose.yml
 
 up:
 	@make down
