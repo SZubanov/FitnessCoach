@@ -6,11 +6,24 @@
     <h1 class="m-0 text-dark">Настройки</h1>
 @stop
 
-@isset($success)
-    @dd(1)
-@endisset
-
 @section('content')
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -110,6 +123,48 @@
                                     </div>
                                 </div>
                             </div>
+                        </form>
+                    @endif
+                </div>
+            </div>
+            
+            <!-- Telegram Linking Card -->
+            <div class="card bg-light mb-2" style="max-width: 18rem;">
+                <div class="card-header text-center">Telegram</div>
+                <div class="card-body text-center">
+                    @if (!$user->telegram_id)
+                        <p class="card-text">Привяжите Telegram для использования бота</p>
+                        <form method="POST" action="{{route('telegram.link')}}">
+                            @csrf
+                            <div class="form-group">
+                                <input name="link_code" type="text" maxlength="8" 
+                                       class="form-control @error('link_code') is-invalid @enderror" 
+                                       placeholder="Введите код из бота" 
+                                       style="text-transform: uppercase;"
+                                       required>
+                                @error('link_code')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                Привязать
+                            </button>
+                        </form>
+                        <small class="text-muted mt-2 d-block">
+                            Получите код в боте командой /link
+                        </small>
+                    @else
+                        <p class="card-text">
+                            ✅ Telegram привязан<br>
+                            <small class="text-muted">ID: {{$user->telegram_id}}</small>
+                        </p>
+                        <form method="POST" action="{{route('telegram.unlink')}}">
+                            @csrf
+                            <button type="submit" class="btn btn-warning">
+                                Отвязать
+                            </button>
                         </form>
                     @endif
                 </div>

@@ -1,5 +1,7 @@
 # Fitness Coach
 
+FitnessCoach is a personal fitness tracking web application built with Laravel that helps users monitor their nutrition, weight, body measurements, and physical activity. The app integrates with the FatSecret API to automatically import nutritional and weight data.
+
 ### Разворачивание проекта для разработки (локально)
 
 Выполнить следующие шаги

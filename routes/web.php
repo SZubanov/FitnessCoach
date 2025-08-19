@@ -27,6 +27,8 @@ use App\Http\Controllers\Web\SettingsController;
 use App\Http\Controllers\Web\UserSetFatSecretTokenCallbackController;
 use App\Http\Controllers\Web\UserSetFatsecretTokenController;
 use App\Http\Controllers\Web\UserUpdateController;
+use App\Http\Controllers\Web\TelegramOAuthResultController;
+use App\Http\Controllers\Web\TelegramLinkController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -102,6 +104,13 @@ Route::group(['middleware' => 'auth'], static function() {
     Route::patch('/users/{user}', UserUpdateController::class)->name('web.users.update');
     Route::post('/fatsecret/{user}/token', UserSetFatsecretTokenController::class)->name('web.users.fatsecret.token');
     Route::get('/fatsecret/token/callback', UserSetFatSecretTokenCallbackController::class)->name('web.users.fatsecret.token.callback');
+    
+    // Telegram linking routes
+    Route::post('/telegram/link', [TelegramLinkController::class, 'link'])->name('telegram.link');
+    Route::post('/telegram/unlink', [TelegramLinkController::class, 'unlink'])->name('telegram.unlink');
 });
+
+// Telegram OAuth routes (accessible without auth)
+Route::get('/telegram/oauth/result', TelegramOAuthResultController::class)->name('telegram.oauth.result');
 
 

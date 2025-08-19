@@ -25,7 +25,10 @@ class User extends Authenticatable
         'password',
         'oauth_token_secret',
         'oauth_token',
-        'default_measure_system'
+        'default_measure_system',
+        'telegram_id',
+        'telegram_username',
+        'timezone'
     ];
 
     /**
