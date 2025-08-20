@@ -218,8 +218,22 @@ class TelegramBotService
 
     private function handleDateConfirmed(Nutgram $bot, string $context): void
     {
+        Log::info('handleDateConfirmed called', ['context' => $context, 'user_id' => $bot->userId()]);
+        
         if ($context === 'measurements') {
+            Log::info('Routing to measurements');
             $this->measurementService->showMeasurementMenu($bot);
+        } elseif (str_starts_with($context, 'sync_')) {
+            // Handle sync date confirmations (sync_weight, sync_food, etc.)
+            $syncType = substr($context, strlen('sync_'));
+            Log::info('Routing to sync execution', ['sync_type' => $syncType]);
+            $this->fatSecretService->executeSyncWithDateRange($bot, $syncType);
+        } elseif (in_array($context, ['weight', 'food', 'all'])) {
+            // Handle legacy sync contexts
+            Log::info('Routing to legacy sync execution', ['context' => $context]);
+            $this->fatSecretService->executeSyncWithDateRange($bot, $context);
+        } else {
+            Log::warning('Unknown date confirmation context', ['context' => $context]);
         }
     }
 

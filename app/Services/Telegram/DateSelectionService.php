@@ -120,7 +120,28 @@ class DateSelectionService
     {
         $parts = explode('_', $data);
         $action = $parts[0] ?? '';
-        $context = end($parts);
+        
+        // Extract context - for callbacks like "quick_today_sync_weight", 
+        // context should be "sync_weight", not just "weight"
+        if ($action === 'quick' && count($parts) >= 4) {
+            // quick_today_sync_weight -> sync_weight
+            $context = implode('_', array_slice($parts, 2));
+        } elseif ($action === 'week' && count($parts) >= 3) {
+            // week_sync_weight -> sync_weight  
+            $context = implode('_', array_slice($parts, 1));
+        } elseif ($action === 'calendar' && count($parts) >= 3) {
+            // calendar_sync_weight or calendar_prev_sync_weight_2025-08
+            if (in_array($parts[1], ['prev', 'next'])) {
+                // calendar_prev_sync_weight_2025-08 -> sync_weight
+                $context = implode('_', array_slice($parts, 2, -1));
+            } else {
+                // calendar_sync_weight -> sync_weight
+                $context = implode('_', array_slice($parts, 1));
+            }
+        } else {
+            // Fallback to last part for simple contexts
+            $context = end($parts);
+        }
 
         switch ($action) {
             case 'quick':

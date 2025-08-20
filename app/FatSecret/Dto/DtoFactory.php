@@ -63,13 +63,15 @@ class DtoFactory
      */
     public function createWeightDto(array $rows, int $date): ?WeightDto
     {
-        if (!isset($weight['month']['day'])) {
+        if (!isset($rows['month']['day'])) {
             return null;
         }
 
-        foreach ($rows as $row) {
-            if ((int)$row['date_int'] === $date) {
-                return new WeightDto($row['weight_kg']);
+        $weights = $rows['month']['day'];
+
+        foreach ($weights as $day) {
+            if ((int)$day['date_int'] === $date) {
+                return new WeightDto($day['weight_kg']);
             }
         }
 

@@ -5,11 +5,19 @@ namespace App\Services\Telegram;
 use App\Models\User;
 use App\FatSecret\FatSecretServiceInterface;
 use App\FatSecret\Dto\OAuthTokenDto;
+use App\FatSecret\Dto\WeightDto;
+use App\FatSecret\Dto\FoodEntryDto;
 use App\FatSecret\Exceptions\RecordNotFoundException;
+use App\Contracts\Actions\Diary\StoreUserDiaryWeightInterface;
+use App\Contracts\Actions\Diary\StoreUserDiaryMacrosInterface;
+use App\Dto\Web\Diary\DiaryWeightStoreDto;
+use App\Dto\Web\Diary\DiaryMacrosStoreDto;
+use App\Dto\UserReport\DtoFactory;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -19,7 +27,10 @@ class FatSecretSyncService
     public function __construct(
         private FatSecretServiceInterface $fatSecretService,
         private DateSelectionService $dateService,
-        private TelegramUserService $userService
+        private TelegramUserService $userService,
+        private StoreUserDiaryWeightInterface $storeWeightAction,
+        private StoreUserDiaryMacrosInterface $storeMacrosAction,
+        private DtoFactory $dtoFactory
     ) {}
 
     public function handleSyncCallback(Nutgram $bot, string $data): void
@@ -203,18 +214,48 @@ class FatSecretSyncService
 
     public function executeSyncWithDateRange(Nutgram $bot, string $syncType): void
     {
+        Log::info('executeSyncWithDateRange called', ['sync_type' => $syncType, 'user_id' => $bot->userId()]);
+        
         $user = $this->userService->getCurrentUser($bot);
+        Log::info('User retrieved', ['user_found' => $user ? 'yes' : 'no', 'user_id' => $user?->id]);
+        
         if (!$user || !$user->isFatSecretAuthorized()) {
+            Log::warning('User not found or not authorized', ['user_found' => $user ? 'yes' : 'no', 'authorized' => $user?->isFatSecretAuthorized()]);
             $bot->answerCallbackQuery('FatSecret не подключен');
             return;
         }
 
+        // First check if we have a selected date from the date selection process
+        $selectedDate = $this->dateService->getUserSelectedDate($bot->userId());
+        Log::info('Selected date retrieved from cache', ['selected_date' => $selectedDate]);
+        
+        if ($selectedDate && isset($selectedDate['context']) && str_contains($selectedDate['context'], $syncType)) {
+            Log::info('Using selected date for sync', ['selected_date' => $selectedDate, 'sync_type' => $syncType]);
+            
+            // User has selected a specific date, use it
+            if (isset($selectedDate['is_range'])) {
+                $startDate = Carbon::parse($selectedDate['start_date']);
+                $endDate = Carbon::parse($selectedDate['end_date']);
+            } else {
+                $startDate = $endDate = Carbon::parse($selectedDate['date']);
+            }
+            
+            Log::info('Calling performSync with selected date', ['start' => $startDate->format('Y-m-d'), 'end' => $endDate->format('Y-m-d')]);
+            $this->performSync($bot, $user, $syncType, $startDate, $endDate);
+            return;
+        }
+
+        // If no selected date, try default date ranges
         $dateRange = $this->getDefaultDateRange($syncType);
+        Log::info('No selected date, trying default range', ['sync_type' => $syncType, 'date_range' => $dateRange]);
+        
         if (!$dateRange) {
+            Log::info('No default range, showing date selection', ['sync_type' => $syncType]);
             $this->dateService->showDateSelection($bot, "sync_{$syncType}");
             return;
         }
 
+        Log::info('Calling performSync with default range', ['start' => $dateRange['start']->format('Y-m-d'), 'end' => $dateRange['end']->format('Y-m-d')]);
         $this->performSync($bot, $user, $syncType, $dateRange['start'], $dateRange['end']);
     }
 
@@ -284,10 +325,14 @@ class FatSecretSyncService
 
             if (in_array($syncType, ['all', 'weight'])) {
                 try {
+                    Log::info('Trying to get weight data', ['user_id' => $user->id, 'date' => $current->format('Y-m-d')]);
                     $weightDto = $this->fatSecretService->getWeightByDate($authToken, $current);
+                    Log::info('Weight data retrieved successfully', ['weight' => $weightDto->getWeight(), 'unit' => $weightDto->getUnit()]);
                     $this->saveWeightData($user, $current, $weightDto);
                     $results['weight']['success']++;
-                } catch (RecordNotFoundException) {
+                    Log::info('Weight save completed', ['success_count' => $results['weight']['success']]);
+                } catch (RecordNotFoundException $e) {
+                    Log::info('No weight data found for date', ['user_id' => $user->id, 'date' => $current->format('Y-m-d')]);
                     // No data for this date, not an error
                 } catch (\Exception $e) {
                     $results['weight']['errors']++;
@@ -320,8 +365,10 @@ class FatSecretSyncService
             usleep(500000); // 0.5 second delay to avoid API limits
         }
 
+        Log::info('Sync processing completed', ['results' => $results, 'sync_type' => $syncType]);
         $this->showSyncResults($bot, $messageId, $results, $syncType, $startDate, $endDate);
         $this->updateLastSyncTimestamp($user->id);
+        Log::info('Sync fully completed and timestamp updated');
     }
 
     private function showSyncResults(Nutgram $bot, int $messageId, array $results, string $syncType, Carbon $startDate, Carbon $endDate): void
@@ -387,16 +434,97 @@ class FatSecretSyncService
         ];
     }
 
-    private function saveWeightData(User $user, Carbon $date, $weightDto): void
+    private function saveWeightData(User $user, Carbon $date, WeightDto $weightDto): void
     {
-        // Implementation depends on your existing weight storage logic
-        // This would integrate with your existing UserWeight model or actions
+        try {
+            // Create DTO for the weight store action
+            $diaryWeightDto = new DiaryWeightStoreDto(
+                date: $date->format('Y-m-d'),
+                weight: $weightDto->getWeight(),
+                unit: $weightDto->getUnit()
+            );
+
+            // Temporarily authenticate as the user to save the weight data
+            $originalUser = Auth::user();
+            Auth::login($user);
+
+            // Store weight using existing action
+            ($this->storeWeightAction)($diaryWeightDto);
+
+            // Restore original authentication
+            if ($originalUser) {
+                Auth::login($originalUser);
+            } else {
+                Auth::logout();
+            }
+
+            Log::info('Weight data saved successfully via Telegram sync', [
+                'user_id' => $user->id,
+                'date' => $date->format('Y-m-d'),
+                'weight' => $weightDto->getWeight(),
+                'unit' => $weightDto->getUnit()
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to save weight data via Telegram sync', [
+                'user_id' => $user->id,
+                'date' => $date->format('Y-m-d'),
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
     }
 
-    private function saveFoodData(User $user, Carbon $date, $foodDto): void
+    private function saveFoodData(User $user, Carbon $date, FoodEntryDto $foodDto): void
     {
-        // Implementation depends on your existing food storage logic
-        // This would integrate with your existing FoodEntry model or actions
+        try {
+            // Convert FatSecret FoodEntryDto to UserFoodEntryDto using the factory
+            $userFoodEntryDto = $this->dtoFactory->createUserFoodEntryFromFoodEntry(
+                $user->id,
+                $date,
+                $foodDto
+            );
+
+            // Create DTO for the macros store action  
+            $diaryMacrosDto = new DiaryMacrosStoreDto(
+                date: $date->format('Y-m-d'),
+                kcal: (float) $userFoodEntryDto->getCalories(),
+                protein: $userFoodEntryDto->getProtein(),
+                fat: $userFoodEntryDto->getFat(),
+                carbs: $userFoodEntryDto->getCarbohydrate()
+            );
+
+            // Temporarily authenticate as the user to save the food data
+            $originalUser = Auth::user();
+            Auth::login($user);
+
+            // Store macros using existing action
+            ($this->storeMacrosAction)($diaryMacrosDto);
+
+            // Restore original authentication
+            if ($originalUser) {
+                Auth::login($originalUser);
+            } else {
+                Auth::logout();
+            }
+
+            Log::info('Food data saved successfully via Telegram sync', [
+                'user_id' => $user->id,
+                'date' => $date->format('Y-m-d'),
+                'calories' => $userFoodEntryDto->getCalories(),
+                'protein' => $userFoodEntryDto->getProtein(),
+                'fat' => $userFoodEntryDto->getFat(),
+                'carbohydrate' => $userFoodEntryDto->getCarbohydrate()
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to save food data via Telegram sync', [
+                'user_id' => $user->id,
+                'date' => $date->format('Y-m-d'),
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
     }
 
     public function disconnectFatSecret(Nutgram $bot): void
