@@ -6,6 +6,7 @@ use App\Contracts\Actions\Diary\StoreUserDiaryWeightInterface;
 use App\Dto\UserReport\DtoFactory;
 use App\Dto\Web\Diary\DiaryWeightStoreDto;
 use App\Helpers\MetricSystem;
+use App\Models\User;
 use App\Repositories\UserReportRepository;
 use Carbon\Carbon;
 
@@ -17,12 +18,11 @@ class StoreUserDiaryWeight implements StoreUserDiaryWeightInterface
     ) {
     }
 
-    public function __invoke(DiaryWeightStoreDto $dto): void
+    public function __invoke(DiaryWeightStoreDto $dto, User $user): void
     {
-        $authUser = \Auth::user();
         $userWeight = $this->dtoFactory
             ->createUserWeightDto(
-                $authUser->id,
+                $user->id,
                 Carbon::parse($dto->date),
                 $dto->weight,
                 $dto->unit

@@ -8,6 +8,7 @@ use App\Exceptions\ServerException;
 use App\FatSecret\Dto\DtoFactory;
 use App\FatSecret\Exceptions\FatSecretException;
 use App\FatSecret\Exceptions\RecordNotFoundException as FatRecordNotFoundException;
+use App\Models\User;
 use App\Services\FatSecretUserDiaryService;
 use Carbon\Carbon;
 
@@ -23,13 +24,12 @@ class GetUserDiaryMacrosWithFatSecret implements GetUserDiaryMacrosWithFatSecret
      * @throws NotFoundException
      * @throws ServerException
      */
-    public function __invoke(Carbon $date)
+    public function __invoke(Carbon $date, User $user)
     {
-        $authUser = \Auth::user();
-        $oauthDto = $this->dtoFactory->createOAuthTokenDto($authUser->oauth_token, $authUser->oauth_token_secret);
+        $oauthDto = $this->dtoFactory->createOAuthTokenDto($user->oauth_token, $user->oauth_token_secret);
 
         try {
-            $this->userReportService->updateUserFoodEntry($authUser->id, $oauthDto, $date);
+            $this->userReportService->updateUserFoodEntry($user->id, $oauthDto, $date);
         } catch (FatSecretException $exception) {
             if ($exception instanceof FatRecordNotFoundException) {
                 throw new NotFoundException();

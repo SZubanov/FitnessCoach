@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web\Diary;
 
 use App\Actions\Diary\StoreUserDiarySizes;
+use App\Contracts\Actions\Users\GetCurrentUserInterface;
 use App\Dto\Web\SuccessResponse;
 use App\Exceptions\ServerException;
 use App\Http\Controllers\Controller;
@@ -16,11 +17,12 @@ class UserDiarySizesStoreController extends Controller
      */
     public function __invoke(
         DiarySizesStoreRequest $request,
-        StoreUserDiarySizes $storeUserDiarySizes
+        StoreUserDiarySizes $storeUserDiarySizes,
+        GetCurrentUserInterface $getCurrentUser
     ): JsonResponse {
 
         try {
-            $storeUserDiarySizes($request->getData());
+            $storeUserDiarySizes($request->getData(), $getCurrentUser());
             $response = new SuccessResponse();
         } catch (\Exception $exception) {
             throw new ServerException();

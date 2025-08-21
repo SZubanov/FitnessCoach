@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web\Diary;
 
 use App\Contracts\Actions\Diary\StoreUserDiaryMacrosInterface;
+use App\Contracts\Actions\Users\GetCurrentUserInterface;
 use App\Dto\Web\SuccessResponse;
 use App\Exceptions\ServerException;
 use App\Http\Controllers\Controller;
@@ -16,11 +17,12 @@ class UserDiaryMacrosStoreController extends Controller
      */
     public function __invoke(
         DiaryMacrosStoreRequest $request,
-        StoreUserDiaryMacrosInterface $storeUserDiaryMacros
+        StoreUserDiaryMacrosInterface $storeUserDiaryMacros,
+        GetCurrentUserInterface $getCurrentUser
     ): JsonResponse {
 
         try {
-            $storeUserDiaryMacros($request->getData());
+            $storeUserDiaryMacros($request->getData(), $getCurrentUser());
             $response = new SuccessResponse();
         } catch (\Exception $exception) {
             throw new ServerException();

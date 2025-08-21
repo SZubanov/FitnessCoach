@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web\Diary;
 
 use App\Contracts\Actions\Diary\GetUserDiaryMacrosWithFatSecretInterface;
+use App\Contracts\Actions\Users\GetCurrentUserInterface;
 use App\Dto\Web\SuccessResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\Diary\DiaryDateRequest;
@@ -13,10 +14,11 @@ class UserDiaryMacrosFatSecretController extends Controller
 {
     public function __invoke(
         DiaryDateRequest $request,
-        GetUserDiaryMacrosWithFatSecretInterface $getUserDiaryMacrosWithFatSecret
+        GetUserDiaryMacrosWithFatSecretInterface $getUserDiaryMacrosWithFatSecret,
+        GetCurrentUserInterface $getCurrentUser
     ): JsonResponse {
 
-        $getUserDiaryMacrosWithFatSecret(Carbon::parse($request->validated()['date']));
+        $getUserDiaryMacrosWithFatSecret(Carbon::parse($request->validated()['date']), $getCurrentUser());
         $response = new SuccessResponse();
 
         return response()->json($response->toArray())->setStatusCode($response->code);

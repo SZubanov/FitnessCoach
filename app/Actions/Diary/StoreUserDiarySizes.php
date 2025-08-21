@@ -6,6 +6,7 @@ use App\Contracts\Actions\Diary\StoreUserDiarySizesInterface;
 use App\Contracts\Actions\Users\GetDefaultSizeUnitUserInterface;
 use App\Dto\UserReport\DtoFactory;
 use App\Dto\Web\Diary\DiarySizesStoreDto;
+use App\Models\User;
 use App\Repositories\UserReportRepository;
 use Carbon\Carbon;
 
@@ -18,14 +19,13 @@ class StoreUserDiarySizes implements StoreUserDiarySizesInterface
     ) {
     }
 
-    public function __invoke(DiarySizesStoreDto $dto): void
+    public function __invoke(DiarySizesStoreDto $dto, User $user): void
     {
-        $authUser = \Auth::user();
         $userSize = $this->dtoFactory
             ->createUserSizesDto(
-                $authUser->id,
+                $user->id,
                 Carbon::parse($dto->date),
-                ($this->defaultSizeUnitUser)(),
+                ($this->defaultSizeUnitUser)($user),
                 $dto->neck,
                 $dto->chest,
                 $dto->waist,

@@ -5,6 +5,7 @@ namespace App\Actions\Diary;
 use App\Contracts\Actions\Diary\StoreUserDiaryStepsInterface;
 use App\Dto\UserReport\DtoFactory;
 use App\Dto\Web\Diary\DiaryStepsStoreDto;
+use App\Models\User;
 use App\Repositories\UserReportRepository;
 use Carbon\Carbon;
 
@@ -16,12 +17,11 @@ class StoreUserDiarySteps implements StoreUserDiaryStepsInterface
     ) {
     }
 
-    public function __invoke(DiaryStepsStoreDto $dto): void
+    public function __invoke(DiaryStepsStoreDto $dto, User $user): void
     {
-        $authUser = \Auth::user();
         $userSteps = $this->dtoFactory
             ->createUserStepsDto(
-                $authUser->id,
+                $user->id,
                 $dto->steps,
                 Carbon::parse($dto->date)
             );

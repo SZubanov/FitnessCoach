@@ -18,6 +18,7 @@ use App\Http\Controllers\Web\Diary\UserDiaryMacrosFormController;
 use App\Http\Controllers\Web\Diary\UserDiarySizesFormController;
 use App\Http\Controllers\Web\Diary\UserDiaryStepsFormController;
 use App\Http\Controllers\Web\Diary\UserDiarySizesStoreController;
+use App\Http\Controllers\Web\Diary\UserDiaryStepsStoreController;
 use App\Http\Controllers\Web\Diary\UserDiaryWeightFatSecretController;
 use App\Http\Controllers\Web\Diary\UserDiaryWeightFormController;
 use App\Http\Controllers\Web\Diary\UserDiaryWeightStoreController;
@@ -91,7 +92,7 @@ Route::group(['middleware' => 'auth'], static function() {
 
         Route::group(['prefix' => 'steps'], static function() {
             Route::get('/create', UserDiaryStepsFormController::class)->name('web.users.diary.create.form.steps');
-            Route::post('/', UserDiarySizesStoreController::class)->name('web.users.diary.store.steps');
+            Route::post('/', UserDiaryStepsStoreController::class)->name('web.users.diary.store.steps');
         });
 
         Route::group(['prefix' => 'sizes'], static function () {
@@ -104,7 +105,7 @@ Route::group(['middleware' => 'auth'], static function() {
     Route::patch('/users/{user}', UserUpdateController::class)->name('web.users.update');
     Route::post('/fatsecret/{user}/token', UserSetFatsecretTokenController::class)->name('web.users.fatsecret.token');
     Route::get('/fatsecret/token/callback', UserSetFatSecretTokenCallbackController::class)->name('web.users.fatsecret.token.callback');
-    
+
     // Telegram linking routes
     Route::post('/telegram/link', [TelegramLinkController::class, 'link'])->name('telegram.link');
     Route::post('/telegram/unlink', [TelegramLinkController::class, 'unlink'])->name('telegram.unlink');

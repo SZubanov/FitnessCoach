@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web\Diary;
 
 use App\Contracts\Actions\Diary\StoreUserDiaryMacrosInterface;
 use App\Contracts\Actions\Diary\StoreUserDiaryWeightInterface;
+use App\Contracts\Actions\Users\GetCurrentUserInterface;
 use App\Dto\Web\SuccessResponse;
 use App\Exceptions\ServerException;
 use App\Http\Controllers\Controller;
@@ -18,11 +19,12 @@ class UserDiaryWeightStoreController extends Controller
      */
     public function __invoke(
         DiaryWeightStoreRequest $request,
-        StoreUserDiaryWeightInterface $storeUserDiaryWeight
+        StoreUserDiaryWeightInterface $storeUserDiaryWeight,
+        GetCurrentUserInterface $getCurrentUser
     ): JsonResponse {
 
         try {
-            $storeUserDiaryWeight($request->getData());
+            $storeUserDiaryWeight($request->getData(), $getCurrentUser());
             $response = new SuccessResponse();
         } catch (\Exception $exception) {
             throw new ServerException();

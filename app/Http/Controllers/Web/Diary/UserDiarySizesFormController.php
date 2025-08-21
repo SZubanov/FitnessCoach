@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\Web\Diary;
 
+use App\Contracts\Actions\Users\GetCurrentUserInterface;
 use App\Contracts\Actions\Users\GetDefaultSizeUnitUserInterface;
 use App\Dto\Web\FormDto;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
 class UserDiarySizesFormController extends Controller
 {
-    public function __invoke(GetDefaultSizeUnitUserInterface $defaultSizeUnitUser): JsonResponse
+    public function __invoke(GetDefaultSizeUnitUserInterface $defaultSizeUnitUser, GetCurrentUserInterface $getCurrentUser): JsonResponse
     {
         $with['method'] = 'create';
-        $with['unit'] = $defaultSizeUnitUser();
+        $with['unit'] = $defaultSizeUnitUser($getCurrentUser());
 
         $response = FormDto::from([
                 'action' => 'success',
