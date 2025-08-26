@@ -18,6 +18,22 @@ class TelegramMessageService
     ) {
     }
 
+    public function sendMessageWelcome(Nutgram $bot): ?Message
+    {
+        $keyboard = InlineKeyboardMarkup::make()
+            ->addRow(
+                $this->inlineKeyboardButtonBuilder->addMeasurements(),
+                $this->inlineKeyboardButtonBuilder->addSync(),
+            )
+            ->addRow(
+                $this->inlineKeyboardButtonBuilder->addHelp()
+            );
+
+        $text = $this->messageBuilder->createWelcomeMessage();
+
+        return $bot->sendMessage($text, parse_mode: 'Markdown', reply_markup: $keyboard);
+    }
+
     public function sendMessageLinkNewAccount(Nutgram $bot): ?Message
     {
         $linkCode = $this->telegramAccountService->generateLinkAccountCode($bot->userId());

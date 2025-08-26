@@ -2,8 +2,6 @@
 
 namespace App\Telegram\Builders\MessageBuilder;
 
-use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
-
 class MessageBuilder implements MessageBuilderInterface
 {
     private string $appUrl;
@@ -27,5 +25,15 @@ class MessageBuilder implements MessageBuilderInterface
             'name' => $name,
             'email' => $email
         ]);
+    }
+
+    public function createWelcomeMessage(): string
+    {
+        return __('telegram.messages.welcome');
+    }
+
+    public function createHelpMessage(): string
+    {
+        return __('telegram.messages.help');
     }
 }

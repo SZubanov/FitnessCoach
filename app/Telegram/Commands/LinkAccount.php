@@ -15,10 +15,10 @@ class LinkAccount extends Command
 
     public function handle(Nutgram $bot, TelegramUserService $userService, TelegramMessageService $telegramMessageService): void
     {
-        $existingUser = $userService->getCurrentUser($bot);
+        $user = $userService->getCurrentUser($bot);
 
-        if ($existingUser) {
-            $telegramMessageService->sendMessageLinkExistingAccount($bot, $existingUser);
+        if ($user) {
+            $telegramMessageService->sendMessageLinkExistingAccount($bot, $user);
         } else {
             $telegramMessageService->sendMessageLinkNewAccount($bot);
         }

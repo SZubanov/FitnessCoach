@@ -20,6 +20,7 @@ use App\Actions\Users\GetDefaultWeightUnitUser;
 use App\Actions\Users\GetListRoles;
 use App\Actions\Users\GetListUsers;
 use App\Actions\Users\GetUserByTelegramId;
+use App\Actions\Users\LinkTelegramAccount;
 use App\Actions\Users\StoreUser;
 use App\Actions\Users\UpdateUser;
 use App\Contracts\Actions\Datatables\ResponseElementsInterface;
@@ -38,6 +39,7 @@ use App\Contracts\Actions\Users\GetDefaultWeightUnitUserInterface;
 use App\Contracts\Actions\Users\GetListRolesInterface;
 use App\Contracts\Actions\Users\GetListUserInterface;
 use App\Contracts\Actions\Users\GetUserByTelegramIdInterface;
+use App\Contracts\Actions\Users\LinkTelegramAccountInterface;
 use App\Contracts\Actions\Users\StoreUserInterface;
 use App\Contracts\Actions\Users\UpdateUserInterface;
 use Illuminate\Support\ServiceProvider;
@@ -63,5 +65,6 @@ class ActionServiceProvider extends ServiceProvider
         StoreUserDiaryStepsInterface::class => StoreUserDiarySteps::class,
         FatSecretLogoutInterface::class => FatSecretLogout::class,
         GetUserByTelegramIdInterface::class => GetUserByTelegramId::class,
+        LinkTelegramAccountInterface::class => LinkTelegramAccount::class,
     ];
 }
