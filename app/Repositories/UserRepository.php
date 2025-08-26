@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Dto\User\UserDto;
+use App\Models\User;
 use DB;
 
 class UserRepository
@@ -30,5 +31,10 @@ class UserRepository
             $user->default_measure_system,
             $user->is_fat_secret_active
         );
+    }
+
+    public function getUserByTelegramId(int $id): ?User
+    {
+        return User::where('telegram_id', $id)->first();
     }
 }

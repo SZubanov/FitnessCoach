@@ -16,7 +16,7 @@ Telegram бот для FitnessCoach предоставляет пользова�
 Добавьте в `.env`:
 
 ```env
-TELEGRAM_BOT_TOKEN=your_bot_token_here
+TELEGRAM_TOKEN=your_bot_token_here
 TELEGRAM_WEBHOOK_URL=https://yourdomain.com/api/telegram/webhook
 ```
 

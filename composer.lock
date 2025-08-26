@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6ac79eb57d2dc0f16327337744777299",
+    "content-hash": "ac92ea46e8ef6aadd43bdf4d2bc69cd4",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -2545,17 +2545,100 @@
             "time": "2025-06-21T22:39:00+00:00"
         },
         {
-            "name": "nutgram/nutgram",
-            "version": "4.38.1",
+            "name": "nutgram/laravel",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/nutgram/nutgram.git",
-                "reference": "fcd925efc48773674fe7c257f2de7dbd75dae657"
+                "url": "https://github.com/nutgram/laravel.git",
+                "reference": "eb33b2e30f0a6e264f9fe2b10fc07076012efc42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nutgram/nutgram/zipball/fcd925efc48773674fe7c257f2de7dbd75dae657",
-                "reference": "fcd925efc48773674fe7c257f2de7dbd75dae657",
+                "url": "https://api.github.com/repos/nutgram/laravel/zipball/eb33b2e30f0a6e264f9fe2b10fc07076012efc42",
+                "reference": "eb33b2e30f0a6e264f9fe2b10fc07076012efc42",
+                "shasum": ""
+            },
+            "require": {
+                "nunomaduro/termwind": "^1.0|^2.0",
+                "nutgram/nutgram": "^4.17.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "illuminate/testing": "^9.0|^10.0|^11.0|^12.0",
+                "orchestra/testbench": "^7.0|^8.0|^9.0|^10.0",
+                "pestphp/pest": "^1.1|^2.0|^3.0",
+                "vimeo/psalm": "^6.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Nutgram\\Laravel\\NutgramServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/Support/Helpers.php"
+                ],
+                "psr-4": {
+                    "Nutgram\\Laravel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Luca Patera",
+                    "email": "lucapatera@outlook.it",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Sergio Brighenti",
+                    "email": "sergio@brighenti.me",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Laravel package for Nutgram",
+            "homepage": "https://github.com/nutgram/nutgram-laravel",
+            "keywords": [
+                "api",
+                "bot",
+                "framework",
+                "laravel",
+                "library",
+                "nutgram",
+                "telegram"
+            ],
+            "support": {
+                "source": "https://github.com/nutgram/laravel/tree/1.5.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Lukasss93",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/SergiX44",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-03-05T21:47:56+00:00"
+        },
+        {
+            "name": "nutgram/nutgram",
+            "version": "4.39.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nutgram/nutgram.git",
+                "reference": "4ef2c48dc83815a831e42bccafea4a28f5cb31ee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nutgram/nutgram/zipball/4ef2c48dc83815a831e42bccafea4a28f5cb31ee",
+                "reference": "4ef2c48dc83815a831e42bccafea4a28f5cb31ee",
                 "shasum": ""
             },
             "require": {
@@ -2617,7 +2700,7 @@
             ],
             "support": {
                 "issues": "https://github.com/nutgram/nutgram/issues",
-                "source": "https://github.com/nutgram/nutgram/tree/4.38.1"
+                "source": "https://github.com/nutgram/nutgram/tree/4.39.0"
             },
             "funding": [
                 {
@@ -2629,7 +2712,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-07-07T20:44:08+00:00"
+            "time": "2025-08-19T08:36:09+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",

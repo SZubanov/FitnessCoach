@@ -3,9 +3,12 @@
 namespace App\Services\Telegram;
 
 use App\Models\User;
+use App\Telegram\Commands\StartCommand;
 use SergiX44\Nutgram\Nutgram;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
+use SergiX44\Nutgram\Telegram\Types\Keyboard\KeyboardButton;
+use SergiX44\Nutgram\Telegram\Types\Keyboard\ReplyKeyboardMarkup;
 use SergiX44\Nutgram\Telegram\Types\Message\Message;
 use Illuminate\Support\Facades\Log;
 
@@ -20,7 +23,8 @@ class TelegramBotService
 
     public function setupBot(Nutgram $bot): void
     {
-        $this->setupCommands($bot);
+        $bot->registerCommand(StartCommand::class);
+//        $this->setupCommands($bot);
         $this->setupCallbackHandlers($bot);
         $this->setupErrorHandlers($bot);
     }
@@ -53,7 +57,7 @@ class TelegramBotService
         $bot->onCallbackQuery(function (Nutgram $bot) {
             try {
                 $callbackData = $bot->callbackQuery()->data;
-                
+
                 // Answer callback query first to prevent timeout
                 try {
                     $bot->answerCallbackQuery();
@@ -63,7 +67,7 @@ class TelegramBotService
                         'callback_data' => $callbackData
                     ]);
                 }
-                
+
                 if (str_starts_with($callbackData, 'date_select_')) {
                     $data = substr($callbackData, strlen('date_select_'));
                     $this->dateService->handleDateSelection($bot, $data);
@@ -105,7 +109,7 @@ class TelegramBotService
                     'callback_data' => $bot->callbackQuery()->data ?? 'null',
                     'user_id' => $bot->userId()
                 ]);
-                
+
                 try {
                     $bot->sendMessage('❌ Произошла ошибка при обработке команды. Попробуйте еще раз.');
                 } catch (\Exception $sendError) {
@@ -113,7 +117,7 @@ class TelegramBotService
                 }
             }
         });
-        
+
         $bot->onMessage(function (Nutgram $bot) {
             // Only handle text messages that are not commands
             if ($bot->message()->text && !str_starts_with($bot->message()->text, '/')) {
@@ -148,25 +152,7 @@ class TelegramBotService
 
     private function handleStartCommand(Nutgram $bot): void
     {
-        $telegramUser = $bot->user();
-        $user = $this->userService->findOrCreateUser($telegramUser);
 
-        $keyboard = InlineKeyboardMarkup::make()
-            ->addRow(
-                InlineKeyboardButton::make('📏 Замеры тела', callback_data: 'measurements_start'),
-                InlineKeyboardButton::make('🔄 Синхронизация', callback_data: 'sync_start')
-            )
-            ->addRow(
-                InlineKeyboardButton::make('❓ Помощь', callback_data: 'help')
-            );
-
-        $welcomeText = "👋 Добро пожаловать в FitnessCoach!\n\n";
-        $welcomeText .= "Этот бот поможет вам:\n";
-        $welcomeText .= "• 📏 Записывать замеры тела\n";
-        $welcomeText .= "• 🔄 Синхронизировать данные с FatSecret\n\n";
-        $welcomeText .= "Выберите действие:";
-
-        $bot->sendMessage($welcomeText, reply_markup: $keyboard);
     }
 
     private function handleHelpCommand(Nutgram $bot): void
@@ -177,15 +163,15 @@ class TelegramBotService
         $helpText .= "/sync - Синхронизация с FatSecret\n";
         $helpText .= "/link - Привязать к существующему аккаунту\n";
         $helpText .= "/help - Показать эту справку\n\n";
-        
+
         $helpText .= "📅 *Работа с датами:*\n";
         $helpText .= "• Быстрый выбор: Сегодня, Вчера, 2 дня назад\n";
         $helpText .= "• Календарь для точной даты\n";
         $helpText .= "• Диапазон дат для синхронизации\n\n";
-        
+
         $helpText .= "📏 *Замеры тела:*\n";
         $helpText .= "Поддерживаемые типы: грудь, талия, бедра, бицепс, бедро\n\n";
-        
+
         $helpText .= "🔄 *Синхронизация:*\n";
         $helpText .= "• Синхронизация веса\n";
         $helpText .= "• Синхронизация питания\n";
@@ -219,7 +205,7 @@ class TelegramBotService
     private function handleDateConfirmed(Nutgram $bot, string $context): void
     {
         Log::info('handleDateConfirmed called', ['context' => $context, 'user_id' => $bot->userId()]);
-        
+
         if ($context === 'measurements') {
             Log::info('Routing to measurements');
             $this->measurementService->showMeasurementMenu($bot);
@@ -239,69 +225,23 @@ class TelegramBotService
 
     private function handleLinkCommand(Nutgram $bot): void
     {
-        $telegramUser = $bot->user();
-        $existingUser = $this->userService->getCurrentUser($bot);
-        
-        if ($existingUser) {
-            $keyboard = InlineKeyboardMarkup::make()
-                ->addRow(
-                    InlineKeyboardButton::make('🔗 Привязать другой аккаунт', callback_data: 'link_new'),
-                    InlineKeyboardButton::make('❌ Отмена', callback_data: 'cancel')
-                );
 
-            $text = "🔗 *Привязка аккаунта*\n\n";
-            $text .= "У вас уже есть привязанный аккаунт:\n";
-            $text .= "👤 {$existingUser->name}\n";
-            $text .= "📧 {$existingUser->email}\n\n";
-            $text .= "Хотите привязать другой аккаунт?";
-
-            $bot->sendMessage($text, reply_markup: $keyboard, parse_mode: 'Markdown');
-        } else {
-            $this->showLinkInstructions($bot);
-        }
     }
 
     private function showLinkInstructions(Nutgram $bot): void
     {
-        $telegramUser = $bot->user();
-        $linkCode = $this->generateLinkCode($bot->userId());
-        
-        $text = "🔗 *Привязка к существующему аккаунту*\n\n";
-        $text .= "Для привязки вашего Telegram к существующему аккаунту:\n\n";
-        $text .= "1️⃣ Откройте веб-сайт приложения\n";
-        $text .= "2️⃣ Войдите в свой аккаунт\n";
-        $text .= "3️⃣ Перейдите в настройки\n";
-        $text .= "4️⃣ Введите код привязки: `{$linkCode}`\n\n";
-        $text .= "🕒 Код действителен 15 минут\n\n";
-        $text .= "📱 *Адрес сайта:* " . (config('app.url') !== 'http://localhost' ? config('app.url') : 'https://yourdomain.com');
 
-        $keyboard = InlineKeyboardMarkup::make()
-            ->addRow(
-                InlineKeyboardButton::make('🔄 Проверить привязку', callback_data: 'check_link'),
-                InlineKeyboardButton::make('🔄 Новый код', callback_data: 'link_new')
-            )
-            ->addRow(
-                InlineKeyboardButton::make('❌ Отмена', callback_data: 'cancel')
-            );
-
-        $bot->sendMessage($text, reply_markup: $keyboard, parse_mode: 'Markdown');
     }
 
     private function generateLinkCode(int $telegramId): string
     {
-        $code = strtoupper(substr(md5($telegramId . time()), 0, 8));
-        
-        // Store the link code in cache for 15 minutes
-        $cacheKey = "telegram_link_code_{$code}";
-        \Cache::put($cacheKey, $telegramId, now()->addMinutes(15));
-        
-        return $code;
+
     }
 
     private function checkLinkStatus(Nutgram $bot): void
     {
         $user = $this->userService->getCurrentUser($bot);
-        
+
         if ($user && $user->telegram_id) {
             $text = "✅ *Аккаунт успешно привязан!*\n\n";
             $text .= "👤 Имя: {$user->name}\n";

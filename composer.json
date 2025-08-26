@@ -14,7 +14,7 @@
         "laravel/tinker": "^2.7",
         "laravel/ui": "^3.4",
         "league/oauth1-client": "^1.10",
-        "nutgram/nutgram": "^4.38",
+        "nutgram/laravel": "^1.5",
         "predis/predis": "^2.0",
         "spatie/laravel-data": "^1.4",
         "spatie/laravel-permission": "^5.5",
