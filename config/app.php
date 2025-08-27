@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Facade;
+use Nutgram\Laravel\NutgramServiceProvider;
 
 return [
 
@@ -168,6 +169,7 @@ return [
          * Package Service Providers...
          */
         Spatie\Permission\PermissionServiceProvider::class,
+        NutgramServiceProvider::class,
 
         /*
          * Application Service Providers...

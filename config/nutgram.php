@@ -15,7 +15,7 @@ return [
 
     // Set if the service provider should automatically load
     // handlers from /routes/telegram.php
-    'routes' => true,
+    'routes' => false,
 
     // Enable or disable Nutgram mixins
     'mixins' => false,
@@ -24,5 +24,5 @@ return [
     'namespace' => app_path('Telegram'),
 
     // Set log channel
-    'log_channel' => env('TELEGRAM_LOG_CHANNEL', 'null'),
+    'log_channel' => env('TELEGRAM_LOG_CHANNEL', 'single'),
 ];

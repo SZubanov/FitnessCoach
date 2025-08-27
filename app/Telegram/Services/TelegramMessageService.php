@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Telegram\Builders\KeyboardBuilder\InlineKeyboardButtonBuilder\InlineKeyboardButtonBuilderInterface;
 use App\Telegram\Builders\MessageBuilder\MessageBuilderInterface;
 use SergiX44\Nutgram\Nutgram;
+use SergiX44\Nutgram\Telegram\Properties\ParseMode;
 use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
 use SergiX44\Nutgram\Telegram\Types\Message\Message;
 
@@ -31,7 +32,7 @@ class TelegramMessageService
 
         $text = $this->messageBuilder->createWelcomeMessage();
 
-        return $bot->sendMessage($text, parse_mode: 'Markdown', reply_markup: $keyboard);
+        return $bot->sendMessage($text, parse_mode: ParseMode::MARKDOWN, reply_markup: $keyboard);
     }
 
     public function sendMessageLinkNewAccount(Nutgram $bot): ?Message
@@ -49,7 +50,7 @@ class TelegramMessageService
 
         $text = $this->messageBuilder->createMessageNewLinkAccount($linkCode);
 
-        return $bot->sendMessage($text, parse_mode: 'Markdown', reply_markup: $keyboard);
+        return $bot->sendMessage($text, parse_mode: ParseMode::MARKDOWN, reply_markup: $keyboard);
     }
 
     public function sendMessageLinkExistingAccount(Nutgram $bot, User $user): ?Message
@@ -61,6 +62,7 @@ class TelegramMessageService
             );
 
         $text = $this->messageBuilder->createMessageExistingLinkAccount($user->name, $user->email);
-        return $bot->sendMessage($text, parse_mode: 'Markdown', reply_markup: $keyboard);
+
+        return $bot->sendMessage($text, parse_mode: ParseMode::MARKDOWN, reply_markup: $keyboard);
     }
 }
