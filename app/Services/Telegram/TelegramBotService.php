@@ -157,27 +157,6 @@ class TelegramBotService
 
     private function handleHelpCommand(Nutgram $bot): void
     {
-        $helpText = "❓ *Справка по командам*\n\n";
-        $helpText .= "/start - Начать работу с ботом\n";
-        $helpText .= "/measurements - Добавить замеры тела\n";
-        $helpText .= "/sync - Синхронизация с FatSecret\n";
-        $helpText .= "/link - Привязать к существующему аккаунту\n";
-        $helpText .= "/help - Показать эту справку\n\n";
-
-        $helpText .= "📅 *Работа с датами:*\n";
-        $helpText .= "• Быстрый выбор: Сегодня, Вчера, 2 дня назад\n";
-        $helpText .= "• Календарь для точной даты\n";
-        $helpText .= "• Диапазон дат для синхронизации\n\n";
-
-        $helpText .= "📏 *Замеры тела:*\n";
-        $helpText .= "Поддерживаемые типы: грудь, талия, бедра, бицепс, бедро\n\n";
-
-        $helpText .= "🔄 *Синхронизация:*\n";
-        $helpText .= "• Синхронизация веса\n";
-        $helpText .= "• Синхронизация питания\n";
-        $helpText .= "• Выборочная синхронизация по датам";
-
-        $bot->sendMessage($helpText, parse_mode: 'Markdown');
     }
 
     private function handleMeasurementsCommand(Nutgram $bot): void

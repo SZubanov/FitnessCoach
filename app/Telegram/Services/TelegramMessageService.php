@@ -21,48 +21,61 @@ class TelegramMessageService
 
     public function sendMessageWelcome(Nutgram $bot): ?Message
     {
+        $text = $this->messageBuilder->createWelcomeMessage();
+
         $keyboard = InlineKeyboardMarkup::make()
             ->addRow(
                 $this->inlineKeyboardButtonBuilder->addMeasurements(),
                 $this->inlineKeyboardButtonBuilder->addSync(),
             )
-            ->addRow(
-                $this->inlineKeyboardButtonBuilder->addHelp()
-            );
-
-        $text = $this->messageBuilder->createWelcomeMessage();
+            ->addRow($this->inlineKeyboardButtonBuilder->addHelp());
 
         return $bot->sendMessage($text, parse_mode: ParseMode::MARKDOWN, reply_markup: $keyboard);
     }
 
-    public function sendMessageLinkNewAccount(Nutgram $bot): ?Message
+    public function sendMessageLinkNewAccount(Nutgram $bot, string $linkCode): ?Message
     {
-        $linkCode = $this->telegramAccountService->generateLinkAccountCode($bot->userId());
+        $text = $this->messageBuilder->createNewLinkAccountMessage($linkCode);
 
         $keyboard = InlineKeyboardMarkup::make()
-            ->addRow(
-                $this->inlineKeyboardButtonBuilder->addCheckLinkAccount(),
-                $this->inlineKeyboardButtonBuilder->addLinkNewAccount(),
-            )
-            ->addRow(
-                $this->inlineKeyboardButtonBuilder->addCancel()
-            );
-
-        $text = $this->messageBuilder->createMessageNewLinkAccount($linkCode);
+            ->addRow($this->inlineKeyboardButtonBuilder->addLinkNewAccount())
+            ->addRow($this->inlineKeyboardButtonBuilder->addCancel());
 
         return $bot->sendMessage($text, parse_mode: ParseMode::MARKDOWN, reply_markup: $keyboard);
     }
 
     public function sendMessageLinkExistingAccount(Nutgram $bot, User $user): ?Message
     {
+        $text = $this->messageBuilder->createExistingLinkAccountMessage($user->name, $user->email);
+
         $keyboard = InlineKeyboardMarkup::make()
             ->addRow(
+                $this->inlineKeyboardButtonBuilder->addCheckLinkAccount(),
                 $this->inlineKeyboardButtonBuilder->addLinkNewAccount(),
-                $this->inlineKeyboardButtonBuilder->addCancel()
-            );
-
-        $text = $this->messageBuilder->createMessageExistingLinkAccount($user->name, $user->email);
+            )
+            ->addRow($this->inlineKeyboardButtonBuilder->addCancel());
 
         return $bot->sendMessage($text, parse_mode: ParseMode::MARKDOWN, reply_markup: $keyboard);
+    }
+
+    public function sendMessageHelp(Nutgram $bot): ?Message
+    {
+        $text = $this->messageBuilder->createHelpMessage();
+
+        return $bot->sendMessage($text, parse_mode: ParseMode::MARKDOWN);
+    }
+
+    public function sendMessageApiError(Nutgram $bot): ?Message
+    {
+        $text = $this->messageBuilder->createApiErrorHandlerMessage();
+
+        return $bot->sendMessage($text, parse_mode: ParseMode::MARKDOWN);
+    }
+
+    public function sendMessageExceptionError(Nutgram $bot): ?Message
+    {
+        $text = $this->messageBuilder->createExceptionHandlerMessage();
+
+        return $bot->sendMessage($text, parse_mode: ParseMode::MARKDOWN);
     }
 }

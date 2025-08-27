@@ -11,7 +11,7 @@ class MessageBuilder implements MessageBuilderInterface
         $this->appUrl = config('app.url');
     }
 
-    public function createMessageNewLinkAccount(string $linkCode): string
+    public function createNewLinkAccountMessage(string $linkCode): string
     {
         return __('telegram.messages.account_link.new', [
             'code' => "`{$linkCode}`",
@@ -19,7 +19,7 @@ class MessageBuilder implements MessageBuilderInterface
         ]);
     }
 
-    public function createMessageExistingLinkAccount(string $name, string $email): string
+    public function createExistingLinkAccountMessage(string $name, string $email): string
     {
         return __('telegram.messages.account_link.exist', [
             'name' => $name,
@@ -35,5 +35,25 @@ class MessageBuilder implements MessageBuilderInterface
     public function createHelpMessage(): string
     {
         return __('telegram.messages.help');
+    }
+
+    public function createChooseDateMessage(): string
+    {
+        return __('telegram.messages.choose_date');
+    }
+
+    public function createCustomDateMessage(): string
+    {
+        return __('telegram.messages.custom_date');
+    }
+
+    public function createApiErrorHandlerMessage(): string
+    {
+        return __('telegram.messages.api_error');
+    }
+
+    public function createExceptionHandlerMessage(): string
+    {
+        return __('telegram.messages.exception_error');
     }
 }

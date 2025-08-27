@@ -11,7 +11,8 @@ class InlineKeyboardButtonBuilder implements InlineKeyboardButtonBuilderInterfac
         CHECK_LINK = 'check_link',
         MEASUREMENTS_START = 'measurements_start',
         SYNC_START = 'sync_start',
-        HELP = 'help';
+        HELP = 'help',
+        CHANGE_DATE = 'change_date';
 
     public function addCancel(): InlineKeyboardButton
     {
@@ -41,5 +42,10 @@ class InlineKeyboardButtonBuilder implements InlineKeyboardButtonBuilderInterfac
     public function addHelp(): InlineKeyboardButton
     {
         return InlineKeyboardButton::make(__('telegram.button.help'), callback_data: self::HELP);
+    }
+
+    public function addChangeDate(): InlineKeyboardButton
+    {
+        return InlineKeyboardButton::make(__('telegram.button.change_date'), callback_data: self::CHANGE_DATE);
     }
 }
