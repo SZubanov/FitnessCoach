@@ -68,12 +68,8 @@ class SyncMenu extends InlineMenu
         cache()->put("telegram_user_sync_type_{$bot->userId()}", $syncType, 900);
         cache()->put("telegram_user_sync_callback_{$bot->userId()}", $callbackData, 900);
 
-        // Ask for date
-        $bot->sendMessage(
-            "🔄 **{$syncType}**\n\n" .
-            "Введите дату для синхронизации в формате ДД.ММ.ГГГГ:\n" .
-            "Например: 25.12.2024 или 25/12/2024"
-        );
+        // Start sync conversation
+        $bot->startConversation(new \App\Telegram\Conversations\SyncConversation());
 
         $this->end();
     }

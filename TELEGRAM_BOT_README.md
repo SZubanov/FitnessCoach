@@ -1,211 +1,175 @@
-# Telegram Bot для FitnessCoach
+# FitnessCoach Telegram Bot Flow Documentation
 
-## Обзор
+pkg: "nutgram/laravel"
 
-Telegram бот для FitnessCoach предоставляет пользователям возможность:
+## Bot Commands
 
-- 📏 **Добавлять замеры тела** с выбором даты (сегодня, вчера, календарь)
-- 🔄 **Синхронизировать данные с FatSecret** за определенные периоды
-- 📅 **Выбирать даты** через удобный интерфейс с календарем
-- 👀 **Просматривать прогресс** и историю замеров
+### Core Commands
+- `/start` - Initialize bot and show main menu
+- `/help` - Show help information
+- `/measurments` - Access measurements menu (requires account linking)
+- `/sync` - Access synchronization menu (requires account linking and FatSecret)
 
-## Настройка
+## Main Flow Structure
 
-### 1. Переменные окружения
-
-Добавьте в `.env`:
-
-```env
-TELEGRAM_TOKEN=your_bot_token_here
-TELEGRAM_WEBHOOK_URL=https://yourdomain.com/api/telegram/webhook
+### 1. Bot Initialization (`/start`)
+```
+/start
+├── Settings (Настройки)
+├── Account Linking (Привязка аккаунта) 
+├── Help (Помощь)
+└── Middleware: check_link
 ```
 
-### 2. Миграции
+### 2. Account Management
 
-Миграции уже применены и добавили поля в таблицу `users`:
-- `telegram_id` - ID пользователя в Telegram
-- `telegram_username` - Username в Telegram  
-- `timezone` - Временная зона пользователя (по умолчанию Europe/Moscow)
-
-### 3. Настройка webhook
-
-```bash
-# Установить webhook
-docker exec coach_fpm php artisan telegram:webhook --url=https://yourdomain.com/api/telegram/webhook
-
-# Проверить статус webhook
-docker exec coach_fpm php artisan telegram:info
+#### Account Linking Flow
+```
+Account Linking (Привязка аккаунта)
+├── Get Link Code (Получить код для привязки)
+│   ├── New Link → Message with link
+│   │   ├── Main Menu (Главное меню)
+│   │   ├── Back (Назад)
+│   │   └── Message about revoke account
+│   └── Remove Link → Revoke account message
+├── Check Link (Проверить привязку)
+│   └── Account status message
+└── Unlink Account (Отвязать аккаунт)
 ```
 
-## Архитектура
+#### Authorization States
+- `authorized account` - User has linked account
+- `!authorized account` - User needs to link account
 
-### Структура сервисов
+### 3. FatSecret Integration
 
+#### FatSecret Linking
 ```
-app/Services/Telegram/
-├── TelegramBotService.php          # Основной сервис бота
-├── TelegramUserService.php         # Управление пользователями
-├── DateSelectionService.php        # Выбор дат и календарь
-├── MeasurementService.php          # Замеры тела
-└── FatSecretSyncService.php        # Синхронизация с FatSecret
+FatSecret Connection (Привязка fatsecret)
+├── authorized fatsecret
+│   ├── Logout from FatSecret (Выйти из fatsecret)
+│   │   └── Logout confirmation message
+│   └── Back (Назад)
+└── !authorized fatsecret
+    ├── Connect FatSecret (Привязать fatsecret)
+    └── Back (Назад)
 ```
 
-### Основные компоненты
+### 4. Measurements System
 
-1. **TelegramBotService** - Центральный роутер команд и коллбэков
-2. **DateSelectionService** - Обработка выбора дат (быстрые кнопки + календарь)
-3. **MeasurementService** - Логика добавления и просмотра замеров
-4. **FatSecretSyncService** - Синхронизация данных с FatSecret API
-
-## Функциональность
-
-### Команды бота
-
-- `/start` - Начало работы, регистрация пользователя
-- `/help` - Справка по командам
-- `/measurements` - Добавить замеры тела
-- `/sync` - Синхронизация с FatSecret
-
-### Выбор дат
-
-#### Быстрые варианты:
-- Сегодня
-- Вчера  
-- 2 дня назад
-- Последние 7 дней
-
-#### Календарь:
-- Навигация по месяцам
-- Выбор конкретной даты
-- Блокировка будущих дат
-- Выделение сегодняшней даты
-
-### Замеры тела
-
-Поддерживаемые типы замеров:
-- 🫀 Грудь
-- ⚡ Талия
-- 🍑 Бедра (pelvis)
-- 💪 Бицепс
-- 🦵 Бедро (thigh)
-- 🗣️ Шея
-- 🦵 Голень (tibia)
-
-#### Процесс добавления:
-1. Выбор даты
-2. Выбор типа замера
-3. Ввод значения (предложения на основе истории или ручной ввод)
-4. Сохранение с подтверждением
-
-### FatSecret синхронизация
-
-#### Типы синхронизации:
-- Полная синхронизация (вес + питание)
-- Только вес
-- Только питание
-- С последней синхронизации
-- За выбранный период
-
-#### Возможности:
-- Выбор диапазона дат
-- Прогресс синхронизации
-- Отчет о результатах
-- Обработка ошибок API
-
-## Состояния и кеширование
-
-### Кеширование состояний:
-- `telegram_user_state_{userId}` - Текущее состояние диалога
-- `telegram_user_selected_date_{userId}` - Выбранная дата
-- `fatsecret_last_sync_{userId}` - Время последней синхронизации
-
-### TTL:
-- Состояния диалога: 1 час
-- Выбранные даты: 1 день  
-- Время последней синхронизации: 3 месяца
-
-## API интеграция
-
-### Webhook endpoint:
-`POST /api/telegram/webhook`
-
-### Обработка:
-1. Логирование входящих запросов
-2. Роутинг команд и коллбэков
-3. Обработка ошибок
-4. Ответ Telegram API
-
-## Безопасность
-
-### Аутентификация пользователей:
-- Автоматическая регистрация по Telegram ID
-- Связывание с существующими аккаунтами  
-- Генерация случайных паролей для новых пользователей
-
-### FatSecret:
-- OAuth подключение только через веб-интерфейс
-- Безопасное хранение токенов
-- Обработка истекших токенов
-
-## Мониторинг и логирование
-
-### Логи:
-- Все входящие webhook запросы
-- Ошибки API Telegram
-- Ошибки синхронизации FatSecret
-- Исключения в обработчиках
-
-### Мониторинг:
-- Статус webhook через команду `telegram:info`
-- Логи ошибок в файлах Laravel
-- Telescope для отладки
-
-## Развитие
-
-### Потенциальные улучшения:
-1. **Уведомления** - Напоминания о замерах
-2. **Графики** - Визуализация прогресса
-3. **Экспорт данных** - CSV/PDF отчеты
-4. **Групповые функции** - Поддержка тренеров
-5. **Интеграция с другими сервисами** - MyFitnessPal, Google Fit
-
-### Техническое развитие:
-1. **Тесты** - Unit и integration тесты
-2. **Кеширование** - Redis для состояний
-3. **Очереди** - Асинхронная обработка синхронизации
-4. **Валидация** - Более строгая валидация данных
-
-## Troubleshooting
-
-### Общие проблемы:
-
-1. **Webhook не работает**
-   ```bash
-   docker exec coach_fmp php artisan telegram:info
-   # Проверить URL и SSL сертификат
-   ```
-
-2. **Пользователи не создаются**
-   - Проверить права доступа к БД
-   - Проверить миграции
-
-3. **FatSecret не синхронизируется**
-   - Проверить OAuth токены пользователя
-   - Проверить API ключи FatSecret
-
-4. **Состояния теряются**
-   - Проверить настройки кеша
-   - Увеличить TTL состояний
-
-### Команды для отладки:
-
-```bash
-# Проверить конфигурацию
-docker exec coach_fpm php artisan config:show nutgram
-
-# Очистить кеш
-docker exec coach_fpm php artisan cache:clear
-
-# Проверить логи
-docker exec coach_fpm tail -f storage/logs/laravel.log
+#### Main Measurements Menu
 ```
+Measurements (Замеры)
+├── Body Parts Selection:
+│   ├── Chest (Грудь)
+│   ├── Waist (Талия)
+│   ├── Neck (Шея)
+│   ├── Biceps (Бицепс)
+│   ├── Pelvis (Таз)
+│   ├── Thigh (Бедро)
+│   └── Change Date (Изменить дату)
+├── Main Menu (Главное меню)
+└── Instructions message
+```
+
+#### Measurement Process
+```
+Select Body Part → Instructions → Value Input → Manual Date Input (DD.MM.YYYY) → Success/Error Message → Main Menu
+```
+
+### 5. Synchronization System
+
+#### Sync Menu Options
+```
+Synchronization (Синхронизация)
+├── Full Sync (Полная)
+├── Weight (Вес)
+├── Food Diary (Дневник питания)
+├── Change Date (Изменить дату)
+└── Main Menu (Главное меню)
+```
+
+#### Sync Process
+```
+Select Sync Type → Manual Date Input (DD.MM.YYYY) → callback:sync_* → Success/Error Message → Main Menu
+```
+
+### 6. Nutrition Tracking (КБЖУ)
+
+#### Macros Menu
+```
+Macronutrients (КБЖУ)
+├── Calories (Ккал)
+├── Proteins (Белки)
+├── Fats (Жиры)
+├── Carbs (Углеводы)
+├── Change Date (Изменить дату)
+└── Main Menu (Главное меню)
+```
+
+#### Macro Entry Process
+```
+Select Macro → Instructions → Value Input → Manual Date Input (DD.MM.YYYY) → Success Message → Main Menu
+```
+
+### 7. Weight Tracking
+
+#### Weight Menu
+```
+Weight (Вес)
+├── Instructions message
+├── Value Input → Manual Date Input (DD.MM.YYYY) → Success Message
+└── Main Menu (Главное меню)
+```
+
+## Middleware Functions
+
+### Security Checks
+- `middleware:check_link` - Verifies account is linked
+- `middleware:check_fatsecret` - Verifies FatSecret connection
+
+### Callback Handlers
+- `callback:settings` - Settings menu handler
+- `callback:link` - Account linking handler
+- `callback:fatsecret` - FatSecret connection handler
+- `callback:fatsecret_logout` - FatSecret logout handler
+- `callback:measurments_menu` - Measurements menu handler
+- `callback:measurments_set` - Save measurement data
+- `callback:sync_menu` - Sync menu handler
+- `callback:sync_*` - Various sync operations
+- `callback:macros_menu` - Macros menu handler
+- `callback:macros_set` - Save macro data
+- `callback:weight_menu` - Weight menu handler
+- `callback:weight_set` - Save weight data
+- `callback:new_link` - Create new account link
+- `callback:remove_link` - Remove account link
+- `callback:check_link` - Check link status
+
+## Message Types
+
+### User Interface Elements
+- **Green (color 3)**: Main Menu buttons
+- **Blue (color 1)**: Action/navigation buttons
+- **Yellow (color 6)**: System messages and responses
+- **Red (color 5)**: Status indicators (authorized/not authorized)
+
+### Common UI Patterns
+- Most flows end with "Main Menu" (Главное меню) option
+- "Back" (Назад) buttons for navigation
+- Manual date input required for all data entries (format: DD.MM.YYYY or DD/MM/YYYY)
+- Instructions provided before data entry with date format examples
+- Success/error messages after operations
+- Date validation with helpful error messages
+
+## Flow Dependencies
+
+1. **Account Required**: Measurements, Sync, Weight, Macros
+2. **FatSecret Required**: Sync operations, Food diary
+3. **Authorization Chain**: Account Link → FatSecret Link → Full Functionality
+
+## Error Handling
+
+- Unauthorized users redirected to account linking
+- Missing FatSecret connection prompts for integration
+- Date validation for historical data entry
+- Success/error feedback for all operations

@@ -16,18 +16,18 @@ class TelegramServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(Nutgram::class, function ($app) {
-            $bot = new Nutgram(config('nutgram.token'));
-            $bot->setRunningMode(Webhook::class);
-            return $bot;
-        });
+//        $this->app->singleton(Nutgram::class, function ($app) {
+//            $bot = new Nutgram(config('nutgram.token'));
+//            $bot->setRunningMode(Webhook::class);
+//            return $bot;
+//        });
 
-        $this->app->singleton(TelegramUserService::class);
-        $this->app->singleton(DateSelectionService::class);
-        $this->app->singleton(MeasurementService::class);
-        $this->app->singleton(FatSecretSyncService::class);
-        $this->app->singleton(TelegramFatSecretService::class);
-        $this->app->singleton(TelegramBotService::class);
+//        $this->app->singleton(TelegramUserService::class);
+//        $this->app->singleton(DateSelectionService::class);
+//        $this->app->singleton(MeasurementService::class);
+//        $this->app->singleton(FatSecretSyncService::class);
+//        $this->app->singleton(TelegramFatSecretService::class);
+//        $this->app->singleton(TelegramBotService::class);
     }
 
     public function boot(): void

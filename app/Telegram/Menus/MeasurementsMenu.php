@@ -58,12 +58,7 @@ class MeasurementsMenu extends InlineMenu
         cache()->put("telegram_user_measurement_type_{$bot->userId()}", $measurementType, 900);
 
         // Start measurement conversation
-        // This would normally start a Conversation class for input handling
-        $bot->sendMessage(
-            "📏 **Замер: {$measurementType}**\n\n" .
-            "Введите значение измерения в сантиметрах:\n" .
-            "Например: 95"
-        );
+        $bot->startConversation(new \App\Telegram\Conversations\MeasurementConversation());
 
         $this->end();
     }

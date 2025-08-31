@@ -4,27 +4,19 @@ namespace App\Telegram\Constants;
 
 class ConversationSteps
 {
-    // Measurement conversation
-    public const MEASUREMENT_SELECT_TYPE = 'select_type';
-    public const MEASUREMENT_INPUT_VALUE = 'input_value';
-    public const MEASUREMENT_INPUT_DATE = 'input_date';
-    public const MEASUREMENT_CONFIRM = 'confirm';
+    // Universal date input step (all conversations start here)
+    public const INPUT_DATE = 'input_date';
     
-    // Macro conversation
-    public const MACRO_SELECT_TYPE = 'select_macro_type';
-    public const MACRO_INPUT_VALUE = 'input_macro_value';
-    public const MACRO_INPUT_DATE = 'input_macro_date';
-    public const MACRO_CONFIRM = 'confirm_macro';
+    // Value input steps
+    public const INPUT_MEASUREMENT_VALUE = 'input_measurement_value';
+    public const INPUT_MACRO_VALUE = 'input_macro_value';
+    public const INPUT_WEIGHT_VALUE = 'input_weight_value';
     
-    // Weight conversation
-    public const WEIGHT_INPUT_VALUE = 'input_weight_value';
-    public const WEIGHT_INPUT_DATE = 'input_weight_date';
-    public const WEIGHT_CONFIRM = 'confirm_weight';
+    // Action execution (for sync)
+    public const EXECUTE_SYNC = 'execute_sync';
     
-    // Sync conversation
-    public const SYNC_SELECT_TYPE = 'select_sync_type';
-    public const SYNC_INPUT_DATE = 'input_sync_date';
-    public const SYNC_CONFIRM = 'confirm_sync';
+    // Success and cleanup
+    public const SHOW_SUCCESS = 'show_success';
     
     // Account linking
     public const LINK_GENERATE_CODE = 'generate_code';

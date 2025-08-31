@@ -33,12 +33,8 @@ class WeightMenu extends InlineMenu
 
     public function startWeightEntry(Nutgram $bot)
     {
-        // Start weight entry conversation
-        $bot->sendMessage(
-            "⚖️ **Запись веса**\n\n" .
-            "Введите ваш вес в килограммах:\n" .
-            "Например: 70.5 или 85.2"
-        );
+        // Start weight conversation
+        $bot->startConversation(new \App\Telegram\Conversations\WeightConversation());
 
         $this->end();
     }

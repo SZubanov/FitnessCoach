@@ -53,12 +53,8 @@ class MacrosMenu extends InlineMenu
         cache()->put("telegram_user_macro_type_{$bot->userId()}", $macroInfo, 900);
         cache()->put("telegram_user_macro_callback_{$bot->userId()}", $callbackData, 900);
 
-        // Ask for value
-        $bot->sendMessage(
-            "{$macroInfo['icon']} **{$macroInfo['name']}**\n\n" .
-            "Введите значение в {$macroInfo['unit']}:\n" .
-            "Например: " . ($macroInfo['name'] === 'калории' ? '2000' : '100')
-        );
+        // Start macro conversation
+        $bot->startConversation(new \App\Telegram\Conversations\MacroConversation());
 
         $this->end();
     }
