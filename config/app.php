@@ -182,7 +182,7 @@ return [
         App\Providers\TelescopeServiceProvider::class,
         App\Providers\ActionServiceProvider::class,
         App\Providers\FatSecretServiceProvider::class,
-        App\Providers\TelegramServiceProvider::class,
+        App\Telegram\Providers\TelegramServiceProvider::class,
 
     ],
 

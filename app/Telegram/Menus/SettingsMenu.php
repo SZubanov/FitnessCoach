@@ -28,21 +28,21 @@ class SettingsMenu extends InlineMenu
     public function showAccountLinking(Nutgram $bot)
     {
         // Navigate to Account Linking menu
-        app(AccountLinkingMenu::class)->start($bot);
-        $this->end();
+        AccountLinkingMenu::begin($bot);
+//        $this->end();
     }
 
     public function showFatSecretConnection(Nutgram $bot)
     {
         // Navigate to FatSecret Connection menu
-        app(FatSecretConnectionMenu::class)->start($bot);
-        $this->end();
+        FatSecretConnectionMenu::begin($bot);
+//        $this->end();
     }
 
     public function backToMain(Nutgram $bot)
     {
-        app(MainMenu::class)->start($bot);
         $this->end();
+        MainMenu::begin($bot);
     }
 
     public function none(Nutgram $bot)

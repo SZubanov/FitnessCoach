@@ -36,37 +36,28 @@ class MainMenu extends InlineMenu
 
     public function showSettings(Nutgram $bot)
     {
-        // Navigate to Settings menu
-        app(SettingsMenu::class)->start($bot);
-        $this->end();
+        SettingsMenu::begin($bot);
     }
 
     public function showMeasurements(Nutgram $bot)
     {
         // Navigate to Measurements menu
-        app(MeasurementsMenu::class)->start($bot);
-        $this->end();
+        MeasurementsMenu::begin($bot);
     }
 
     public function showSync(Nutgram $bot)
     {
-        // Navigate to Sync menu
-        app(SyncMenu::class)->start($bot);
-        $this->end();
+        SyncMenu::begin($bot);
     }
 
     public function showMacros(Nutgram $bot)
     {
-        // Navigate to Macros menu
-        app(MacrosMenu::class)->start($bot);
-        $this->end();
+        MacrosMenu::begin($bot);
     }
 
     public function showWeight(Nutgram $bot)
     {
-        // Navigate to Weight menu
-        app(WeightMenu::class)->start($bot);
-        $this->end();
+        WeightMenu::begin($bot);
     }
 
     public function showHelp(Nutgram $bot)

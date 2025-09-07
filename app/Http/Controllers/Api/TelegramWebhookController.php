@@ -3,22 +3,18 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\Telegram\TelegramBotService;
 use Illuminate\Http\JsonResponse;
 use SergiX44\Nutgram\Nutgram;
 use Illuminate\Support\Facades\Log;
 
 class TelegramWebhookController extends Controller
 {
-    public function __invoke(Nutgram $bot, TelegramBotService $botService): JsonResponse
+    public function __invoke(Nutgram $bot): JsonResponse
     {
         try {
             // Log raw input first
             $rawInput = file_get_contents('php://input');
             Log::info('Telegram webhook raw input', ['raw_input' => $rawInput]);
-
-            // Setup bot handlers before processing
-            $botService->setupBot($bot);
 
             // Process the incoming update
             $bot->run();

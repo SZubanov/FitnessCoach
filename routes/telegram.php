@@ -13,6 +13,6 @@ use SergiX44\Nutgram\Nutgram;
 |
 */
 
-$bot->onCommand('start', function (Nutgram $bot) {
-    $bot->sendMessage('Hello, world!');
-})->description('The start command!');
+//$bot->onCommand('start', function (Nutgram $bot) {
+//    $bot->sendMessage('Hello, world!');
+//})->description('The start command!');

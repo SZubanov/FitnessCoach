@@ -32,9 +32,4 @@ class UserRepository
             $user->is_fat_secret_active
         );
     }
-
-    public function getUserByTelegramId(int $id): ?User
-    {
-        return User::where('telegram_id', $id)->first();
-    }
 }

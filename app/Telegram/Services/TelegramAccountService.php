@@ -1,17 +1,50 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Telegram\Services;
 
-class TelegramAccountService
+use App\Contracts\Actions\Telegram\GenerateLinkAccountCodeInterface;
+use App\Contracts\Actions\Telegram\UnlinkTelegramAccountInterface;
+use App\Contracts\Actions\Users\GetUserByTelegramIdInterface;
+use App\Telegram\Exceptions\AbstractTelegramBotException;
+use App\Telegram\Exceptions\UnlinkTelegramAccountException;
+use App\Telegram\Exceptions\UserNotFoundException;
+
+readonly class TelegramAccountService
 {
+    public function __construct(
+        private GetUserByTelegramIdInterface     $getUserByTelegramId,
+        private UnlinkTelegramAccountInterface   $unlinkTelegramAccount,
+        private GenerateLinkAccountCodeInterface $generateLinkAccountCode,
+    ) {
+    }
+
     public function generateLinkAccountCode(int $telegramId): string
     {
-        $code = strtoupper(substr(md5($telegramId . time()), 0, 8));
+        return ($this->generateLinkAccountCode)($telegramId);
+    }
 
-        // Store the link code in cache for 15 minutes
-        $cacheKey = "telegram_link_code_{$code}";
-        \Cache::put($cacheKey, $telegramId, now()->addMinutes(15));
+    public function checkLinkAccountStatus(int $telegramUserId): bool
+    {
+       return ($this->getUserByTelegramId)($telegramUserId) !== null;
+    }
 
-        return $code;
+    /**
+     * @param int $telegramUserId
+     * @return void
+     * @throws AbstractTelegramBotException
+     */
+    public function removeLinkAccount(int $telegramUserId): void
+    {
+        $user = ($this->getUserByTelegramId)($telegramUserId);
+        if ($user === null) {
+            throw new UserNotFoundException();
+        }
+
+        $result = ($this->unlinkTelegramAccount)($user);
+        if ($result === false) {
+            throw new UnlinkTelegramAccountException();
+        }
     }
 }
