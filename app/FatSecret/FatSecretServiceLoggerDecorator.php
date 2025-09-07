@@ -24,10 +24,10 @@ class FatSecretServiceLoggerDecorator implements FatSecretServiceInterface
     /**
      * @inheritDoc
      */
-    public function getRequestToken(): void
+    public function getRequestToken(): string
     {
         try {
-            $this->fatSecretService->getRequestToken();
+           return $this->fatSecretService->getRequestToken();
         } catch (GuzzleException $exception) {
             Log::error($exception->getMessage(), $exception->getTrace());
             throw new RequestErrorException();

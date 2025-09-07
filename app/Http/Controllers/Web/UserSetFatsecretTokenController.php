@@ -8,24 +8,24 @@ use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class UserSetFatsecretTokenController extends Controller
 {
     /**
      * @param User $user
      * @param FatSecretFacade $fatSecretFacade
-     * @return Application|Factory|View
+     * @return RedirectResponse|View
      */
-    public function __invoke(User $user, FatSecretFacade $fatSecretFacade): View|Factory|Application
+    public function __invoke(User $user, FatSecretFacade $fatSecretFacade)
     {
         try {
-            $fatSecretFacade->getRequestToken();
+            $authUrl = $fatSecretFacade->getRequestToken();
         } catch (\Exception $e) {
             return view('settings')
                 ->withErrors(['error' => $e->getMessage()])
                 ->with(['user' => $user]);
         }
-        return view('settings')
-            ->with(['user' => $user]);
+        return redirect()->away($authUrl);
     }
 }

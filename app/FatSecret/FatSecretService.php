@@ -26,15 +26,15 @@ class FatSecretService implements FatSecretServiceInterface
     }
 
     /**
-     * @return void
+     * @return string
      * @throws GuzzleException
      * @throws LeagueCredentialsException
      */
-    public function getRequestToken(): void
+    public function getRequestToken(): string
     {
         $temporaryCredentials = $this->fatSecretAuth->getTemporaryCredentials();
         $this->fatSecretRepository->storeTemporaryCredentials($temporaryCredentials, Auth::id());
-        $this->fatSecretAuth->authorize($temporaryCredentials);
+        return $this->fatSecretAuth->getAuthorizationUrl($temporaryCredentials);
     }
 
     /**

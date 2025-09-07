@@ -16,10 +16,10 @@ interface FatSecretServiceInterface
 {
 
     /**
-     * @return void
+     * @return string
      * @throws RequestErrorException|Exceptions\CredentialsException
      */
-    public function getRequestToken(): void;
+    public function getRequestToken(): string;
 
     /**
      * @throws FatSecretException

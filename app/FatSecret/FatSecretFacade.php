@@ -19,12 +19,12 @@ class FatSecretFacade
     }
 
     /**
-     * @return void
+     * @return string
      * @throws FatSecretException
      */
-    public function getRequestToken(): void
+    public function getRequestToken(): string
     {
-        $this->fatSecretService->getRequestToken();
+       return $this->fatSecretService->getRequestToken();
     }
 
     /**
