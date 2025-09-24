@@ -12,11 +12,6 @@ class TelegramWebhookController extends Controller
     public function __invoke(Nutgram $bot): JsonResponse
     {
         try {
-            // Log raw input first
-            $rawInput = file_get_contents('php://input');
-            Log::info('Telegram webhook raw input', ['raw_input' => $rawInput]);
-
-            // Process the incoming update
             $bot->run();
 
             // Log webhook info after processing
