@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Actions\Users;
+namespace App\Actions\Telegram;
 
-use App\Contracts\Actions\Users\LinkTelegramAccountInterface;
+use App\Contracts\Actions\Telegram\LinkTelegramAccountInterface;
 use App\Models\User;
 
 class LinkTelegramAccount implements LinkTelegramAccountInterface

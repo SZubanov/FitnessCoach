@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Contracts\Actions\Users;
+namespace App\Contracts\Actions\Telegram;
 
 use App\Models\User;
 
