@@ -61,8 +61,8 @@ class MacrosMenu extends InlineMenu
 
     public function backToMain(Nutgram $bot)
     {
-        app(MainMenu::class)->start($bot);
         $this->end();
+        MainMenu::begin($bot);
     }
 
     public function none(Nutgram $bot)

@@ -76,14 +76,14 @@ class SyncMenu extends InlineMenu
 
     public function goToSettings(Nutgram $bot)
     {
-        app(SettingsMenu::class)->start($bot);
         $this->end();
+        SettingsMenu::begin($bot);
     }
 
     public function backToMain(Nutgram $bot)
     {
-        app(MainMenu::class)->start($bot);
         $this->end();
+        MainMenu::begin($bot);
     }
 
     public function none(Nutgram $bot)

@@ -33,16 +33,14 @@ class WeightMenu extends InlineMenu
 
     public function startWeightEntry(Nutgram $bot)
     {
-        // Start weight conversation
-        $bot->startConversation(new \App\Telegram\Conversations\WeightConversation());
-
         $this->end();
+        $bot->startConversation(new \App\Telegram\Conversations\WeightConversation());
     }
 
     public function backToMain(Nutgram $bot)
     {
-        app(MainMenu::class)->start($bot);
         $this->end();
+        MainMenu::begin($bot);
     }
 
     public function none(Nutgram $bot)

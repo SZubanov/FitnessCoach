@@ -73,6 +73,7 @@ class MainMenu extends InlineMenu
                    "**Пример:** 25.12.2024 или 25/12/2024";
 
         $this->menuText($helpText)
+            ->clearButtons()
             ->addButtonRow(
                 InlineKeyboardButton::make('🏠 Главное меню', callback_data: CallbackData::MAIN_MENU . '@backToMain')
             )
