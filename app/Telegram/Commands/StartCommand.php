@@ -23,7 +23,7 @@ class StartCommand extends Command
                       "Используйте меню ниже для начала работы:";
 
         $bot->sendMessage($welcomeText);
-        
+
         MainMenu::begin($bot);
     }
 }
