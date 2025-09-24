@@ -122,7 +122,7 @@ return [
             'handler' => StreamHandler::class,
             'formatter' => Nutgram\Laravel\Log\NutgramFormatter::class,
             'with' => [
-                'stream' => 'php://stderr',
+                'stream' => storage_path('logs/laravel.log'),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],
