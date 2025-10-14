@@ -7,11 +7,9 @@ use App\FatSecret\Dto\FoodEntryDto;
 use App\FatSecret\Dto\OAuthTokenDto;
 use App\FatSecret\Dto\WeightDto;
 use App\FatSecret\Exceptions\FatSecretException;
-use App\FatSecret\Exceptions\RequestErrorException;
-use App\FatSecret\Exceptions\ResponseDecodeException;
 use Carbon\Carbon;
 
-class FatSecretFacade
+class FatSecretFacade implements FatSecretFacadeInterface
 {
     public function __construct(public FatSecretServiceInterface $fatSecretService)
     {

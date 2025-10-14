@@ -9,7 +9,7 @@ class ConversationHelper
 {
     public static function returnToMainMenu(Nutgram $bot): void
     {
-        app(MainMenu::class)->start($bot);
+        MainMenu::begin($bot);
     }
     
     public static function getSuccessMessage(string $type, string $value, string $date): string

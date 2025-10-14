@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\FatSecret\FatSecretFacade;
+use App\FatSecret\FatSecretFacadeInterface;
 use App\FatSecret\FatSecretService;
 use App\FatSecret\FatSecretServiceInterface;
 use App\FatSecret\FatSecretServiceLoggerDecorator;
@@ -14,5 +16,7 @@ class FatSecretServiceProvider extends ServiceProvider
         $this->app->bind(FatSecretServiceInterface::class, function ($app) {
             return new FatSecretServiceLoggerDecorator($app->make(FatSecretService::class));
         });
+
+        $this->app->bind(FatSecretFacadeInterface::class, FatSecretFacade::class);
     }
 }

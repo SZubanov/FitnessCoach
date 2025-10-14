@@ -16,8 +16,6 @@ use App\Telegram\Commands\StatusCommand;
 use App\Telegram\Commands\CancelCommand;
 use App\Telegram\Commands\InfoCommand;
 use App\Telegram\Commands\SupportCommand;
-use App\Telegram\Middleware\AccountLinkMiddleware;
-use App\Telegram\Middleware\FatSecretMiddleware;
 use Illuminate\Support\ServiceProvider;
 use SergiX44\Nutgram\Nutgram;
 
@@ -34,36 +32,15 @@ class TelegramServiceProvider extends ServiceProvider
     {
         /** @var Nutgram $bot */
         $bot = app(Nutgram::class);
-
         // Core Navigation Commands
         $bot->onCommand('start', StartCommand::class);
         $bot->onCommand('help', HelpCommand::class);
-        $bot->onCommand('menu', MenuCommand::class);
 
-        // Feature Shortcut Commands (with middleware)
-        $bot->onCommand('measurements', MeasurementsCommand::class)
-            ->middleware(AccountLinkMiddleware::class);
-
-        $bot->onCommand('macros', MacrosCommand::class)
-            ->middleware(AccountLinkMiddleware::class);
-
-        $bot->onCommand('weight', WeightCommand::class)
-            ->middleware(AccountLinkMiddleware::class);
-
-        $bot->onCommand('sync', SyncCommand::class)
-            ->middleware([AccountLinkMiddleware::class, FatSecretMiddleware::class]);
+        $bot->onCommand('sync', SyncCommand::class);
 
         // Admin & Management Commands
-        $bot->onCommand('settings', SettingsCommand::class);
         $bot->onCommand('account', AccountCommand::class);
-        $bot->onCommand('fatsecret', FatSecretCommand::class)
-            ->middleware(AccountLinkMiddleware::class);
-        $bot->onCommand('status', StatusCommand::class);
-
-        // Utility Commands
-        $bot->onCommand('cancel', CancelCommand::class);
-        $bot->onCommand('info', InfoCommand::class);
-        $bot->onCommand('support', SupportCommand::class);
+        $bot->onCommand('fatsecret', FatSecretCommand::class);
     }
 
     private function registerMiddleware()
@@ -78,15 +55,16 @@ class TelegramServiceProvider extends ServiceProvider
         $bot = app(Nutgram::class);
 
         // Register conversation step handlers
-//        $bot->onText(function (Nutgram $bot) {
-//            // This catches text input during conversations
-//            // The conversation system will handle routing to appropriate step
-//        });
+        $bot->onText(function (Nutgram $bot) {
+            // This catches text input during conversations
+            // The conversation system will handle routing to appropriate step
+        });
 
         // Error handlers
         $bot->onException(function (Nutgram $bot, \Throwable $exception) {
             logger()->error('Telegram Bot Exception', [
                 'exception' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString(),
                 'user_id' => $bot->userId(),
                 'update' => $bot->update()
             ]);
@@ -115,8 +93,6 @@ class TelegramServiceProvider extends ServiceProvider
 
     public function register()
     {
-        // Bind services to container if needed
-        $this->app->singleton(\App\Telegram\Services\DateValidationService::class);
-        $this->app->singleton(\App\Telegram\Services\TelegramAccountService::class);
+
     }
 }
