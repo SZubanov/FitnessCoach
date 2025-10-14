@@ -55,10 +55,10 @@ class TelegramServiceProvider extends ServiceProvider
         $bot = app(Nutgram::class);
 
         // Register conversation step handlers
-        $bot->onText(function (Nutgram $bot) {
-            // This catches text input during conversations
-            // The conversation system will handle routing to appropriate step
-        });
+//        $bot->onText(function (Nutgram $bot) {
+//             This catches text input during conversations
+//             The conversation system will handle routing to appropriate step
+//        });
 
         // Error handlers
         $bot->onException(function (Nutgram $bot, \Throwable $exception) {
