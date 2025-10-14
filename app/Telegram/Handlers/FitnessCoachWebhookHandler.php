@@ -170,6 +170,66 @@ class FitnessCoachWebhookHandler extends WebhookHandler
             ->send();
     }
 
+    /**
+     * Handle /help command
+     * Shows list of available commands
+     */
+    public function help(): void
+    {
+        $helpText = "🆘 **Помощь по командам FitnessCoach**\n\n" .
+                   $this->formatCommandsHelp() . "\n\n" .
+                   "🔗 **Команды с параметрами:**\n" .
+                   "• /sync полная - Полная синхронизация с FatSecret";
+
+        $this->chat->html($helpText)
+            ->keyboard($this->buildHelpKeyboard())
+            ->send();
+    }
+
+    /**
+     * Show help from callback (from main menu button)
+     * This version includes back button and feature descriptions
+     */
+    public function showHelp(): void
+    {
+        $helpText = "📖 **Помощь FitnessCoach Bot**\n\n" .
+                   "**Доступные функции:**\n" .
+                   "📏 **Замеры** - Записывайте измерения тела\n" .
+                   "🔄 **Синхронизация** - Синхронизация с FatSecret\n" .
+                   "🍎 **КБЖУ** - Отслеживание калорий и макронутриентов\n" .
+                   "⚖️ **Вес** - Записывайте показания веса\n" .
+                   "⚙️ **Настройки** - Управление аккаунтом и подключениями\n\n" .
+                   "**Формат даты:** DD.MM.YYYY или DD/MM/YYYY\n" .
+                   "**Пример:** 25.12.2024 или 25/12/2024";
+
+        // Edit the message with new keyboard
+        $this->chat->edit($this->messageId)
+            ->html($helpText)
+            ->keyboard($this->buildHelpKeyboard())
+            ->send();
+    }
+
+    /**
+     * Format commands list for help message
+     */
+    protected function formatCommandsHelp(): string
+    {
+        $commands = [];
+
+        $commands[] = "📋 **Основные команды:**";
+        $commands[] = "/start - Главное меню и приветствие";
+        $commands[] = "/help - Помощь и список команд";
+
+        $commands[] = "\n🚀 **Быстрые команды:**";
+        $commands[] = "/sync [тип] - Синхронизация с FatSecret";
+
+        $commands[] = "\n⚙️ **Управление:**";
+        $commands[] = "/account - Привязка аккаунта";
+        $commands[] = "/fatsecret - Подключение к FatSecret";
+
+        return implode("\n", $commands);
+    }
+
     // ============================================================================
     // KEYBOARDS
     // ============================================================================
@@ -186,6 +246,16 @@ class FitnessCoachWebhookHandler extends WebhookHandler
             \DefStudio\Telegraph\Keyboard\Button::make('🍎 КБЖУ')->action('showMacros'),
             \DefStudio\Telegraph\Keyboard\Button::make('⚖️ Вес')->action('showWeight'),
             \DefStudio\Telegraph\Keyboard\Button::make('❓ Помощь')->action('showHelp'),
+        ]);
+    }
+
+    /**
+     * Build help keyboard with back button
+     */
+    protected function buildHelpKeyboard(): Keyboard
+    {
+        return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
         ]);
     }
 }
