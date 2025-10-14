@@ -136,13 +136,56 @@ class FitnessCoachWebhookHandler extends WebhookHandler
             ->send();
     }
 
+    // ============================================================================
+    // COMMANDS - Phase 3
+    // ============================================================================
+
     /**
-     * Placeholder for main menu keyboard (will be implemented in Phase 3)
+     * Handle /start command
+     * Shows welcome message and main menu
+     */
+    public function start(): void
+    {
+        $welcomeText = "🎯 **Добро пожаловать в FitnessCoach!**\n\n" .
+                      "Я помогу вам отслеживать:\n" .
+                      "⚖️ Вес и измерения тела\n" .
+                      "🍎 Макронутриенты (КБЖУ)\n" .
+                      "🔄 Синхронизацию с FatSecret\n\n" .
+                      "Используйте меню ниже для начала работы:";
+
+        $this->chat->html($welcomeText)->send();
+
+        // Show main menu with keyboard
+        $this->mainMenu();
+    }
+
+    /**
+     * Show main menu with keyboard
+     * Can be called from /start or from callback actions
+     */
+    public function mainMenu(): void
+    {
+        $this->chat->html('🏠 Главное меню FitnessCoach')
+            ->keyboard($this->buildMainMenuKeyboard())
+            ->send();
+    }
+
+    // ============================================================================
+    // KEYBOARDS
+    // ============================================================================
+
+    /**
+     * Build main menu keyboard
      */
     protected function buildMainMenuKeyboard(): Keyboard
     {
         return Keyboard::make()->buttons([
-            \DefStudio\Telegraph\Keyboard\Button::make('❓ Помощь')->action('help'),
+            \DefStudio\Telegraph\Keyboard\Button::make('⚙️ Настройки')->action('showSettings'),
+            \DefStudio\Telegraph\Keyboard\Button::make('📏 Замеры')->action('showMeasurements'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🔄 Синхронизация')->action('showSync'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🍎 КБЖУ')->action('showMacros'),
+            \DefStudio\Telegraph\Keyboard\Button::make('⚖️ Вес')->action('showWeight'),
+            \DefStudio\Telegraph\Keyboard\Button::make('❓ Помощь')->action('showHelp'),
         ]);
     }
 }
