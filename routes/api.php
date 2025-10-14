@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\TelegramWebhookController;
+// use App\Http\Controllers\Api\TelegramWebhookController; // Removed - now using Telegraph
 use App\Http\Controllers\Api\TelegramFatSecretAuthController;
 use App\Http\Controllers\Api\TelegramFatSecretCallbackController;
 use Illuminate\Http\Request;
@@ -21,7 +21,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/telegram/webhook', TelegramWebhookController::class)->name('telegram.webhook');
+// Old Nutgram webhook - now handled by Telegraph automatically
+// Route::post('/telegram/webhook', TelegramWebhookController::class)->name('telegram.webhook');
 
 // Telegram FatSecret OAuth routes
 Route::post('/telegram/fatsecret/auth', [TelegramFatSecretAuthController::class, 'initiate'])->name('telegram.fatsecret.auth');
