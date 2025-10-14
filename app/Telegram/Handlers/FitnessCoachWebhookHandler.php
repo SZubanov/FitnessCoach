@@ -4,6 +4,7 @@ namespace App\Telegram\Handlers;
 
 use App\Models\User;
 use App\Telegram\Exceptions\UserNotFoundException;
+use App\Telegram\Services\TelegramAccountService;
 use App\Telegram\Services\TelegramUserService;
 use DefStudio\Telegraph\Handlers\WebhookHandler;
 use DefStudio\Telegraph\Keyboard\Keyboard;
@@ -14,6 +15,7 @@ class FitnessCoachWebhookHandler extends WebhookHandler
 {
     public function __construct(
         private readonly TelegramUserService $telegramUserService,
+        private readonly TelegramAccountService $telegramAccountService,
     ) {
         parent::__construct();
     }
@@ -230,6 +232,90 @@ class FitnessCoachWebhookHandler extends WebhookHandler
         return implode("\n", $commands);
     }
 
+    /**
+     * Handle /account command
+     * Shows account linking menu with options to link/unlink/check status
+     */
+    public function account(): void
+    {
+        $this->chat->html('🔗 Привязка аккаунта')
+            ->keyboard($this->buildAccountMenuKeyboard())
+            ->send();
+    }
+
+    /**
+     * Show account menu from callback
+     * Edits the message instead of sending new one
+     */
+    public function accountLinking(): void
+    {
+        $this->chat->edit($this->messageId)
+            ->html('🔗 Привязка аккаунта')
+            ->keyboard($this->buildAccountMenuKeyboard())
+            ->send();
+    }
+
+    // ============================================================================
+    // ACCOUNT LINKING CALLBACKS - Phase 4
+    // ============================================================================
+
+    /**
+     * Generate link code for account binding
+     * Shows a temporary code that user can use in web interface
+     */
+    public function generateLinkCode(): void
+    {
+        $linkCode = $this->telegramAccountService->generateLinkAccountCode($this->chat->chat_id);
+
+        $message = "🔗 **Код для привязки аккаунта**\n\n" .
+            "Ваш код: `{$linkCode}`\n\n" .
+            "⏰ Код действителен 15 минут\n" .
+            "🌐 Используйте этот код в веб-интерфейсе для привязки аккаунта\n\n" .
+            "⚠️ **Внимание:** При создании нового кода, старый перестает действовать";
+
+        $this->chat->edit($this->messageId)
+            ->html($message)
+            ->keyboard($this->buildAccountBackKeyboard())
+            ->send();
+    }
+
+    /**
+     * Check account linking status
+     * Shows whether the current Telegram account is linked to FitnessCoach user
+     */
+    public function checkLinkStatus(): void
+    {
+        $isLinked = $this->telegramAccountService->checkLinkAccountStatus($this->chat->chat_id);
+
+        $statusMessage = $isLinked
+            ? "✅ **Статус привязки**\n\nВаш аккаунт привязан к системе FitnessCoach"
+            : "❌ **Статус привязки**\n\nВаш аккаунт не привязан к системе FitnessCoach\n\n" .
+              "Используйте кнопку \"Получить код для привязки\" для создания кода";
+
+        $this->chat->edit($this->messageId)
+            ->html($statusMessage)
+            ->keyboard($this->buildAccountBackKeyboard())
+            ->send();
+    }
+
+    /**
+     * Remove account link
+     * Unlinks the Telegram account from FitnessCoach user
+     */
+    public function removeLinkAccount(): void
+    {
+        $this->telegramAccountService->removeLinkAccount($this->chat->chat_id);
+
+        $message = "❌ **Отвязка аккаунта**\n\n" .
+            "Ваш аккаунт был отвязан от системы FitnessCoach\n\n" .
+            "Для повторной привязки используйте функцию \"Получить код для привязки\"";
+
+        $this->chat->edit($this->messageId)
+            ->html($message)
+            ->keyboard($this->buildAccountBackKeyboard())
+            ->send();
+    }
+
     // ============================================================================
     // KEYBOARDS
     // ============================================================================
@@ -255,6 +341,32 @@ class FitnessCoachWebhookHandler extends WebhookHandler
     protected function buildHelpKeyboard(): Keyboard
     {
         return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
+        ]);
+    }
+
+    /**
+     * Build account menu keyboard
+     * Shows options to generate code, check status, or remove link
+     */
+    protected function buildAccountMenuKeyboard(): Keyboard
+    {
+        return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('📝 Получить код для привязки')->action('generateLinkCode'),
+            \DefStudio\Telegraph\Keyboard\Button::make('✅ Проверить привязку')->action('checkLinkStatus'),
+            \DefStudio\Telegraph\Keyboard\Button::make('❌ Отвязать аккаунт')->action('removeLinkAccount'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
+        ]);
+    }
+
+    /**
+     * Build account back keyboard
+     * Shows back button to return to account menu and main menu
+     */
+    protected function buildAccountBackKeyboard(): Keyboard
+    {
+        return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('↩️ Назад')->action('accountLinking'),
             \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
         ]);
     }
