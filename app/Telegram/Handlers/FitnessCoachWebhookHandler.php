@@ -535,6 +535,103 @@ class FitnessCoachWebhookHandler extends WebhookHandler
     }
 
     // ============================================================================
+    // MAIN MENU CALLBACKS - Phase 4 (Stubs for now)
+    // ============================================================================
+
+    /**
+     * Show settings menu
+     * Note: This is a stub implementation. Full settings menu will be added in Phase 5
+     */
+    public function showSettings(): void
+    {
+        $message = "⚙️ **Настройки**\n\n" .
+            "Управление вашим аккаунтом и подключениями:\n\n" .
+            "🔗 **Привязка аккаунта** - Управление связью Telegram с FitnessCoach\n" .
+            "🔐 **FatSecret** - Подключение к FatSecret API\n" .
+            "👤 **Профиль** - Ваши личные данные\n\n" .
+            "Выберите раздел для управления:";
+
+        $this->chat->edit($this->messageId)
+            ->html($message)
+            ->keyboard($this->buildSettingsKeyboard())
+            ->send();
+    }
+
+    /**
+     * Show measurements menu
+     * Note: This is a stub implementation. Full measurements flow will be added in Phase 5
+     */
+    public function showMeasurements(): void
+    {
+        // Check if user has linked account
+        if (!$this->requireLinkedAccount()) {
+            return;
+        }
+
+        $message = "📏 **Замеры тела**\n\n" .
+            "Отслеживайте изменения ваших измерений:\n\n" .
+            "📐 **Новый замер** - Добавить новое измерение\n" .
+            "📊 **История** - Просмотр истории замеров\n" .
+            "📈 **Прогресс** - График изменений\n\n" .
+            "💡 **Совет:** Делайте замеры в одно и то же время для точности";
+
+        $this->chat->edit($this->messageId)
+            ->html($message)
+            ->keyboard($this->buildMeasurementsKeyboard())
+            ->send();
+    }
+
+    /**
+     * Show macros (КБЖУ) menu
+     * Note: This is a stub implementation. Full macros flow will be added in Phase 5
+     */
+    public function showMacros(): void
+    {
+        // Check if user has linked account
+        if (!$this->requireLinkedAccount()) {
+            return;
+        }
+
+        $message = "🍎 **КБЖУ - Макронутриенты**\n\n" .
+            "Отслеживание калорий и макронутриентов:\n\n" .
+            "➕ **Добавить прием пищи** - Записать еду\n" .
+            "📊 **Сегодня** - Статистика за сегодня\n" .
+            "📅 **История** - Просмотр по дням\n" .
+            "🔄 **Синхронизация** - Импорт из FatSecret\n\n" .
+            "💡 **К** - Калории, **Б** - Белки, **Ж** - Жиры, **У** - Углеводы";
+
+        $this->chat->edit($this->messageId)
+            ->html($message)
+            ->keyboard($this->buildMacrosKeyboard())
+            ->send();
+    }
+
+    /**
+     * Show weight tracking menu
+     * Note: This is a stub implementation. Full weight flow will be added in Phase 5
+     */
+    public function showWeight(): void
+    {
+        // Check if user has linked account
+        if (!$this->requireLinkedAccount()) {
+            return;
+        }
+
+        $message = "⚖️ **Отслеживание веса**\n\n" .
+            "Ведите учет вашего веса:\n\n" .
+            "➕ **Добавить вес** - Новая запись\n" .
+            "📊 **Текущий вес** - Последние показания\n" .
+            "📈 **Динамика** - График изменений\n" .
+            "🔄 **Синхронизация** - Импорт из FatSecret\n\n" .
+            "💡 **Совет:** Взвешивайтесь утром натощак для точности";
+
+        $this->chat->edit($this->messageId)
+            ->html($message)
+            ->keyboard($this->buildWeightKeyboard())
+            ->send();
+    }
+
+    // ============================================================================
     // KEYBOARDS
     // ============================================================================
 
@@ -637,6 +734,52 @@ class FitnessCoachWebhookHandler extends WebhookHandler
     {
         return Keyboard::make()->buttons([
             \DefStudio\Telegraph\Keyboard\Button::make('↩️ Назад')->action('showSync'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
+        ]);
+    }
+
+    /**
+     * Build settings menu keyboard
+     * Shows options for account and FatSecret management
+     */
+    protected function buildSettingsKeyboard(): Keyboard
+    {
+        return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('🔗 Привязка аккаунта')->action('accountLinking'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🔐 FatSecret')->action('fatSecretConnect'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
+        ]);
+    }
+
+    /**
+     * Build measurements menu keyboard
+     * Stub keyboard - will be expanded in Phase 5
+     */
+    protected function buildMeasurementsKeyboard(): Keyboard
+    {
+        return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
+        ]);
+    }
+
+    /**
+     * Build macros menu keyboard
+     * Stub keyboard - will be expanded in Phase 5
+     */
+    protected function buildMacrosKeyboard(): Keyboard
+    {
+        return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
+        ]);
+    }
+
+    /**
+     * Build weight menu keyboard
+     * Stub keyboard - will be expanded in Phase 5
+     */
+    protected function buildWeightKeyboard(): Keyboard
+    {
+        return Keyboard::make()->buttons([
             \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
         ]);
     }
