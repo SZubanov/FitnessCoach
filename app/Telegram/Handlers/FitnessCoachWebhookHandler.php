@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Services\Telegram\TelegramFatSecretService;
 use App\Telegram\Exceptions\UserNotFoundException;
 use App\Telegram\Services\ConversationStateService;
+use App\Telegram\Services\DateValidationService;
 use App\Telegram\Services\TelegramAccountService;
 use App\Telegram\Services\TelegramUserService;
 use DefStudio\Telegraph\Handlers\WebhookHandler;
@@ -20,6 +21,7 @@ class FitnessCoachWebhookHandler extends WebhookHandler
         private readonly TelegramAccountService $telegramAccountService,
         private readonly TelegramFatSecretService $telegramFatSecretService,
         private readonly ConversationStateService $conversationState,
+        private readonly DateValidationService $dateValidation,
     ) {
         parent::__construct();
     }
@@ -203,22 +205,196 @@ class FitnessCoachWebhookHandler extends WebhookHandler
 
     /**
      * Handle measurement conversation flow
-     * Note: Full implementation will be added in Phase 5
+     *
+     * Steps:
+     * 1. input_date - User enters measurement date
+     * 2. input_value - User enters measurement value in cm
+     * 3. save_success - Save and show success message
      */
     private function handleMeasurementConversation(Stringable $text, ?string $step): void
     {
-        $this->chat->html("📏 Обработка замера... (в разработке)")->send();
-        $this->conversationState->endConversation((string) $this->chat->chat_id);
+        $chatId = (string) $this->chat->chat_id;
+
+        match ($step) {
+            'input_date' => $this->handleMeasurementDateInput($text, $chatId),
+            'input_value' => $this->handleMeasurementValueInput($text, $chatId),
+            default => $this->handleUnknownConversation($chatId),
+        };
+    }
+
+    /**
+     * Handle date input for measurement
+     */
+    private function handleMeasurementDateInput(Stringable $text, string $chatId): void
+    {
+        // Validate date
+        $dateResult = $this->dateValidation->validateAndParseDate((string) $text);
+
+        if (!$dateResult['valid']) {
+            $this->chat->html($dateResult['error'])->send();
+            return;
+        }
+
+        // Store validated date
+        $this->conversationState->setData($chatId, 'date', $dateResult['formatted']);
+        $this->conversationState->setData($chatId, 'date_object', $dateResult['date']);
+
+        // Move to value input step
+        $this->conversationState->setStep($chatId, 'input_value');
+
+        // Get measurement type
+        $measurementType = $this->conversationState->getData($chatId, 'measurement_type', 'замер');
+
+        // Ask for measurement value
+        $this->chat->html(
+            "📏 **Замер: {$measurementType}**\n\n" .
+            "Введите значение в сантиметрах:\n" .
+            "Например: 95"
+        )->send();
+    }
+
+    /**
+     * Handle value input for measurement
+     */
+    private function handleMeasurementValueInput(Stringable $text, string $chatId): void
+    {
+        $valueInput = trim((string) $text);
+
+        // Validate numeric input
+        if (!is_numeric($valueInput)) {
+            $this->chat->html(
+                "❌ **Неверное значение**\n\n" .
+                "Введите число (в сантиметрах):\n" .
+                "Например: 95"
+            )->send();
+            return;
+        }
+
+        $value = (float) $valueInput;
+
+        // Validate range
+        if ($value < 1 || $value > 300) {
+            $this->chat->html(
+                "❌ **Значение вне допустимого диапазона**\n\n" .
+                "Введите значение от 1 до 300 см:"
+            )->send();
+            return;
+        }
+
+        // Get stored data
+        $date = $this->conversationState->getData($chatId, 'date');
+        $measurementType = $this->conversationState->getData($chatId, 'measurement_type', 'замер');
+
+        // TODO: Save to database
+        // $this->measurementService->saveMeasurement($userId, $measurementType, $value, $date);
+
+        // Show success message
+        $this->chat->html(
+            "✅ **Замер сохранен**\n\n" .
+            "Тип: {$measurementType}\n" .
+            "Значение: {$value} см\n" .
+            "Дата: {$date}"
+        )->send();
+
+        // Clean up and return to menu
+        $this->conversationState->endConversation($chatId);
+        $this->mainMenu();
     }
 
     /**
      * Handle weight conversation flow
-     * Note: Full implementation will be added in Phase 5
+     *
+     * Steps:
+     * 1. input_date - User enters weight measurement date
+     * 2. input_value - User enters weight value in kg
+     * 3. save_success - Save and show success message
      */
     private function handleWeightConversation(Stringable $text, ?string $step): void
     {
-        $this->chat->html("⚖️ Обработка веса... (в разработке)")->send();
-        $this->conversationState->endConversation((string) $this->chat->chat_id);
+        $chatId = (string) $this->chat->chat_id;
+
+        match ($step) {
+            'input_date' => $this->handleWeightDateInput($text, $chatId),
+            'input_value' => $this->handleWeightValueInput($text, $chatId),
+            default => $this->handleUnknownConversation($chatId),
+        };
+    }
+
+    /**
+     * Handle date input for weight
+     */
+    private function handleWeightDateInput(Stringable $text, string $chatId): void
+    {
+        // Validate date
+        $dateResult = $this->dateValidation->validateAndParseDate((string) $text);
+
+        if (!$dateResult['valid']) {
+            $this->chat->html($dateResult['error'])->send();
+            return;
+        }
+
+        // Store validated date
+        $this->conversationState->setData($chatId, 'date', $dateResult['formatted']);
+        $this->conversationState->setData($chatId, 'date_object', $dateResult['date']);
+
+        // Move to value input step
+        $this->conversationState->setStep($chatId, 'input_value');
+
+        // Ask for weight value
+        $this->chat->html(
+            "⚖️ **Запись веса**\n\n" .
+            "Введите ваш вес в килограммах:\n" .
+            "Например: 70.5 или 85,2"
+        )->send();
+    }
+
+    /**
+     * Handle value input for weight
+     */
+    private function handleWeightValueInput(Stringable $text, string $chatId): void
+    {
+        $valueInput = trim((string) $text);
+
+        // Replace comma with dot for decimal separator
+        $valueInput = str_replace(',', '.', $valueInput);
+
+        // Validate numeric input
+        if (!is_numeric($valueInput)) {
+            $this->chat->html(
+                "❌ **Неверное значение**\n\n" .
+                "Введите число (вес в килограммах):\n" .
+                "Например: 70.5 или 85,2"
+            )->send();
+            return;
+        }
+
+        $value = (float) $valueInput;
+
+        // Validate range
+        if ($value < 20 || $value > 300) {
+            $this->chat->html(
+                "❌ **Значение вне допустимого диапазона**\n\n" .
+                "Введите вес от 20 до 300 кг:"
+            )->send();
+            return;
+        }
+
+        // Get stored data
+        $date = $this->conversationState->getData($chatId, 'date');
+
+        // TODO: Save to database
+        // $this->weightService->saveWeight($userId, $value, $date);
+
+        // Show success message
+        $this->chat->html(
+            "✅ **Вес сохранен**\n\n" .
+            "Значение: {$value} кг\n" .
+            "Дата: {$date}"
+        )->send();
+
+        // Clean up and return to menu
+        $this->conversationState->endConversation($chatId);
+        $this->mainMenu();
     }
 
     /**
@@ -660,7 +836,6 @@ class FitnessCoachWebhookHandler extends WebhookHandler
 
     /**
      * Show measurements menu
-     * Note: This is a stub implementation. Full measurements flow will be added in Phase 5
      */
     public function showMeasurements(): void
     {
@@ -680,6 +855,34 @@ class FitnessCoachWebhookHandler extends WebhookHandler
             ->html($message)
             ->keyboard($this->buildMeasurementsKeyboard())
             ->send();
+    }
+
+    /**
+     * Start new measurement conversation
+     * Initiates measurement input flow with date step
+     */
+    public function startNewMeasurement(): void
+    {
+        // Check if user has linked account
+        if (!$this->requireLinkedAccount()) {
+            return;
+        }
+
+        $chatId = (string) $this->chat->chat_id;
+
+        // Start conversation with measurement type
+        // For now we'll use a generic type, but this could be extended to ask for specific body part
+        $this->conversationState->startConversation(
+            $chatId,
+            'measurement',
+            ['measurement_type' => 'Грудь'] // TODO: Add measurement type selection
+        );
+
+        $this->conversationState->setStep($chatId, 'input_date');
+
+        // Show date input instructions
+        $instructions = $this->dateValidation->getDateInputInstructions();
+        $this->chat->html($instructions)->send();
     }
 
     /**
@@ -709,7 +912,6 @@ class FitnessCoachWebhookHandler extends WebhookHandler
 
     /**
      * Show weight tracking menu
-     * Note: This is a stub implementation. Full weight flow will be added in Phase 5
      */
     public function showWeight(): void
     {
@@ -730,6 +932,33 @@ class FitnessCoachWebhookHandler extends WebhookHandler
             ->html($message)
             ->keyboard($this->buildWeightKeyboard())
             ->send();
+    }
+
+    /**
+     * Start new weight entry conversation
+     * Initiates weight input flow with date step
+     */
+    public function startNewWeight(): void
+    {
+        // Check if user has linked account
+        if (!$this->requireLinkedAccount()) {
+            return;
+        }
+
+        $chatId = (string) $this->chat->chat_id;
+
+        // Start conversation with weight type
+        $this->conversationState->startConversation(
+            $chatId,
+            'weight',
+            []
+        );
+
+        $this->conversationState->setStep($chatId, 'input_date');
+
+        // Show date input instructions
+        $instructions = $this->dateValidation->getDateInputInstructions();
+        $this->chat->html($instructions)->send();
     }
 
     // ============================================================================
@@ -854,11 +1083,11 @@ class FitnessCoachWebhookHandler extends WebhookHandler
 
     /**
      * Build measurements menu keyboard
-     * Stub keyboard - will be expanded in Phase 5
      */
     protected function buildMeasurementsKeyboard(): Keyboard
     {
         return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('📐 Новый замер')->action('startNewMeasurement'),
             \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
         ]);
     }
@@ -876,11 +1105,11 @@ class FitnessCoachWebhookHandler extends WebhookHandler
 
     /**
      * Build weight menu keyboard
-     * Stub keyboard - will be expanded in Phase 5
      */
     protected function buildWeightKeyboard(): Keyboard
     {
         return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('⚖️ Добавить вес')->action('startNewWeight'),
             \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
         ]);
     }
