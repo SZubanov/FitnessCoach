@@ -125,18 +125,35 @@ class UpdateUserAction implements UpdateUser
     - `FatSecretRepository.php` - Data persistence
     - `FatSecretServiceLoggerDecorator.php` - Logging decorator
 
-### 5. Telegram Bot Architecture
-- Telegram bot services located in `app/Services/Telegram/`
-- Key services:
-    - `TelegramBotService.php` - Main command router and callback handler
-    - `TelegramUserService.php` - User management and auto-registration
-    - `DateSelectionService.php` - Calendar and date selection UI
-    - `MeasurementService.php` - Body measurement tracking
-    - `FatSecretSyncService.php` - FatSecret OAuth and synchronization
-    - `TelegramFatSecretService.php` - OAuth flow management
-- All services use Nutgram framework with webhook mode
-- State management via Laravel Cache with appropriate TTL
-- User linking system with temporary codes for account connection
+### 5. Telegram Bot Architecture ⚡ MIGRATED TO TELEGRAPH (Oct 2025)
+
+**NEW: Telegraph Framework (Laravel-native)**
+- Main handler: `app/Telegram/Handlers/FitnessCoachWebhookHandler.php` (1,406 lines)
+- State management: `app/Telegram/Services/ConversationStateService.php` (294 lines)
+- Method-based routing: `Button::make('Text')->action('methodName')` → `public function methodName()`
+- Cache-based conversations: 15-minute TTL with step tracking
+- Configuration: `config/telegraph.php` with custom webhook handler
+
+**Key Services**:
+- `TelegramUserService.php` - User management and auto-registration
+- `TelegramAccountService.php` - Account linking with temporary codes
+- `TelegramFatSecretService.php` - OAuth flow management
+- `DateValidationService.php` - Date input validation and parsing
+- `ConversationStateService.php` - Custom conversation state management (replaces Nutgram's built-in)
+
+**Conversation Patterns**:
+- Guard methods: `requireLinkedAccount()`, `requireFatSecretAuth()`
+- Central router: `handleChatMessage()` with match expression
+- Step-based flows: date input → value input → save → cleanup
+- 4 conversation types: measurement, weight, macro (КБЖУ), sync
+
+**OLD (Preserved for reference)**:
+- `app/Telegram/Commands/` - Nutgram commands (deprecated)
+- `app/Telegram/Conversations/` - Nutgram conversations (deprecated)
+- `app/Telegram/Menus/` - Nutgram menus (deprecated)
+- `app/Telegram/Constants/CallbackData.php` - String constants (deprecated)
+
+**Documentation**: See `TELEGRAPH_MIGRATION_*.md` files for complete migration details
 
 ## Code Standards
 
@@ -258,14 +275,6 @@ class UpdateUserAction implements UpdateUser
 - Implement proper authentication flows
 - Use the decorator pattern for cross-cutting concerns
 - Handle API failures gracefully with fallbacks
-
-### 24. Telegram Bot Development
-1. Create service in `app/Services/Telegram/`
-2. Register in `TelegramServiceProvider`
-3. Add command handlers to `TelegramBotService`
-4. Implement state management with cache
-5. Add callback routing with descriptive prefixes
-6. Test webhook functionality with ngrok/public URL
 
 ## Quality Assurance
 

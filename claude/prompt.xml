@@ -1,0 +1,125 @@
+<context>
+    I am implementing telegram bot to my project.
+    For the PoC I used llm and got this result @app/Services/Telegram/ .
+    I already started refactoring and put all my files here @app/Telegram/ .
+    I recognized several issues with rough realization. PoC doesn't follow the classical nutgram pck documentation.
+</context>
+<task>
+You need to implement plan  for implementing @TelegramBotArchitecturePlan of the basis for a Telegram bot.
+</task>
+<mcp>
+use context7 to retrieve nutgram documentation.
+</mcp>
+<documentation>
+What project does @PROJECT_OVERVIEW.md.
+Description how telegram api conversations must work @TELEGRAM_BOT_README.md
+Flow of interactions: @FitnessCoachTelegramFlow.canvas
+</documentation>
+
+
+<context>
+I am implementing telegram bot to my project.
+For the PoC I used llm and got this result @app/Services/Telegram/ .
+I already started refactoring and put all my files here @app/Telegram/ .
+I recognized several issues with rough realization. PoC doesn't follow the classical nutgram pck documentation.
+</context>
+<task>
+You need to check the plan  @TelegramBotArchitecturePlan of the basis for a Telegram bot. And decompose it to the smaller pieces.
+Let's start from menu decomposition. Create task list to develop menu components.
+</task>
+<mcp>
+use context7 to retrieve nutgram documentation.
+</mcp>
+<documentation>
+What project does @PROJECT_OVERVIEW.md.
+Description how telegram api conversations must work @TELEGRAM_BOT_README.md
+Flow of interactions: @FitnessCoachTelegramFlow.canvas
+</documentation>
+
+
+<rule>
+Do not proceed if don't have connection to MCP.
+Writing code is strictly prohibited.
+</rule>
+<mcp>
+use context7 to retrieve defstudio/telegraph documentation.
+</mcp>
+<role>
+You are senior software engineer. Specify on the laravel apps.
+</role>
+<documentation>
+Architectural plan for PoC: /Users/szubanov/Projects/FitnessCoach/TelegramBotArchitecturePlan
+Canvas with bot flows: /Users/szubanov/Projects/FitnessCoach/FitnessCoachTelegramFlow.canvas  !important It is not up to date.
+</documentation>
+<context>
+This is a pet-project.
+I am implementing telegram bot to my project.
+For the PoC I used Nutgram library.
+All telegram bot files lay here: /Users/szubanov/Projects/FitnessCoach/app/Telegram
+I recognized several issues with rough realization. Nutgram has several imperfections.
+</context>
+<task>
+1. Investigate the current code of telegram bot.
+2. Research documentation of defstudio/telegraph documentation.
+3. Advise plan of migration to new package.
+
+In your plan don't need to put:
+- estimations.
+- infrastructure details.
+- team decomposition.
+
+</task>
+
+
+<rule>
+Do not proceed if don't have connection to MCP.
+Writing code is strictly prohibited.
+</rule>
+<mcp>
+use context7 to retrieve defstudio/telegraph documentation.
+</mcp>
+<role>
+You are senior software engineer. Specify on the laravel apps.
+</role>
+<documentation>
+Architectural
+</documentation>
+<context>
+This is a pet-project.
+I am implementing telegram bot to my project.
+For the PoC I used Nutgram library.
+All telegram bot files lay here: /Users/szubanov/Projects/FitnessCoach/app/Telegram
+I recognized several issues with rough realization. Nutgram has several imperfections.
+I decided to migrate to the another package: defstudio/telegraph
+</context>
+<task>
+
+</task>
+
+
+<rule>
+Do not proceed if don't have connection to MCP.
+Writing code is strictly prohibited.
+</rule>
+<mcp>
+use context7 to retrieve defstudio/telegraph documentation.
+</mcp>
+<role>
+You are senior software engineer. Specify on the laravel apps.
+</role>
+<documentation>
+Architectural plan for PoC: /Users/szubanov/Projects/FitnessCoach/TelegramBotArchitecturePlan
+Canvas with bot flows: /Users/szubanov/Projects/FitnessCoach/FitnessCoachTelegramFlow.canvas  !important It is not up to date.
+Migrati
+</documentation>
+<context>
+This is a pet-project.
+I am implementing telegram bot to my project.
+For the PoC I used Nutgram library.
+All telegram bot files lay here: /Users/szubanov/Projects/FitnessCoach/app/Telegram
+I recognized several issues with rough realization. Nutgram has several imperfections.
+I decided to migrate to the another package: defstudio/telegraph
+</context>
+<task>
+
+</task>
