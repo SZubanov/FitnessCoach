@@ -3,6 +3,7 @@
 namespace App\Telegram\Handlers;
 
 use App\Models\User;
+use App\Services\Telegram\TelegramFatSecretService;
 use App\Telegram\Exceptions\UserNotFoundException;
 use App\Telegram\Services\TelegramAccountService;
 use App\Telegram\Services\TelegramUserService;
@@ -16,6 +17,7 @@ class FitnessCoachWebhookHandler extends WebhookHandler
     public function __construct(
         private readonly TelegramUserService $telegramUserService,
         private readonly TelegramAccountService $telegramAccountService,
+        private readonly TelegramFatSecretService $telegramFatSecretService,
     ) {
         parent::__construct();
     }
@@ -255,6 +257,29 @@ class FitnessCoachWebhookHandler extends WebhookHandler
             ->send();
     }
 
+    /**
+     * Handle /fatsecret command
+     * Shows FatSecret connection menu with OAuth options
+     */
+    public function fatsecret(): void
+    {
+        $this->chat->html('🔗 Привязка FatSecret')
+            ->keyboard($this->buildFatSecretMenuKeyboard())
+            ->send();
+    }
+
+    /**
+     * Show FatSecret menu from callback
+     * Edits the message instead of sending new one
+     */
+    public function fatSecretConnect(): void
+    {
+        $this->chat->edit($this->messageId)
+            ->html('🔗 Привязка FatSecret')
+            ->keyboard($this->buildFatSecretMenuKeyboard())
+            ->send();
+    }
+
     // ============================================================================
     // ACCOUNT LINKING CALLBACKS - Phase 4
     // ============================================================================
@@ -317,6 +342,91 @@ class FitnessCoachWebhookHandler extends WebhookHandler
     }
 
     // ============================================================================
+    // FATSECRET CALLBACKS - Phase 4
+    // ============================================================================
+
+    /**
+     * Check FatSecret connection status
+     * Shows whether the user is authorized with FatSecret
+     */
+    public function checkFatSecretConnection(): void
+    {
+        $user = $this->getUserFromChat();
+        $isAuthorized = $user && $user->isFatSecretAuthorized();
+
+        $statusMessage = $isAuthorized
+            ? "✅ **Статус привязки**\n\nВаш аккаунт авторизован в FatSecret"
+            : "❌ **Статус привязки**\n\nВаш аккаунт не авторизован в FatSecret\n\n";
+
+        $this->chat->edit($this->messageId)
+            ->html($statusMessage)
+            ->keyboard($this->buildFatSecretBackKeyboard())
+            ->send();
+    }
+
+    /**
+     * Initiate FatSecret OAuth flow
+     * Generates OAuth URL and shows it to the user
+     */
+    public function connectFatSecret(): void
+    {
+        // Require linked account first
+        $user = $this->requireLinkedAccount();
+        if (!$user) {
+            return;
+        }
+
+        try {
+            $oauthUrl = $this->telegramFatSecretService->initiateOAuthForTelegram($user);
+
+            $message = "🔗 **Подключение FatSecret**\n\n" .
+                "Для подключения к FatSecret нажмите на ссылку ниже:\n\n" .
+                "[Подключить FatSecret]({$oauthUrl})\n\n" .
+                "После авторизации вы будете автоматически перенаправлены обратно в бот";
+
+            $this->chat->edit($this->messageId)
+                ->html($message)
+                ->keyboard($this->buildFatSecretBackKeyboard())
+                ->send();
+        } catch (\Exception $e) {
+            $this->chat->edit($this->messageId)
+                ->html('❌ Ошибка при создании ссылки для подключения FatSecret. Попробуйте позже.')
+                ->keyboard($this->buildFatSecretBackKeyboard())
+                ->send();
+        }
+    }
+
+    /**
+     * Logout from FatSecret
+     * Removes FatSecret authorization tokens
+     */
+    public function logoutFromFatSecret(): void
+    {
+        $user = $this->getUserFromChat();
+
+        if (!$user) {
+            $this->chat->edit($this->messageId)
+                ->html('❌ Аккаунт не привязан.')
+                ->keyboard($this->buildFatSecretBackKeyboard())
+                ->send();
+            return;
+        }
+
+        // Use the old service's logout method which uses FatSecretLogoutInterface
+        $oldService = app(\App\Telegram\Services\TelegramFatSecretService::class);
+        $oldService->logout($this->chat->chat_id);
+
+        $message = "🚪 **Отключение от FatSecret**\n\n" .
+            "Ваш аккаунт был отключен от FatSecret\n\n" .
+            "❌ Функции синхронизации больше не доступны\n";
+
+        $this->chat->edit($this->messageId)
+            ->html($message)
+            ->keyboard($this->buildFatSecretBackKeyboard())
+            ->send();
+    }
+
+    // ============================================================================
     // KEYBOARDS
     // ============================================================================
 
@@ -367,6 +477,32 @@ class FitnessCoachWebhookHandler extends WebhookHandler
     {
         return Keyboard::make()->buttons([
             \DefStudio\Telegraph\Keyboard\Button::make('↩️ Назад')->action('accountLinking'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
+        ]);
+    }
+
+    /**
+     * Build FatSecret menu keyboard
+     * Shows options to connect, check status, or logout
+     */
+    protected function buildFatSecretMenuKeyboard(): Keyboard
+    {
+        return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('✅ Проверить привязку')->action('checkFatSecretConnection'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🔗 Подключить FatSecret')->action('connectFatSecret'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🚪 Выйти из FatSecret')->action('logoutFromFatSecret'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
+        ]);
+    }
+
+    /**
+     * Build FatSecret back keyboard
+     * Shows back button to return to FatSecret menu and main menu
+     */
+    protected function buildFatSecretBackKeyboard(): Keyboard
+    {
+        return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('↩️ Назад')->action('fatSecretConnect'),
             \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
         ]);
     }
