@@ -5,6 +5,7 @@ namespace App\Telegram\Handlers;
 use App\Models\User;
 use App\Services\Telegram\TelegramFatSecretService;
 use App\Telegram\Exceptions\UserNotFoundException;
+use App\Telegram\Services\ConversationStateService;
 use App\Telegram\Services\TelegramAccountService;
 use App\Telegram\Services\TelegramUserService;
 use DefStudio\Telegraph\Handlers\WebhookHandler;
@@ -18,6 +19,7 @@ class FitnessCoachWebhookHandler extends WebhookHandler
         private readonly TelegramUserService $telegramUserService,
         private readonly TelegramAccountService $telegramAccountService,
         private readonly TelegramFatSecretService $telegramFatSecretService,
+        private readonly ConversationStateService $conversationState,
     ) {
         parent::__construct();
     }
@@ -138,6 +140,105 @@ class FitnessCoachWebhookHandler extends WebhookHandler
     {
         $this->chat->message("❓ Неизвестная команда: {$text}\n\nИспользуйте /help для списка доступных команд.")
             ->send();
+    }
+
+    /**
+     * Handle incoming chat messages (non-command text)
+     *
+     * This is the central message router that directs messages to appropriate
+     * conversation handlers based on active conversation state.
+     *
+     * Flow:
+     * 1. Check if user is in an active conversation
+     * 2. Route to appropriate handler based on conversation type and step
+     * 3. If not in conversation, show help message
+     *
+     * @param Stringable $text The incoming message text
+     * @return void
+     */
+    protected function handleChatMessage(Stringable $text): void
+    {
+        $chatId = (string) $this->chat->chat_id;
+
+        // Check if user is in an active conversation
+        if (!$this->conversationState->isInConversation($chatId)) {
+            $this->chat->html(
+                "💬 Я понимаю только команды.\n\n" .
+                "Используйте /help для списка доступных команд\n" .
+                "или нажмите /start для главного меню."
+            )->send();
+            return;
+        }
+
+        // Route message to appropriate conversation handler
+        $conversationType = $this->conversationState->getConversationType($chatId);
+        $step = $this->conversationState->getStep($chatId);
+
+        match ($conversationType) {
+            'measurement' => $this->handleMeasurementConversation($text, $step),
+            'weight' => $this->handleWeightConversation($text, $step),
+            'macro' => $this->handleMacroConversation($text, $step),
+            'sync' => $this->handleSyncConversation($text, $step),
+            default => $this->handleUnknownConversation($chatId),
+        };
+    }
+
+    /**
+     * Handle unknown or invalid conversation type
+     */
+    private function handleUnknownConversation(string $chatId): void
+    {
+        $this->conversationState->endConversation($chatId);
+        $this->chat->html(
+            "❌ Произошла ошибка в диалоге.\n\n" .
+            "Попробуйте начать сначала через главное меню."
+        )
+            ->keyboard($this->buildMainMenuKeyboard())
+            ->send();
+    }
+
+    // ============================================================================
+    // CONVERSATION HANDLERS - Phase 5 (Stubs for now)
+    // ============================================================================
+
+    /**
+     * Handle measurement conversation flow
+     * Note: Full implementation will be added in Phase 5
+     */
+    private function handleMeasurementConversation(Stringable $text, ?string $step): void
+    {
+        $this->chat->html("📏 Обработка замера... (в разработке)")->send();
+        $this->conversationState->endConversation((string) $this->chat->chat_id);
+    }
+
+    /**
+     * Handle weight conversation flow
+     * Note: Full implementation will be added in Phase 5
+     */
+    private function handleWeightConversation(Stringable $text, ?string $step): void
+    {
+        $this->chat->html("⚖️ Обработка веса... (в разработке)")->send();
+        $this->conversationState->endConversation((string) $this->chat->chat_id);
+    }
+
+    /**
+     * Handle macro/КБЖУ conversation flow
+     * Note: Full implementation will be added in Phase 5
+     */
+    private function handleMacroConversation(Stringable $text, ?string $step): void
+    {
+        $this->chat->html("🍎 Обработка КБЖУ... (в разработке)")->send();
+        $this->conversationState->endConversation((string) $this->chat->chat_id);
+    }
+
+    /**
+     * Handle sync conversation flow
+     * Note: Full implementation will be added in Phase 5
+     */
+    private function handleSyncConversation(Stringable $text, ?string $step): void
+    {
+        $this->chat->html("🔄 Обработка синхронизации... (в разработке)")->send();
+        $this->conversationState->endConversation((string) $this->chat->chat_id);
     }
 
     // ============================================================================
