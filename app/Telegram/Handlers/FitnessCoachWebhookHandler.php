@@ -280,6 +280,55 @@ class FitnessCoachWebhookHandler extends WebhookHandler
             ->send();
     }
 
+    /**
+     * Handle /sync command
+     * Shows synchronization menu with FatSecret sync options
+     */
+    public function sync(): void
+    {
+        // Check if user has FatSecret connected
+        if (!$this->requireFatSecretAuth()) {
+            return;
+        }
+
+        $instructionsText = "🔄 **Синхронизация с FatSecret**\n\n" .
+                           "Выберите тип синхронизации:\n\n" .
+                           "💡 **Доступные опции:**\n" .
+                           "🔄 **Полная** - Синхронизация всех данных\n" .
+                           "⚖️ **Вес** - Только данные о весе\n" .
+                           "🍎 **Дневник питания** - Только питание\n\n" .
+                           "⚠️ **Требуется подключение к FatSecret**";
+
+        $this->chat->html($instructionsText)
+            ->keyboard($this->buildSyncMenuKeyboard())
+            ->send();
+    }
+
+    /**
+     * Show sync menu from callback
+     * Edits the message instead of sending new one
+     */
+    public function showSync(): void
+    {
+        // Check if user has FatSecret connected
+        if (!$this->requireFatSecretAuth()) {
+            return;
+        }
+
+        $instructionsText = "🔄 **Синхронизация с FatSecret**\n\n" .
+                           "Выберите тип синхронизации:\n\n" .
+                           "💡 **Доступные опции:**\n" .
+                           "🔄 **Полная** - Синхронизация всех данных\n" .
+                           "⚖️ **Вес** - Только данные о весе\n" .
+                           "🍎 **Дневник питания** - Только питание\n\n" .
+                           "⚠️ **Требуется подключение к FatSecret**";
+
+        $this->chat->edit($this->messageId)
+            ->html($instructionsText)
+            ->keyboard($this->buildSyncMenuKeyboard())
+            ->send();
+    }
+
     // ============================================================================
     // ACCOUNT LINKING CALLBACKS - Phase 4
     // ============================================================================
@@ -427,6 +476,65 @@ class FitnessCoachWebhookHandler extends WebhookHandler
     }
 
     // ============================================================================
+    // SYNC CALLBACKS - Phase 5 (Simplified for now)
+    // ============================================================================
+
+    /**
+     * Perform full synchronization with FatSecret
+     * Note: This is a simplified implementation. Full conversation flow will be added in Phase 5
+     */
+    public function syncFull(): void
+    {
+        $message = "🔄 **Полная синхронизация**\n\n" .
+            "⏳ Выполняется синхронизация всех данных с FatSecret...\n\n" .
+            "Это может занять несколько секунд.";
+
+        $this->chat->edit($this->messageId)
+            ->html($message)
+            ->keyboard($this->buildSyncBackKeyboard())
+            ->send();
+
+        // TODO: Implement actual sync logic in Phase 5
+        // This will trigger FatSecretSyncService
+    }
+
+    /**
+     * Perform weight synchronization with FatSecret
+     * Note: This is a simplified implementation. Full conversation flow will be added in Phase 5
+     */
+    public function syncWeight(): void
+    {
+        $message = "⚖️ **Синхронизация веса**\n\n" .
+            "⏳ Выполняется синхронизация данных о весе с FatSecret...\n\n" .
+            "Это может занять несколько секунд.";
+
+        $this->chat->edit($this->messageId)
+            ->html($message)
+            ->keyboard($this->buildSyncBackKeyboard())
+            ->send();
+
+        // TODO: Implement actual sync logic in Phase 5
+    }
+
+    /**
+     * Perform food diary synchronization with FatSecret
+     * Note: This is a simplified implementation. Full conversation flow will be added in Phase 5
+     */
+    public function syncFood(): void
+    {
+        $message = "🍎 **Синхронизация дневника питания**\n\n" .
+            "⏳ Выполняется синхронизация дневника питания с FatSecret...\n\n" .
+            "Это может занять несколько секунд.";
+
+        $this->chat->edit($this->messageId)
+            ->html($message)
+            ->keyboard($this->buildSyncBackKeyboard())
+            ->send();
+
+        // TODO: Implement actual sync logic in Phase 5
+    }
+
+    // ============================================================================
     // KEYBOARDS
     // ============================================================================
 
@@ -503,6 +611,32 @@ class FitnessCoachWebhookHandler extends WebhookHandler
     {
         return Keyboard::make()->buttons([
             \DefStudio\Telegraph\Keyboard\Button::make('↩️ Назад')->action('fatSecretConnect'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
+        ]);
+    }
+
+    /**
+     * Build sync menu keyboard
+     * Shows sync type options
+     */
+    protected function buildSyncMenuKeyboard(): Keyboard
+    {
+        return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('🔄 Полная синхронизация')->action('syncFull'),
+            \DefStudio\Telegraph\Keyboard\Button::make('⚖️ Синхронизация веса')->action('syncWeight'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🍎 Дневник питания')->action('syncFood'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
+        ]);
+    }
+
+    /**
+     * Build sync back keyboard
+     * Shows back button to return to sync menu and main menu
+     */
+    protected function buildSyncBackKeyboard(): Keyboard
+    {
+        return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('↩️ Назад')->action('showSync'),
             \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
         ]);
     }
