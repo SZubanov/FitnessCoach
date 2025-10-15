@@ -2,6 +2,21 @@
 
 namespace App\Telegram\Constants;
 
+/**
+ * CallbackData Constants - DEPRECATED
+ *
+ * This class was used with Nutgram's callback data pattern.
+ *
+ * With Telegraph migration, callbacks are handled via method-based routing:
+ * - Button::make('Text')->action('methodName') routes to public function methodName()
+ * - No string constants needed - method names are used directly
+ *
+ * This class is kept for backward compatibility with old Nutgram menus
+ * that are still in the codebase during migration. Once migration is complete
+ * and old Nutgram menus are removed, this class can be deleted.
+ *
+ * @deprecated Use Telegraph method-based callback routing instead
+ */
 class CallbackData
 {
     // Main menu
