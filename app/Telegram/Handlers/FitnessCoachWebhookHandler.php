@@ -399,12 +399,121 @@ class FitnessCoachWebhookHandler extends WebhookHandler
 
     /**
      * Handle macro/КБЖУ conversation flow
-     * Note: Full implementation will be added in Phase 5
+     *
+     * Steps:
+     * 1. input_date - User enters date for macro entry
+     * 2. input_value - User enters macro value (calories/protein/fat/carbs)
+     * 3. save_success - Save and show success message
      */
     private function handleMacroConversation(Stringable $text, ?string $step): void
     {
-        $this->chat->html("🍎 Обработка КБЖУ... (в разработке)")->send();
-        $this->conversationState->endConversation((string) $this->chat->chat_id);
+        $chatId = (string) $this->chat->chat_id;
+
+        match ($step) {
+            'input_date' => $this->handleMacroDateInput($text, $chatId),
+            'input_value' => $this->handleMacroValueInput($text, $chatId),
+            default => $this->handleUnknownConversation($chatId),
+        };
+    }
+
+    /**
+     * Handle date input for macro
+     */
+    private function handleMacroDateInput(Stringable $text, string $chatId): void
+    {
+        // Validate date
+        $dateResult = $this->dateValidation->validateAndParseDate((string) $text);
+
+        if (!$dateResult['valid']) {
+            $this->chat->html($dateResult['error'])->send();
+            return;
+        }
+
+        // Store validated date
+        $this->conversationState->setData($chatId, 'date', $dateResult['formatted']);
+        $this->conversationState->setData($chatId, 'date_object', $dateResult['date']);
+
+        // Move to value input step
+        $this->conversationState->setStep($chatId, 'input_value');
+
+        // Get macro type info
+        $macroType = $this->conversationState->getData($chatId, 'macro_type', [
+            'name' => 'неизвестно',
+            'unit' => '',
+            'icon' => '❓'
+        ]);
+
+        // Ask for macro value
+        $example = $macroType['name'] === 'калории' ? '2000' : '100';
+        $this->chat->html(
+            "{$macroType['icon']} **{$macroType['name']}**\n\n" .
+            "Введите значение в {$macroType['unit']}:\n" .
+            "Например: {$example}"
+        )->send();
+    }
+
+    /**
+     * Handle value input for macro
+     */
+    private function handleMacroValueInput(Stringable $text, string $chatId): void
+    {
+        $valueInput = trim((string) $text);
+
+        // Validate numeric input
+        if (!is_numeric($valueInput)) {
+            $macroType = $this->conversationState->getData($chatId, 'macro_type', [
+                'name' => 'неизвестно',
+                'unit' => '',
+                'icon' => '❓'
+            ]);
+            $example = $macroType['name'] === 'калории' ? '2000' : '100';
+
+            $this->chat->html(
+                "❌ **Неверное значение**\n\n" .
+                "Введите число в {$macroType['unit']}:\n" .
+                "Например: {$example}"
+            )->send();
+            return;
+        }
+
+        $value = (float) $valueInput;
+        $macroType = $this->conversationState->getData($chatId, 'macro_type', [
+            'name' => 'неизвестно',
+            'unit' => '',
+            'icon' => '❓'
+        ]);
+
+        // Validate ranges based on macro type
+        $validRange = match ($macroType['name']) {
+            'калории' => ['min' => 500, 'max' => 5000],
+            default => ['min' => 0, 'max' => 1000] // For proteins, fats, carbs
+        };
+
+        if ($value < $validRange['min'] || $value > $validRange['max']) {
+            $this->chat->html(
+                "❌ **Значение вне допустимого диапазона**\n\n" .
+                "Введите значение от {$validRange['min']} до {$validRange['max']} {$macroType['unit']}:"
+            )->send();
+            return;
+        }
+
+        // Get stored data
+        $date = $this->conversationState->getData($chatId, 'date');
+
+        // TODO: Save to database
+        // $this->macroService->saveMacro($userId, $macroType['name'], $value, $date);
+
+        // Show success message
+        $this->chat->html(
+            "✅ **КБЖУ сохранено**\n\n" .
+            "Тип: {$macroType['name']}\n" .
+            "Значение: {$value} {$macroType['unit']}\n" .
+            "Дата: {$date}"
+        )->send();
+
+        // Clean up and return to menu
+        $this->conversationState->endConversation($chatId);
+        $this->mainMenu();
     }
 
     /**
@@ -961,6 +1070,80 @@ class FitnessCoachWebhookHandler extends WebhookHandler
         $this->chat->html($instructions)->send();
     }
 
+    /**
+     * Select calories macro type and start conversation
+     */
+    public function selectMacroCalories(): void
+    {
+        $this->startMacroConversationWithType([
+            'name' => 'калории',
+            'unit' => 'ккал',
+            'icon' => '🔥'
+        ]);
+    }
+
+    /**
+     * Select proteins macro type and start conversation
+     */
+    public function selectMacroProteins(): void
+    {
+        $this->startMacroConversationWithType([
+            'name' => 'белки',
+            'unit' => 'г',
+            'icon' => '🥩'
+        ]);
+    }
+
+    /**
+     * Select fats macro type and start conversation
+     */
+    public function selectMacroFats(): void
+    {
+        $this->startMacroConversationWithType([
+            'name' => 'жиры',
+            'unit' => 'г',
+            'icon' => '🧈'
+        ]);
+    }
+
+    /**
+     * Select carbs macro type and start conversation
+     */
+    public function selectMacroCarbs(): void
+    {
+        $this->startMacroConversationWithType([
+            'name' => 'углеводы',
+            'unit' => 'г',
+            'icon' => '🍞'
+        ]);
+    }
+
+    /**
+     * Helper method to start macro conversation with specific type
+     */
+    private function startMacroConversationWithType(array $macroType): void
+    {
+        // Check if user has linked account
+        if (!$this->requireLinkedAccount()) {
+            return;
+        }
+
+        $chatId = (string) $this->chat->chat_id;
+
+        // Start conversation with macro type
+        $this->conversationState->startConversation(
+            $chatId,
+            'macro',
+            ['macro_type' => $macroType]
+        );
+
+        $this->conversationState->setStep($chatId, 'input_date');
+
+        // Show date input instructions
+        $instructions = $this->dateValidation->getDateInputInstructions();
+        $this->chat->html($instructions)->send();
+    }
+
     // ============================================================================
     // KEYBOARDS
     // ============================================================================
@@ -1094,11 +1277,15 @@ class FitnessCoachWebhookHandler extends WebhookHandler
 
     /**
      * Build macros menu keyboard
-     * Stub keyboard - will be expanded in Phase 5
+     * Shows options for selecting macro type (calories, proteins, fats, carbs)
      */
     protected function buildMacrosKeyboard(): Keyboard
     {
         return Keyboard::make()->buttons([
+            \DefStudio\Telegraph\Keyboard\Button::make('🔥 Калории')->action('selectMacroCalories'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🥩 Белки')->action('selectMacroProteins'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🧈 Жиры')->action('selectMacroFats'),
+            \DefStudio\Telegraph\Keyboard\Button::make('🍞 Углеводы')->action('selectMacroCarbs'),
             \DefStudio\Telegraph\Keyboard\Button::make('🏠 Главное меню')->action('mainMenu'),
         ]);
     }
