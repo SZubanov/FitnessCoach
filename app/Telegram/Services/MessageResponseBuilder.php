@@ -100,6 +100,16 @@ class MessageResponseBuilder
     }
 
     /**
+     * Alias for newLine() - adds a blank line for spacing
+     *
+     * @return self
+     */
+    public function blank(): self
+    {
+        return $this->newLine();
+    }
+
+    /**
      * Add a section separator
      *
      * @return self
@@ -208,6 +218,22 @@ class MessageResponseBuilder
     {
         foreach ($items as $item) {
             $this->parts[] = "• {$item}";
+        }
+        return $this;
+    }
+
+    /**
+     * Add a section with title and bullet list
+     *
+     * @param string $title Section title
+     * @param array<string> $items List items for the section
+     * @return self
+     */
+    public function addSection(string $title, array $items): self
+    {
+        $this->parts[] = $title;
+        foreach ($items as $item) {
+            $this->parts[] = $item;
         }
         return $this;
     }
