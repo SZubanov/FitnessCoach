@@ -125,11 +125,71 @@ class UpdateUserAction implements UpdateUser
     - `FatSecretRepository.php` - Data persistence
     - `FatSecretServiceLoggerDecorator.php` - Logging decorator
 
-### 5. Telegram Bot Architecture ⚡ MIGRATED TO TELEGRAPH (Oct 2025)
+### 5. Telegram Bot Architecture ⚡ REFACTORING IN PROGRESS (Phase 1/6 Complete - Oct 2025)
 
-**NEW: Telegraph Framework (Laravel-native)**
-- Main handler: `app/Telegram/Handlers/FitnessCoachWebhookHandler.php` (1,406 lines)
-- State management: `app/Telegram/Services/ConversationStateService.php` (294 lines)
+**CURRENT STATE: Phase 1 Foundation Complete ✅**
+
+The Telegram bot is undergoing a systematic refactoring from a monolithic handler (1,406 lines) to a SOLID-compliant, pattern-based architecture. **Phase 1 infrastructure is complete** with 20 foundational files implementing 6 design patterns.
+
+#### Phase 1: Foundation & Infrastructure (✅ COMPLETED)
+
+**Design Patterns Implemented**:
+- **Command Pattern**: Command and callback handlers with registry
+- **Strategy Pattern**: Polymorphic conversation handlers
+- **Chain of Responsibility**: Composable middleware pipeline
+- **Factory Pattern**: Centralized keyboard construction
+- **Builder Pattern**: Fluent message and keyboard builders
+- **DTO Pattern**: Immutable conversation context and results
+- **Registry Pattern**: O(1) command/callback lookup
+
+**Core Infrastructure** (20 files, ~1,796 lines):
+
+1. **Interfaces/Contracts** (`app/Telegram/*/Contracts/`):
+   - `TelegramCommandHandler` - Command execution contract
+   - `CallbackHandler` - Callback query contract
+   - `ConversationHandler` - Strategy for conversation flows
+   - `ConversationContext` - Immutable conversation state DTO
+   - `ConversationResult` - Conversation outcome DTO
+   - `ConversationStatus` - Type-safe state enum
+   - `TelegramMiddleware` - Middleware chain contract
+
+2. **Services** (`app/Telegram/Services/`):
+   - `TelegramCommandRegistry` - Command pattern registry with O(1) lookup
+   - `MessageResponseBuilder` - Fluent API for formatted messages (30+ methods)
+
+3. **Keyboards** (`app/Telegram/Keyboards/`):
+   - `KeyboardFactory` - Factory for 13 predefined keyboards (eliminates 155 lines of duplication)
+   - `KeyboardBuilder` - Fluent builder for dynamic keyboards
+
+4. **Middleware** (`app/Telegram/Middleware/`):
+   - `MiddlewarePipeline` - Laravel-style pipeline orchestrator
+   - `RequireAccountLinkMiddleware` - Account linking guard
+   - `RequireFatSecretAuthMiddleware` - FatSecret OAuth guard
+
+5. **Exceptions** (`app/Telegram/Exceptions/`):
+   - `UnknownCommandException` - Unregistered command errors
+   - `NoActiveConversationException` - Missing conversation errors
+   - `InvalidConversationStepException` - Invalid step errors
+   - `NoHandlerForConversationTypeException` - Missing handler errors
+
+**Benefits Realized**:
+- ✅ Full type safety with comprehensive type hints
+- ✅ Interface-based programming enabling dependency injection
+- ✅ Eliminated keyboard duplication (155 lines)
+- ✅ Composable middleware for reusable authorization
+- ✅ Consistent message formatting across all handlers
+- ✅ O(1) command lookup vs. linear if-else chains
+- ✅ Testable components with clear interfaces
+
+**Documentation**:
+- Architecture proposal: `TELEGRAM_BOT_ARCHITECTURE_PROPOSAL.md` (1,443 lines)
+- Implementation plan: `TELEGRAM_REFACTORING_IMPLEMENTATION_PLAN.md` (2,283 lines)
+- Phase 1 changelog: `TELEGRAM_REFACTORING_PHASE1_CHANGELOG.md` (complete metrics)
+- Phase 1 technical docs: `TELEGRAM_REFACTORING_PHASE1_TECHNICAL_DOCS.md` (detailed guides)
+
+#### Current Production State (Telegraph Framework)
+
+**Main Handler**: `app/Telegram/Handlers/FitnessCoachWebhookHandler.php` (1,406 lines - being decomposed)
 - Method-based routing: `Button::make('Text')->action('methodName')` → `public function methodName()`
 - Cache-based conversations: 15-minute TTL with step tracking
 - Configuration: `config/telegraph.php` with custom webhook handler
@@ -139,21 +199,133 @@ class UpdateUserAction implements UpdateUser
 - `TelegramAccountService.php` - Account linking with temporary codes
 - `TelegramFatSecretService.php` - OAuth flow management
 - `DateValidationService.php` - Date input validation and parsing
-- `ConversationStateService.php` - Custom conversation state management (replaces Nutgram's built-in)
+- `ConversationStateService.php` - Custom conversation state management (294 lines)
 
-**Conversation Patterns**:
-- Guard methods: `requireLinkedAccount()`, `requireFatSecretAuth()`
-- Central router: `handleChatMessage()` with match expression
+**Conversation Patterns** (being refactored):
+- Guard methods: `requireLinkedAccount()`, `requireFatSecretAuth()` → Replaced by middleware
+- Central router: `handleChatMessage()` with match expression → Being replaced by registry
 - Step-based flows: date input → value input → save → cleanup
 - 4 conversation types: measurement, weight, macro (КБЖУ), sync
 
-**OLD (Preserved for reference)**:
-- `app/Telegram/Commands/` - Nutgram commands (deprecated)
-- `app/Telegram/Conversations/` - Nutgram conversations (deprecated)
-- `app/Telegram/Menus/` - Nutgram menus (deprecated)
-- `app/Telegram/Constants/CallbackData.php` - String constants (deprecated)
+**Legacy Code (Deprecated - Nutgram migration artifacts)**:
+- `app/Telegram/Commands/` - Old Nutgram commands
+- `app/Telegram/Conversations/` - Old Nutgram conversations
+- `app/Telegram/Menus/` - Old Nutgram menus
+- `app/Telegram/Constants/CallbackData.php` - String constants
 
-**Documentation**: See `TELEGRAPH_MIGRATION_*.md` files for complete migration details
+#### Upcoming Phases
+
+**Phase 2: Commands Migration** (Next - ~4-6 hours)
+- Extract 5 command handlers: start, help, account, fatsecret, sync
+- Register in TelegramCommandRegistry
+- Reduce handler by ~200-250 lines
+
+**Phase 3: Callback System** (~6-8 hours)
+- Extract 12+ callback handlers
+- Implement callback registry
+- Reduce handler by ~300-400 lines
+
+**Phase 4: Conversation Manager** (~8-10 hours)
+- Extract 4 conversation handlers
+- Implement conversation manager
+- Reduce handler by ~400-500 lines
+
+**Phase 5: Integration & Testing** (~4-6 hours)
+- Wire all components together
+- Comprehensive testing
+- Performance validation
+
+**Phase 6: Final Migration** (~2-3 hours)
+- Remove old handler
+- Update configuration
+- Final cleanup
+
+**Goal**: Reduce handler from 1,406 lines to ~150 lines while improving testability and maintainability
+
+#### Development Guidelines for Telegram Bot
+
+**When Creating New Commands**:
+```php
+// 1. Implement TelegramCommandHandler interface
+class MyCommandHandler implements TelegramCommandHandler
+{
+    public function handle(TelegraphChat $chat): void
+    {
+        // Use KeyboardFactory and MessageResponseBuilder
+        $message = MessageResponseBuilder::create()
+            ->title('My Feature')
+            ->text('Description here')
+            ->build();
+
+        $chat->message($message)
+            ->keyboard($this->keyboardFactory->mainMenu())
+            ->send();
+    }
+
+    public function getCommandName(): string
+    {
+        return 'mycommand';
+    }
+}
+
+// 2. Register in service provider
+$registry->register(new MyCommandHandler($keyboardFactory));
+```
+
+**When Creating Callbacks**:
+```php
+// Implement CallbackHandler interface
+class MyCallbackHandler implements CallbackHandler
+{
+    public function handle(TelegraphChat $chat, ?int $messageId = null): void
+    {
+        // Implementation here
+    }
+
+    public function getCallbackName(): string
+    {
+        return 'my_callback';
+    }
+}
+```
+
+**When Using Middleware**:
+```php
+// Build pipeline for protected actions
+$pipeline = new MiddlewarePipeline([
+    new RequireAccountLinkMiddleware($userService, $keyboardFactory),
+    new RequireFatSecretAuthMiddleware($keyboardFactory),
+]);
+
+$result = $pipeline->through($chat, function ($user) {
+    // Only executed if all guards pass
+    return $this->performAction($user);
+});
+```
+
+**When Building Messages**:
+```php
+// Use MessageResponseBuilder for consistency
+$message = MessageResponseBuilder::create()
+    ->greeting('FitnessCoach')
+    ->addFeatures(['weight', 'measurements', 'macros'])
+    ->success('Operation completed')
+    ->addInstructions('Use /help for more information')
+    ->build();
+```
+
+**When Creating Keyboards**:
+```php
+// Use KeyboardFactory for predefined keyboards
+$keyboard = $this->keyboardFactory->mainMenu();
+
+// Use KeyboardBuilder for dynamic keyboards
+$keyboard = KeyboardBuilder::create()
+    ->addButton('Custom', 'customAction')
+    ->addMainMenuButton()
+    ->inColumns(2)
+    ->build();
+```
 
 ## Code Standards
 
