@@ -183,6 +183,7 @@ return [
         App\Providers\ActionServiceProvider::class,
         App\Providers\FatSecretServiceProvider::class,
         App\Telegram\Providers\TelegramServiceProvider::class,
+        App\Providers\TelegramBotServiceProvider::class,
 
     ],
 
