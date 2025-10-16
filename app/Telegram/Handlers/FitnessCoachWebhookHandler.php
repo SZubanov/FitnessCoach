@@ -8,6 +8,7 @@ use App\Telegram\Exceptions\UserNotFoundException;
 use App\Telegram\Services\ConversationStateService;
 use App\Telegram\Services\DateValidationService;
 use App\Telegram\Services\TelegramAccountService;
+use App\Telegram\Services\TelegramCommandRegistry;
 use App\Telegram\Services\TelegramUserService;
 use DefStudio\Telegraph\Handlers\WebhookHandler;
 use DefStudio\Telegraph\Keyboard\Keyboard;
@@ -22,6 +23,7 @@ class FitnessCoachWebhookHandler extends WebhookHandler
         private readonly TelegramFatSecretService $telegramFatSecretService,
         private readonly ConversationStateService $conversationState,
         private readonly DateValidationService $dateValidation,
+        private readonly TelegramCommandRegistry $commandRegistry,
     ) {
         parent::__construct();
     }
@@ -622,26 +624,16 @@ class FitnessCoachWebhookHandler extends WebhookHandler
     }
 
     // ============================================================================
-    // COMMANDS - Phase 3
+    // COMMANDS - Delegated to TelegramCommandRegistry
     // ============================================================================
 
     /**
      * Handle /start command
-     * Shows welcome message and main menu
+     * Delegates to StartCommandHandler via registry
      */
     public function start(): void
     {
-        $welcomeText = "🎯 **Добро пожаловать в FitnessCoach!**\n\n" .
-                      "Я помогу вам отслеживать:\n" .
-                      "⚖️ Вес и измерения тела\n" .
-                      "🍎 Макронутриенты (КБЖУ)\n" .
-                      "🔄 Синхронизацию с FatSecret\n\n" .
-                      "Используйте меню ниже для начала работы:";
-
-        $this->chat->html($welcomeText)->send();
-
-        // Show main menu with keyboard
-        $this->mainMenu();
+        $this->commandRegistry->handle('start', $this->chat);
     }
 
     /**
@@ -657,18 +649,11 @@ class FitnessCoachWebhookHandler extends WebhookHandler
 
     /**
      * Handle /help command
-     * Shows list of available commands
+     * Delegates to HelpCommandHandler via registry
      */
     public function help(): void
     {
-        $helpText = "🆘 **Помощь по командам FitnessCoach**\n\n" .
-                   $this->formatCommandsHelp() . "\n\n" .
-                   "🔗 **Команды с параметрами:**\n" .
-                   "• /sync полная - Полная синхронизация с FatSecret";
-
-        $this->chat->html($helpText)
-            ->keyboard($this->buildHelpKeyboard())
-            ->send();
+        $this->commandRegistry->handle('help', $this->chat);
     }
 
     /**
@@ -695,35 +680,12 @@ class FitnessCoachWebhookHandler extends WebhookHandler
     }
 
     /**
-     * Format commands list for help message
-     */
-    protected function formatCommandsHelp(): string
-    {
-        $commands = [];
-
-        $commands[] = "📋 **Основные команды:**";
-        $commands[] = "/start - Главное меню и приветствие";
-        $commands[] = "/help - Помощь и список команд";
-
-        $commands[] = "\n🚀 **Быстрые команды:**";
-        $commands[] = "/sync [тип] - Синхронизация с FatSecret";
-
-        $commands[] = "\n⚙️ **Управление:**";
-        $commands[] = "/account - Привязка аккаунта";
-        $commands[] = "/fatsecret - Подключение к FatSecret";
-
-        return implode("\n", $commands);
-    }
-
-    /**
      * Handle /account command
-     * Shows account linking menu with options to link/unlink/check status
+     * Delegates to AccountCommandHandler via registry
      */
     public function account(): void
     {
-        $this->chat->html('🔗 Привязка аккаунта')
-            ->keyboard($this->buildAccountMenuKeyboard())
-            ->send();
+        $this->commandRegistry->handle('account', $this->chat);
     }
 
     /**
@@ -740,13 +702,11 @@ class FitnessCoachWebhookHandler extends WebhookHandler
 
     /**
      * Handle /fatsecret command
-     * Shows FatSecret connection menu with OAuth options
+     * Delegates to FatSecretCommandHandler via registry
      */
     public function fatsecret(): void
     {
-        $this->chat->html('🔗 Привязка FatSecret')
-            ->keyboard($this->buildFatSecretMenuKeyboard())
-            ->send();
+        $this->commandRegistry->handle('fatsecret', $this->chat);
     }
 
     /**
@@ -763,26 +723,11 @@ class FitnessCoachWebhookHandler extends WebhookHandler
 
     /**
      * Handle /sync command
-     * Shows synchronization menu with FatSecret sync options
+     * Delegates to SyncCommandHandler via registry
      */
     public function sync(): void
     {
-        // Check if user has FatSecret connected
-        if (!$this->requireFatSecretAuth()) {
-            return;
-        }
-
-        $instructionsText = "🔄 **Синхронизация с FatSecret**\n\n" .
-                           "Выберите тип синхронизации:\n\n" .
-                           "💡 **Доступные опции:**\n" .
-                           "🔄 **Полная** - Синхронизация всех данных\n" .
-                           "⚖️ **Вес** - Только данные о весе\n" .
-                           "🍎 **Дневник питания** - Только питание\n\n" .
-                           "⚠️ **Требуется подключение к FatSecret**";
-
-        $this->chat->html($instructionsText)
-            ->keyboard($this->buildSyncMenuKeyboard())
-            ->send();
+        $this->commandRegistry->handle('sync', $this->chat);
     }
 
     /**
