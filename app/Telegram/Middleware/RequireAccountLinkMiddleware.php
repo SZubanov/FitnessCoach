@@ -34,11 +34,11 @@ class RequireAccountLinkMiddleware implements TelegramMiddleware
      *
      * Checks if the Telegram user is linked to a FitnessCoach account.
      * If not linked, sends error message and returns null to stop execution.
-     * If linked, passes the User instance to the next middleware/handler.
+     * If linked, stores user on chat and passes chat to next middleware.
      *
      * @param TelegraphChat $chat Telegram chat
      * @param Closure $next Next middleware or handler in the chain
-     * @return mixed User instance or null if stopped
+     * @return mixed Result from next middleware/handler or null if stopped
      */
     public function handle(TelegraphChat $chat, Closure $next): mixed
     {
@@ -49,8 +49,12 @@ class RequireAccountLinkMiddleware implements TelegramMiddleware
             return null;
         }
 
-        // Pass user to next middleware/handler
-        return $next($user);
+        // Store user on chat for downstream middleware access
+        // This is a runtime property, not persisted to database
+        $chat->_authenticatedUser = $user;
+
+        // Pass chat to next middleware/handler (maintaining interface contract)
+        return $next($chat);
     }
 
     /**

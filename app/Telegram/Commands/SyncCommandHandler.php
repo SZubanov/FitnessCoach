@@ -59,8 +59,9 @@ class SyncCommandHandler implements TelegramCommandHandler
         ]);
 
         // Execute through pipeline
-        $pipeline->through($chat, function ($user) use ($chat) {
+        $pipeline->through($chat, function ($chat) {
             // Only reached if both middleware checks pass
+            // User is available at $chat->_authenticatedUser if needed
             $this->showSyncMenu($chat);
         });
     }

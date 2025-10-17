@@ -2,7 +2,6 @@
 
 namespace App\Telegram\Middleware;
 
-use App\Models\User;
 use App\Telegram\Keyboards\KeyboardFactory;
 use App\Telegram\Middleware\Contracts\TelegramMiddleware;
 use Closure;
@@ -34,54 +33,31 @@ class RequireFatSecretAuthMiddleware implements TelegramMiddleware
      * Handle the middleware logic
      *
      * Checks if the user has authorized FatSecret.
-     * Expects a User instance to be passed from previous middleware.
+     * Gets the User instance from the chat's _authenticatedUser property
+     * set by RequireAccountLinkMiddleware.
      *
-     * @param TelegraphChat $chat Telegram chat
+     * @param TelegraphChat $chat Telegram chat with _authenticatedUser property
      * @param Closure $next Next middleware or handler in the chain
-     * @return mixed User instance or null if stopped
+     * @return mixed Result from next middleware/handler or null if stopped
      */
     public function handle(TelegraphChat $chat, Closure $next): mixed
     {
-        // This is a simplified implementation
-        // In a proper pipeline, we'd get the user from the previous middleware
-        // For now, we'll handle it via the chat context
-
-        // Get the first parameter passed (should be User from RequireAccountLinkMiddleware)
-        $user = $this->getUserFromContext($next);
+        // Get the authenticated user stored by RequireAccountLinkMiddleware
+        $user = $chat->_authenticatedUser ?? null;
 
         if (!$user || !$user->isFatSecretAuthorized()) {
             $this->sendNotAuthorizedMessage($chat);
             return null;
         }
 
-        // Pass user to next middleware/handler
-        return $next($user);
-    }
-
-    /**
-     * Get user from the middleware chain context
-     *
-     * This is a workaround since we can't directly access
-     * the parameter from previous middleware in this implementation.
-     *
-     * @param Closure $next
-     * @return User|null
-     */
-    private function getUserFromContext(Closure $next): ?User
-    {
-        // Attempt to get user by calling next with a probe
-        // In practice, this should be passed more cleanly
-        // This is a limitation of the current middleware pattern
-
-        // For now, return null and let the implementation handle it
-        // The actual implementation will need refinement
-        return null;
+        // Pass chat to next middleware/handler (maintaining interface contract)
+        return $next($chat);
     }
 
     /**
      * Send "not authorized" error message
      *
-     * @param TelegraphChat $chat
+     * @param TelegraphChat $chat Telegram chat instance
      * @return void
      */
     private function sendNotAuthorizedMessage(TelegraphChat $chat): void
