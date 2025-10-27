@@ -3,7 +3,7 @@
 namespace App\Telegram\Callbacks;
 
 use App\Telegram\Callbacks\Contracts\CallbackHandler;
-use App\Telegram\Exceptions\UnknownCallbackException;
+use DefStudio\Telegraph\Exceptions\TelegramWebhookException;
 use DefStudio\Telegraph\Models\TelegraphChat;
 
 /**
@@ -63,12 +63,12 @@ class CallbackRegistry
      * @param TelegraphChat $chat The Telegram chat instance
      * @param int|null $messageId The message ID to edit (optional)
      * @return void
-     * @throws UnknownCallbackException If callback is not registered
+     * @throws TelegramWebhookException
      */
     public function handle(string $callbackName, TelegraphChat $chat, ?int $messageId = null): void
     {
         if (!$this->has($callbackName)) {
-            throw UnknownCallbackException::forCallback($callbackName);
+            throw TelegramWebhookException::invalidAction($callbackName);
         }
 
         $this->handlers[$callbackName]->handle($chat, $messageId);

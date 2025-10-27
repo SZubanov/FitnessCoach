@@ -4,6 +4,7 @@ namespace App\Telegram\Handlers;
 
 use App\Models\User;
 use App\Services\Telegram\TelegramFatSecretService;
+use App\Telegram\Callbacks\CallbackRegistry;
 use App\Telegram\Exceptions\UserNotFoundException;
 use App\Telegram\Services\ConversationStateService;
 use App\Telegram\Services\DateValidationService;
@@ -24,8 +25,33 @@ class FitnessCoachWebhookHandler extends WebhookHandler
         private readonly ConversationStateService $conversationState,
         private readonly DateValidationService $dateValidation,
         private readonly TelegramCommandRegistry $commandRegistry,
+        private readonly CallbackRegistry $callbackRegistry,
     ) {
         parent::__construct();
+    }
+
+    /**
+     * Override Telegraph's handleCallbackQuery to delegate to CallbackRegistry
+     *
+     * Telegraph's default implementation uses App::call() with reflection to invoke
+     * callback methods. We override it to delegate directly to the CallbackRegistry,
+     * which routes to the appropriate handler class.
+     *
+     * Flow: Telegram callback → handleCallbackQuery() → CallbackRegistry → Handler class
+     *
+     * @return void
+     */
+    protected function handleCallbackQuery(): void
+    {
+        // Use parent's method to extract all callback data
+        // This sets: $this->messageId, $this->callbackQueryId, $this->data, $this->originalKeyboard
+        parent::extractCallbackQueryData();
+
+        /** @var string $action */
+        $action = $this->callbackQuery?->data()->get('action') ?? '';
+
+        // Delegate directly to CallbackRegistry - no magic methods needed!
+        $this->callbackRegistry->handle($action, $this->chat, $this->messageId);
     }
 
     /**
@@ -657,47 +683,12 @@ class FitnessCoachWebhookHandler extends WebhookHandler
     }
 
     /**
-     * Show help from callback (from main menu button)
-     * This version includes back button and feature descriptions
-     */
-    public function showHelp(): void
-    {
-        $helpText = "📖 **Помощь FitnessCoach Bot**\n\n" .
-                   "**Доступные функции:**\n" .
-                   "📏 **Замеры** - Записывайте измерения тела\n" .
-                   "🔄 **Синхронизация** - Синхронизация с FatSecret\n" .
-                   "🍎 **КБЖУ** - Отслеживание калорий и макронутриентов\n" .
-                   "⚖️ **Вес** - Записывайте показания веса\n" .
-                   "⚙️ **Настройки** - Управление аккаунтом и подключениями\n\n" .
-                   "**Формат даты:** DD.MM.YYYY или DD/MM/YYYY\n" .
-                   "**Пример:** 25.12.2024 или 25/12/2024";
-
-        // Edit the message with new keyboard
-        $this->chat->edit($this->messageId)
-            ->html($helpText)
-            ->keyboard($this->buildHelpKeyboard())
-            ->send();
-    }
-
-    /**
      * Handle /account command
      * Delegates to AccountCommandHandler via registry
      */
     public function account(): void
     {
         $this->commandRegistry->handle('account', $this->chat);
-    }
-
-    /**
-     * Show account menu from callback
-     * Edits the message instead of sending new one
-     */
-    public function accountLinking(): void
-    {
-        $this->chat->edit($this->messageId)
-            ->html('🔗 Привязка аккаунта')
-            ->keyboard($this->buildAccountMenuKeyboard())
-            ->send();
     }
 
     /**
@@ -710,18 +701,6 @@ class FitnessCoachWebhookHandler extends WebhookHandler
     }
 
     /**
-     * Show FatSecret menu from callback
-     * Edits the message instead of sending new one
-     */
-    public function fatSecretConnect(): void
-    {
-        $this->chat->edit($this->messageId)
-            ->html('🔗 Привязка FatSecret')
-            ->keyboard($this->buildFatSecretMenuKeyboard())
-            ->send();
-    }
-
-    /**
      * Handle /sync command
      * Delegates to SyncCommandHandler via registry
      */
@@ -730,467 +709,19 @@ class FitnessCoachWebhookHandler extends WebhookHandler
         $this->commandRegistry->handle('sync', $this->chat);
     }
 
-    /**
-     * Show sync menu from callback
-     * Edits the message instead of sending new one
-     */
-    public function showSync(): void
-    {
-        // Check if user has FatSecret connected
-        if (!$this->requireFatSecretAuth()) {
-            return;
-        }
-
-        $instructionsText = "🔄 **Синхронизация с FatSecret**\n\n" .
-                           "Выберите тип синхронизации:\n\n" .
-                           "💡 **Доступные опции:**\n" .
-                           "🔄 **Полная** - Синхронизация всех данных\n" .
-                           "⚖️ **Вес** - Только данные о весе\n" .
-                           "🍎 **Дневник питания** - Только питание\n\n" .
-                           "⚠️ **Требуется подключение к FatSecret**";
-
-        $this->chat->edit($this->messageId)
-            ->html($instructionsText)
-            ->keyboard($this->buildSyncMenuKeyboard())
-            ->send();
-    }
-
     // ============================================================================
-    // ACCOUNT LINKING CALLBACKS - Phase 4
+    // NOTE: All callback methods have been removed and delegated to CallbackRegistry
+    // The overridden handleCallbackQuery() method (defined above) automatically routes
+    // callback actions directly to the CallbackRegistry, which then routes to the
+    // corresponding handler classes.
+    //
+    // Removed callbacks (now handled by registry):
+    // - Main Menu: mainMenu, showSettings, showMeasurements, showMacros, showWeight, showHelp
+    // - Account: accountLinking, generateLinkCode, checkLinkStatus, removeLinkAccount
+    // - FatSecret: fatSecretConnect, checkFatSecretConnection, connectFatSecret, logoutFromFatSecret
+    // - Sync: showSync, syncFull, syncWeight, syncFood
+    // - Initiators: startNewMeasurement, startNewWeight, selectMacro*
     // ============================================================================
-
-    /**
-     * Generate link code for account binding
-     * Shows a temporary code that user can use in web interface
-     */
-    public function generateLinkCode(): void
-    {
-        $linkCode = $this->telegramAccountService->generateLinkAccountCode($this->chat->chat_id);
-
-        $message = "🔗 **Код для привязки аккаунта**\n\n" .
-            "Ваш код: `{$linkCode}`\n\n" .
-            "⏰ Код действителен 15 минут\n" .
-            "🌐 Используйте этот код в веб-интерфейсе для привязки аккаунта\n\n" .
-            "⚠️ **Внимание:** При создании нового кода, старый перестает действовать";
-
-        $this->chat->edit($this->messageId)
-            ->html($message)
-            ->keyboard($this->buildAccountBackKeyboard())
-            ->send();
-    }
-
-    /**
-     * Check account linking status
-     * Shows whether the current Telegram account is linked to FitnessCoach user
-     */
-    public function checkLinkStatus(): void
-    {
-        $isLinked = $this->telegramAccountService->checkLinkAccountStatus($this->chat->chat_id);
-
-        $statusMessage = $isLinked
-            ? "✅ **Статус привязки**\n\nВаш аккаунт привязан к системе FitnessCoach"
-            : "❌ **Статус привязки**\n\nВаш аккаунт не привязан к системе FitnessCoach\n\n" .
-              "Используйте кнопку \"Получить код для привязки\" для создания кода";
-
-        $this->chat->edit($this->messageId)
-            ->html($statusMessage)
-            ->keyboard($this->buildAccountBackKeyboard())
-            ->send();
-    }
-
-    /**
-     * Remove account link
-     * Unlinks the Telegram account from FitnessCoach user
-     */
-    public function removeLinkAccount(): void
-    {
-        $this->telegramAccountService->removeLinkAccount($this->chat->chat_id);
-
-        $message = "❌ **Отвязка аккаунта**\n\n" .
-            "Ваш аккаунт был отвязан от системы FitnessCoach\n\n" .
-            "Для повторной привязки используйте функцию \"Получить код для привязки\"";
-
-        $this->chat->edit($this->messageId)
-            ->html($message)
-            ->keyboard($this->buildAccountBackKeyboard())
-            ->send();
-    }
-
-    // ============================================================================
-    // FATSECRET CALLBACKS - Phase 4
-    // ============================================================================
-
-    /**
-     * Check FatSecret connection status
-     * Shows whether the user is authorized with FatSecret
-     */
-    public function checkFatSecretConnection(): void
-    {
-        $user = $this->getUserFromChat();
-        $isAuthorized = $user && $user->isFatSecretAuthorized();
-
-        $statusMessage = $isAuthorized
-            ? "✅ **Статус привязки**\n\nВаш аккаунт авторизован в FatSecret"
-            : "❌ **Статус привязки**\n\nВаш аккаунт не авторизован в FatSecret\n\n";
-
-        $this->chat->edit($this->messageId)
-            ->html($statusMessage)
-            ->keyboard($this->buildFatSecretBackKeyboard())
-            ->send();
-    }
-
-    /**
-     * Initiate FatSecret OAuth flow
-     * Generates OAuth URL and shows it to the user
-     */
-    public function connectFatSecret(): void
-    {
-        // Require linked account first
-        $user = $this->requireLinkedAccount();
-        if (!$user) {
-            return;
-        }
-
-        try {
-            $oauthUrl = $this->telegramFatSecretService->initiateOAuthForTelegram($user);
-
-            $message = "🔗 **Подключение FatSecret**\n\n" .
-                "Для подключения к FatSecret нажмите на ссылку ниже:\n\n" .
-                "[Подключить FatSecret]({$oauthUrl})\n\n" .
-                "После авторизации вы будете автоматически перенаправлены обратно в бот";
-
-            $this->chat->edit($this->messageId)
-                ->html($message)
-                ->keyboard($this->buildFatSecretBackKeyboard())
-                ->send();
-        } catch (\Exception $e) {
-            $this->chat->edit($this->messageId)
-                ->html('❌ Ошибка при создании ссылки для подключения FatSecret. Попробуйте позже.')
-                ->keyboard($this->buildFatSecretBackKeyboard())
-                ->send();
-        }
-    }
-
-    /**
-     * Logout from FatSecret
-     * Removes FatSecret authorization tokens
-     */
-    public function logoutFromFatSecret(): void
-    {
-        $user = $this->getUserFromChat();
-
-        if (!$user) {
-            $this->chat->edit($this->messageId)
-                ->html('❌ Аккаунт не привязан.')
-                ->keyboard($this->buildFatSecretBackKeyboard())
-                ->send();
-            return;
-        }
-
-        // Use the old service's logout method which uses FatSecretLogoutInterface
-        $oldService = app(\App\Telegram\Services\TelegramFatSecretService::class);
-        $oldService->logout($this->chat->chat_id);
-
-        $message = "🚪 **Отключение от FatSecret**\n\n" .
-            "Ваш аккаунт был отключен от FatSecret\n\n" .
-            "❌ Функции синхронизации больше не доступны\n";
-
-        $this->chat->edit($this->messageId)
-            ->html($message)
-            ->keyboard($this->buildFatSecretBackKeyboard())
-            ->send();
-    }
-
-    // ============================================================================
-    // SYNC CALLBACKS - Phase 5 (Simplified for now)
-    // ============================================================================
-
-    /**
-     * Perform full synchronization with FatSecret
-     * Initiates conversation to select sync date
-     */
-    public function syncFull(): void
-    {
-        $this->startSyncConversation([
-            'name' => 'Полная синхронизация',
-            'icon' => '🔄',
-            'callback' => 'full'
-        ]);
-    }
-
-    /**
-     * Perform weight synchronization with FatSecret
-     * Initiates conversation to select sync date
-     */
-    public function syncWeight(): void
-    {
-        $this->startSyncConversation([
-            'name' => 'Синхронизация веса',
-            'icon' => '⚖️',
-            'callback' => 'weight'
-        ]);
-    }
-
-    /**
-     * Perform food diary synchronization with FatSecret
-     * Initiates conversation to select sync date
-     */
-    public function syncFood(): void
-    {
-        $this->startSyncConversation([
-            'name' => 'Синхронизация дневника питания',
-            'icon' => '🍎',
-            'callback' => 'food'
-        ]);
-    }
-
-    /**
-     * Helper method to start sync conversation with specific type
-     */
-    private function startSyncConversation(array $syncType): void
-    {
-        $chatId = (string) $this->chat->chat_id;
-
-        // Start conversation with sync type
-        $this->conversationState->startConversation(
-            $chatId,
-            'sync',
-            [
-                'sync_type' => $syncType,
-                'sync_callback' => $syncType['callback']
-            ]
-        );
-
-        $this->conversationState->setStep($chatId, 'input_date');
-
-        // Show date input instructions
-        $instructions = $this->dateValidation->getDateInputInstructions();
-        $this->chat->html("🔄 **{$syncType['name']}**\n\n" . $instructions)->send();
-    }
-
-    // ============================================================================
-    // MAIN MENU CALLBACKS - Phase 4 (Stubs for now)
-    // ============================================================================
-
-    /**
-     * Show settings menu
-     * Note: This is a stub implementation. Full settings menu will be added in Phase 5
-     */
-    public function showSettings(): void
-    {
-        $message = "⚙️ **Настройки**\n\n" .
-            "Управление вашим аккаунтом и подключениями:\n\n" .
-            "🔗 **Привязка аккаунта** - Управление связью Telegram с FitnessCoach\n" .
-            "🔐 **FatSecret** - Подключение к FatSecret API\n" .
-            "👤 **Профиль** - Ваши личные данные\n\n" .
-            "Выберите раздел для управления:";
-
-        $this->chat->edit($this->messageId)
-            ->html($message)
-            ->keyboard($this->buildSettingsKeyboard())
-            ->send();
-    }
-
-    /**
-     * Show measurements menu
-     */
-    public function showMeasurements(): void
-    {
-        // Check if user has linked account
-        if (!$this->requireLinkedAccount()) {
-            return;
-        }
-
-        $message = "📏 **Замеры тела**\n\n" .
-            "Отслеживайте изменения ваших измерений:\n\n" .
-            "📐 **Новый замер** - Добавить новое измерение\n" .
-            "📊 **История** - Просмотр истории замеров\n" .
-            "📈 **Прогресс** - График изменений\n\n" .
-            "💡 **Совет:** Делайте замеры в одно и то же время для точности";
-
-        $this->chat->edit($this->messageId)
-            ->html($message)
-            ->keyboard($this->buildMeasurementsKeyboard())
-            ->send();
-    }
-
-    /**
-     * Start new measurement conversation
-     * Initiates measurement input flow with date step
-     */
-    public function startNewMeasurement(): void
-    {
-        // Check if user has linked account
-        if (!$this->requireLinkedAccount()) {
-            return;
-        }
-
-        $chatId = (string) $this->chat->chat_id;
-
-        // Start conversation with measurement type
-        // For now we'll use a generic type, but this could be extended to ask for specific body part
-        $this->conversationState->startConversation(
-            $chatId,
-            'measurement',
-            ['measurement_type' => 'Грудь'] // TODO: Add measurement type selection
-        );
-
-        $this->conversationState->setStep($chatId, 'input_date');
-
-        // Show date input instructions
-        $instructions = $this->dateValidation->getDateInputInstructions();
-        $this->chat->html($instructions)->send();
-    }
-
-    /**
-     * Show macros (КБЖУ) menu
-     * Note: This is a stub implementation. Full macros flow will be added in Phase 5
-     */
-    public function showMacros(): void
-    {
-        // Check if user has linked account
-        if (!$this->requireLinkedAccount()) {
-            return;
-        }
-
-        $message = "🍎 **КБЖУ - Макронутриенты**\n\n" .
-            "Отслеживание калорий и макронутриентов:\n\n" .
-            "➕ **Добавить прием пищи** - Записать еду\n" .
-            "📊 **Сегодня** - Статистика за сегодня\n" .
-            "📅 **История** - Просмотр по дням\n" .
-            "🔄 **Синхронизация** - Импорт из FatSecret\n\n" .
-            "💡 **К** - Калории, **Б** - Белки, **Ж** - Жиры, **У** - Углеводы";
-
-        $this->chat->edit($this->messageId)
-            ->html($message)
-            ->keyboard($this->buildMacrosKeyboard())
-            ->send();
-    }
-
-    /**
-     * Show weight tracking menu
-     */
-    public function showWeight(): void
-    {
-        // Check if user has linked account
-        if (!$this->requireLinkedAccount()) {
-            return;
-        }
-
-        $message = "⚖️ **Отслеживание веса**\n\n" .
-            "Ведите учет вашего веса:\n\n" .
-            "➕ **Добавить вес** - Новая запись\n" .
-            "📊 **Текущий вес** - Последние показания\n" .
-            "📈 **Динамика** - График изменений\n" .
-            "🔄 **Синхронизация** - Импорт из FatSecret\n\n" .
-            "💡 **Совет:** Взвешивайтесь утром натощак для точности";
-
-        $this->chat->edit($this->messageId)
-            ->html($message)
-            ->keyboard($this->buildWeightKeyboard())
-            ->send();
-    }
-
-    /**
-     * Start new weight entry conversation
-     * Initiates weight input flow with date step
-     */
-    public function startNewWeight(): void
-    {
-        // Check if user has linked account
-        if (!$this->requireLinkedAccount()) {
-            return;
-        }
-
-        $chatId = (string) $this->chat->chat_id;
-
-        // Start conversation with weight type
-        $this->conversationState->startConversation(
-            $chatId,
-            'weight',
-            []
-        );
-
-        $this->conversationState->setStep($chatId, 'input_date');
-
-        // Show date input instructions
-        $instructions = $this->dateValidation->getDateInputInstructions();
-        $this->chat->html($instructions)->send();
-    }
-
-    /**
-     * Select calories macro type and start conversation
-     */
-    public function selectMacroCalories(): void
-    {
-        $this->startMacroConversationWithType([
-            'name' => 'калории',
-            'unit' => 'ккал',
-            'icon' => '🔥'
-        ]);
-    }
-
-    /**
-     * Select proteins macro type and start conversation
-     */
-    public function selectMacroProteins(): void
-    {
-        $this->startMacroConversationWithType([
-            'name' => 'белки',
-            'unit' => 'г',
-            'icon' => '🥩'
-        ]);
-    }
-
-    /**
-     * Select fats macro type and start conversation
-     */
-    public function selectMacroFats(): void
-    {
-        $this->startMacroConversationWithType([
-            'name' => 'жиры',
-            'unit' => 'г',
-            'icon' => '🧈'
-        ]);
-    }
-
-    /**
-     * Select carbs macro type and start conversation
-     */
-    public function selectMacroCarbs(): void
-    {
-        $this->startMacroConversationWithType([
-            'name' => 'углеводы',
-            'unit' => 'г',
-            'icon' => '🍞'
-        ]);
-    }
-
-    /**
-     * Helper method to start macro conversation with specific type
-     */
-    private function startMacroConversationWithType(array $macroType): void
-    {
-        // Check if user has linked account
-        if (!$this->requireLinkedAccount()) {
-            return;
-        }
-
-        $chatId = (string) $this->chat->chat_id;
-
-        // Start conversation with macro type
-        $this->conversationState->startConversation(
-            $chatId,
-            'macro',
-            ['macro_type' => $macroType]
-        );
-
-        $this->conversationState->setStep($chatId, 'input_date');
-
-        // Show date input instructions
-        $instructions = $this->dateValidation->getDateInputInstructions();
-        $this->chat->html($instructions)->send();
-    }
 
     // ============================================================================
     // KEYBOARDS
