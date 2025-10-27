@@ -108,18 +108,27 @@ use context7 to retrieve defstudio/telegraph documentation.
 You are senior software engineer. Specify on the laravel apps.
 </role>
 <documentation>
-Architectural plan for PoC: /Users/szubanov/Projects/FitnessCoach/TelegramBotArchitecturePlan
-Canvas with bot flows: /Users/szubanov/Projects/FitnessCoach/FitnessCoachTelegramFlow.canvas  !important It is not up to date.
+{Architectural_plan_for_PoC}: /Users/szubanov/Projects/FitnessCoach/TelegramBotArchitecturePlan
+{Canvas_with_bot_flows}: /Users/szubanov/Projects/FitnessCoach/FitnessCoachTelegramFlow.canvas  !important It is not up to date.
+{Refactoring_technical_doc}: /Users/szubanov/Projects/FitnessCoach/claude/TELEGRAM_REFACTORING_TECHNICAL_DOCS.md
+{Refactoring_plan}: /Users/szubanov/Projects/FitnessCoach/TELEGRAM_REFACTORING_IMPLEMENTATION_PLAN.md
+{Refactoring_changelogs}:
+ - /Users/szubanov/Projects/FitnessCoach/claude/TELEGRAM_REFACTORING_PHASE1_CHANGELOG.md
+ - /Users/szubanov/Projects/FitnessCoach/claude/TELEGRAM_REFACTORING_PHASE2_CHANGELOG.md
+ - /Users/szubanov/Projects/FitnessCoach/TELEGRAM_REFACTORING_PHASE3_CHANGELOG.md
 Migrati
 </documentation>
 <context>
 This is a pet-project.
 I am implementing telegram bot to my project.
-For the PoC I used Nutgram library.
-All telegram bot files lay here: /Users/szubanov/Projects/FitnessCoach/app/Telegram
-I recognized several issues with rough realization. Nutgram has several imperfections.
-I decided to migrate to the another package: defstudio/telegraph
+All telegram bot files lay here: /Users/szubanov/Projects/FitnessCoach/app/Telegram.
+Previously I started the refactoring process for my telegram bot. I followed {Refactoring_plan} and finished partial changes {Refactoring_changelogs}.
 </context>
 <task>
-
+I met the issue with last task at phase 3.
+Task 3.8. I've tried several iterations to fix it with AI.
+Result witch I get in /Users/szubanov/Projects/FitnessCoach/app/Telegram/Handlers/FitnessCoachWebhookHandler.php:34-133. is not satisfied to me.
+It adds "magic" code and looks very complicated. And It doesn't work properly.
+I want you verify changes and propose simple approach.
+Refer to documentation when it is necessary. Especially to {Refactoring_technical_doc}
 </task>
