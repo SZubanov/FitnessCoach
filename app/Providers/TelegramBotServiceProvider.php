@@ -32,9 +32,15 @@ use App\Telegram\Commands\FatSecretCommandHandler;
 use App\Telegram\Commands\HelpCommandHandler;
 use App\Telegram\Commands\StartCommandHandler;
 use App\Telegram\Commands\SyncCommandHandler;
+use App\Telegram\Conversations\ConversationManager;
+use App\Telegram\Conversations\MacroConversationHandler;
+use App\Telegram\Conversations\MeasurementConversationHandler;
+use App\Telegram\Conversations\SyncConversationHandler;
+use App\Telegram\Conversations\WeightConversationHandler;
 use App\Telegram\Keyboards\KeyboardFactory;
 use App\Telegram\Services\ConversationStateService;
 use App\Telegram\Services\DateValidationService;
+use App\Telegram\Services\MessageResponseBuilder;
 use App\Telegram\Services\TelegramAccountService;
 use App\Telegram\Services\TelegramCommandRegistry;
 use App\Telegram\Services\TelegramUserService;
@@ -46,12 +52,14 @@ use Illuminate\Support\ServiceProvider;
  * Registers and configures all Telegram bot services, including:
  * - Command handlers (Phase 2)
  * - Callback handlers (Phase 3)
+ * - Conversation handlers (Phase 4)
  * - Keyboard factory
  * - Command registry
  * - Callback registry
+ * - Conversation manager
  *
  * This provider bootstraps the Telegram bot infrastructure created
- * during the Phase 1, Phase 2, and Phase 3 refactoring.
+ * during the Phase 1, Phase 2, Phase 3, and Phase 4 refactoring.
  */
 class TelegramBotServiceProvider extends ServiceProvider
 {
@@ -62,6 +70,7 @@ class TelegramBotServiceProvider extends ServiceProvider
      * - KeyboardFactory (shared across all handlers)
      * - TelegramCommandRegistry (central command router)
      * - CallbackRegistry (central callback router)
+     * - ConversationManager (Phase 4 - conversation flow orchestration)
      *
      * @return void
      */
@@ -78,6 +87,33 @@ class TelegramBotServiceProvider extends ServiceProvider
         // Register CallbackRegistry as singleton
         // Single registry for all callback handlers
         $this->app->singleton(CallbackRegistry::class);
+
+        // Register ConversationManager as singleton (Phase 4)
+        // Manages conversation flow routing to specialized handlers
+        $this->app->singleton(ConversationManager::class, function ($app) {
+            $dateValidation = $app->make(DateValidationService::class);
+            $keyboardFactory = $app->make(KeyboardFactory::class);
+            $messageBuilder = $app->make(MessageResponseBuilder::class);
+
+            return new ConversationManager(
+                $app->make(ConversationStateService::class),
+                $app->make(TelegramUserService::class),
+                [
+                    new MeasurementConversationHandler($dateValidation, $keyboardFactory, $messageBuilder),
+                    new WeightConversationHandler($dateValidation, $keyboardFactory, $messageBuilder),
+                    new MacroConversationHandler($dateValidation, $keyboardFactory, $messageBuilder),
+                    new SyncConversationHandler($dateValidation, $keyboardFactory, $messageBuilder),
+                ]
+            );
+        });
+
+        // Tag conversation handlers for potential future use
+        $this->app->tag([
+            MeasurementConversationHandler::class,
+            WeightConversationHandler::class,
+            MacroConversationHandler::class,
+            SyncConversationHandler::class,
+        ], 'telegram.conversations');
     }
 
     /**
