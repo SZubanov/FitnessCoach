@@ -92,7 +92,7 @@ class WeightConversationHandler implements ConversationHandler
                 ->icon('⚖️')
                 ->title('Запись веса')
                 ->text('Введите ваш вес в килограммах:')
-                ->addExample('Например: 70.5 или 85,2')
+                ->example('Например: 70.5 или 85,2')
                 ->build(),
             data: [
                 'date' => $dateResult['formatted'],
@@ -128,7 +128,7 @@ class WeightConversationHandler implements ConversationHandler
                     ->icon('❌')
                     ->title('Неверное значение')
                     ->text('Введите число (вес в килограммах):')
-                    ->addExample('Например: 70.5 или 85,2')
+                    ->example('Например: 70.5 или 85,2')
                     ->build()
             );
         }

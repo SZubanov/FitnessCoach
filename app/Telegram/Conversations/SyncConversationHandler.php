@@ -203,7 +203,7 @@ class SyncConversationHandler implements ConversationHandler
                     ->icon('❌')
                     ->title('Ошибка синхронизации')
                     ->text('Попробуйте позже или проверьте подключение к FatSecret')
-                    ->addInstructions('Используйте /sync для повторной попытки')
+                    ->instruction('Используйте /sync для повторной попытки')
                     ->build(),
                 keyboard: $this->keyboardFactory->mainMenu()
             );

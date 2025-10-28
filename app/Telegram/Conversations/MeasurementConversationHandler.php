@@ -94,7 +94,7 @@ class MeasurementConversationHandler implements ConversationHandler
                 ->icon('📏')
                 ->title("Замер: {$measurementType}")
                 ->text("Введите значение в сантиметрах:")
-                ->addExample('Например: 95')
+                ->example('Например: 95')
                 ->build(),
             data: [
                 'date' => $dateResult['formatted'],
@@ -126,7 +126,7 @@ class MeasurementConversationHandler implements ConversationHandler
                     ->icon('❌')
                     ->title('Неверное значение')
                     ->text('Введите число (в сантиметрах):')
-                    ->addExample('Например: 95')
+                    ->example('Например: 95')
                     ->build()
             );
         }

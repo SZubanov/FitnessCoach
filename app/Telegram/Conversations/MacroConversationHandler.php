@@ -112,7 +112,7 @@ class MacroConversationHandler implements ConversationHandler
                 ->icon($macroType['icon'])
                 ->title($macroType['name'])
                 ->text("Введите значение в {$macroType['unit']}:")
-                ->addExample("Например: {$example}")
+                ->example("Например: {$example}")
                 ->build(),
             data: [
                 'date' => $dateResult['formatted'],
@@ -152,7 +152,7 @@ class MacroConversationHandler implements ConversationHandler
                     ->icon('❌')
                     ->title('Неверное значение')
                     ->text("Введите число в {$macroType['unit']}:")
-                    ->addExample("Например: {$example}")
+                    ->example("Например: {$example}")
                     ->build()
             );
         }
