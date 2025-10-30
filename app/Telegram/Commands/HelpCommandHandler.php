@@ -52,7 +52,7 @@ class HelpCommandHandler implements TelegramCommandHandler
             ->build();
 
         // Send help message with keyboard
-        $chat->html($helpMessage)
+        $chat->markdown($helpMessage)
             ->keyboard($this->keyboardFactory->help())
             ->send();
     }

@@ -45,7 +45,7 @@ class RemoveLinkAccountCallback implements CallbackHandler
             "Для повторной привязки используйте функцию \"Получить код для привязки\"";
 
         $chat->edit($messageId)
-            ->html($message)
+            ->markdown($message)
             ->keyboard($this->keyboardFactory->accountBack())
             ->send();
     }

@@ -70,7 +70,7 @@ class ShowMeasurementsCallback implements CallbackHandler
             "💡 **Совет:** Делайте замеры в одно и то же время для точности";
 
         $chat->edit($messageId)
-            ->html($message)
+            ->markdown($message)
             ->keyboard($this->keyboardFactory->measurements())
             ->send();
     }

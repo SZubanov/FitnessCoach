@@ -86,7 +86,7 @@ class SelectMacroCarbsCallback implements CallbackHandler
 
         // Show date input instructions
         $instructions = $this->dateValidation->getDateInputInstructions();
-        $chat->html($instructions)->send();
+        $chat->markdown($instructions)->send();
     }
 
     /**

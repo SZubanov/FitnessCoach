@@ -42,7 +42,7 @@ class ShowSettingsCallback implements CallbackHandler
             "Выберите раздел для управления:";
 
         $chat->edit($messageId)
-            ->html($message)
+            ->markdown($message)
             ->keyboard($this->keyboardFactory->settings())
             ->send();
     }

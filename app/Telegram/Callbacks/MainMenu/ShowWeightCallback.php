@@ -71,7 +71,7 @@ class ShowWeightCallback implements CallbackHandler
             "💡 **Совет:** Взвешивайтесь утром натощак для точности";
 
         $chat->edit($messageId)
-            ->html($message)
+            ->markdown($message)
             ->keyboard($this->keyboardFactory->weight())
             ->send();
     }

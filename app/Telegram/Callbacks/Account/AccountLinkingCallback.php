@@ -36,7 +36,7 @@ class AccountLinkingCallback implements CallbackHandler
     public function handle(TelegraphChat $chat, ?int $messageId = null): void
     {
         $chat->edit($messageId)
-            ->html('🔗 Привязка аккаунта')
+            ->markdown('🔗 Привязка аккаунта')
             ->keyboard($this->keyboardFactory->accountMenu())
             ->send();
     }

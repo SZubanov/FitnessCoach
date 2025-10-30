@@ -59,7 +59,7 @@ class AccountCommandHandler implements TelegramCommandHandler
             ->build();
 
         // Send message with account menu keyboard
-        $chat->html($message)
+        $chat->markdown($message)
             ->keyboard($this->keyboardFactory->accountMenu())
             ->send();
     }

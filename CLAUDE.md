@@ -125,15 +125,11 @@ class UpdateUserAction implements UpdateUser
     - `FatSecretRepository.php` - Data persistence
     - `FatSecretServiceLoggerDecorator.php` - Logging decorator
 
-### 5. Telegram Bot Architecture ⚡ REFACTORING IN PROGRESS (Phase 4/6 Complete - Oct 2025)
+### 5. Telegram Bot Architecture
 
-**CURRENT STATE: Phase 4 Conversation Handlers Complete ✅**
+The Telegram bot uses a SOLID-compliant, pattern-based architecture built on the Telegraph framework.
 
-The Telegram bot is undergoing a systematic refactoring from a monolithic handler (1,406 lines) to a SOLID-compliant, pattern-based architecture. **Phases 1-4 are complete** with handler reduced from 1,406 lines to 447 lines (68% reduction).
-
-#### Phase 1: Foundation & Infrastructure (✅ COMPLETED)
-
-**Design Patterns Implemented**:
+#### Design Patterns
 - **Command Pattern**: Command and callback handlers with registry
 - **Strategy Pattern**: Polymorphic conversation handlers
 - **Chain of Responsibility**: Composable middleware pipeline
@@ -142,9 +138,9 @@ The Telegram bot is undergoing a systematic refactoring from a monolithic handle
 - **DTO Pattern**: Immutable conversation context and results
 - **Registry Pattern**: O(1) command/callback lookup
 
-**Core Infrastructure** (20 files, ~1,796 lines):
+#### Core Components
 
-1. **Interfaces/Contracts** (`app/Telegram/*/Contracts/`):
+**Interfaces/Contracts** (`app/Telegram/*/Contracts/`):
    - `TelegramCommandHandler` - Command execution contract
    - `CallbackHandler` - Callback query contract
    - `ConversationHandler` - Strategy for conversation flows
@@ -153,155 +149,58 @@ The Telegram bot is undergoing a systematic refactoring from a monolithic handle
    - `ConversationStatus` - Type-safe state enum
    - `TelegramMiddleware` - Middleware chain contract
 
-2. **Services** (`app/Telegram/Services/`):
+**Services** (`app/Telegram/Services/`):
    - `TelegramCommandRegistry` - Command pattern registry with O(1) lookup
    - `MessageResponseBuilder` - Fluent API for formatted messages (30+ methods)
 
-3. **Keyboards** (`app/Telegram/Keyboards/`):
+**Keyboards** (`app/Telegram/Keyboards/`):
    - `KeyboardFactory` - Factory for 13 predefined keyboards (eliminates 155 lines of duplication)
    - `KeyboardBuilder` - Fluent builder for dynamic keyboards
 
-4. **Middleware** (`app/Telegram/Middleware/`):
+**Middleware** (`app/Telegram/Middleware/`):
    - `MiddlewarePipeline` - Laravel-style pipeline orchestrator
    - `RequireAccountLinkMiddleware` - Account linking guard
    - `RequireFatSecretAuthMiddleware` - FatSecret OAuth guard
 
-5. **Exceptions** (`app/Telegram/Exceptions/`):
+**Exceptions** (`app/Telegram/Exceptions/`):
    - `UnknownCommandException` - Unregistered command errors
    - `NoActiveConversationException` - Missing conversation errors
    - `InvalidConversationStepException` - Invalid step errors
    - `NoHandlerForConversationTypeException` - Missing handler errors
 
-**Benefits Realized**:
-- ✅ Full type safety with comprehensive type hints
-- ✅ Interface-based programming enabling dependency injection
-- ✅ Eliminated keyboard duplication (155 lines)
-- ✅ Composable middleware for reusable authorization
-- ✅ Consistent message formatting across all handlers
-- ✅ O(1) command lookup vs. linear if-else chains
-- ✅ Testable components with clear interfaces
+#### Architecture Components
 
-**Documentation**:
-- Architecture proposal: `TELEGRAM_BOT_ARCHITECTURE_PROPOSAL.md` (1,443 lines)
-- Implementation plan: `TELEGRAM_REFACTORING_IMPLEMENTATION_PLAN.md` (2,283 lines)
-- Phase 1 changelog: `TELEGRAM_REFACTORING_PHASE1_CHANGELOG.md` (complete metrics)
-- Phase 1 technical docs: `TELEGRAM_REFACTORING_PHASE1_TECHNICAL_DOCS.md` (detailed guides)
-
-#### Current Production State (Telegraph Framework)
-
-**Main Handler**: `app/Telegram/Handlers/FitnessCoachWebhookHandler.php` (1,406 lines - being decomposed)
+**Main Handler**: `app/Telegram/Handlers/FitnessCoachWebhookHandler.php` (211 lines)
+- Entry point for all Telegram webhook requests
+- Delegates to specialized registries and managers
 - Method-based routing: `Button::make('Text')->action('methodName')` → `public function methodName()`
-- Cache-based conversations: 15-minute TTL with step tracking
-- Configuration: `config/telegraph.php` with custom webhook handler
+- Configuration: `config/telegraph.php`
+
+**Command System**:
+- 5 command handlers implementing `TelegramCommandHandler` interface
+- `TelegramCommandRegistry` with O(1) lookup
+- Commands: start, help, account, fatsecret, sync
+- Middleware-based authorization (no guard methods)
+
+**Callback System**:
+- 25 callback handlers implementing `CallbackHandler` interface
+- `CallbackRegistry` with O(1) lookup
+- Organized by feature: MainMenu, Account, FatSecret, Sync, Measurements, Weight, Macros
+- Direct delegation without magic methods
+
+**Conversation System**:
+- 4 conversation handlers implementing `ConversationHandler` interface
+- `ConversationManager` orchestrates conversation lifecycle
+- Strategy Pattern for conversation types (measurement, weight, macro, sync)
+- Type-safe DTOs: ConversationContext, ConversationResult, ConversationStatus
+- Cache-based state management (15-minute TTL)
 
 **Key Services**:
 - `TelegramUserService.php` - User management and auto-registration
 - `TelegramAccountService.php` - Account linking with temporary codes
 - `TelegramFatSecretService.php` - OAuth flow management
 - `DateValidationService.php` - Date input validation and parsing
-- `ConversationStateService.php` - Custom conversation state management (294 lines)
-
-**Conversation Patterns** (being refactored):
-- Guard methods: `requireLinkedAccount()`, `requireFatSecretAuth()` → Replaced by middleware
-- Central router: `handleChatMessage()` with match expression → Being replaced by registry
-- Step-based flows: date input → value input → save → cleanup
-- 4 conversation types: measurement, weight, macro (КБЖУ), sync
-
-**Legacy Code (Deprecated - Nutgram migration artifacts)**:
-- `app/Telegram/Commands/` - Old Nutgram commands
-- `app/Telegram/Conversations/` - Old Nutgram conversations
-- `app/Telegram/Menus/` - Old Nutgram menus
-- `app/Telegram/Constants/CallbackData.php` - String constants
-
-#### Phase 2: Commands Migration (✅ COMPLETED)
-
-**Result**: Extracted 5 command handlers (~247 lines) + registry (63 lines)
-
-**Command Handlers Created**:
-- `StartCommandHandler.php` - Welcome message with features list
-- `HelpCommandHandler.php` - Command documentation
-- `AccountCommandHandler.php` - Account linking menu
-- `FatSecretCommandHandler.php` - FatSecret OAuth menu
-- `SyncCommandHandler.php` - Synchronization options with middleware guards
-
-**Benefits**:
-- ✅ O(1) command lookup via registry pattern
-- ✅ Middleware-based authorization (no guard methods needed)
-- ✅ Handler reduced by ~180 lines
-
-**Documentation**: `TELEGRAM_REFACTORING_PHASE2_CHANGELOG.md`
-
-#### Phase 3: Callback System (✅ COMPLETED)
-
-**Result**: Extracted 25 callback handlers (1,896 lines) organized by feature domains
-
-**Callback Categories**:
-1. **Main Menu** (6 handlers): Navigation and feature access
-2. **Account Management** (4 handlers): Account linking, code generation
-3. **FatSecret Integration** (4 handlers): OAuth connection management
-4. **Sync Operations** (4 handlers): FatSecret sync workflows
-5. **Measurements** (2 handlers): Body measurements tracking
-6. **Weight Tracking** (2 handlers): Weight entry workflows
-7. **Macro Nutrients** (5 handlers): КБЖУ tracking (calories, proteins, fats, carbs)
-
-**Benefits**:
-- ✅ O(1) callback lookup via registry pattern
-- ✅ Direct delegation (no magic methods)
-- ✅ Feature-based organization
-- ✅ Handler reduced by ~435 lines (98 → 23 lines for callback routing)
-
-**Documentation**: `TELEGRAM_REFACTORING_PHASE3_CHANGELOG.md`
-
-#### Phase 4: Conversation Handlers (✅ COMPLETED)
-
-**Result**: Extracted 4 conversation handlers (899 lines) with ConversationManager orchestration
-
-**Conversation Handlers Created**:
-- `MeasurementConversationHandler.php` - Body measurements (1-300 cm range)
-- `WeightConversationHandler.php` - Weight tracking (20-300 kg, decimal support)
-- `MacroConversationHandler.php` - Macro nutrients with type-specific validation
-- `SyncConversationHandler.php` - FatSecret sync with immediate execution pattern
-
-**ConversationManager** (238 lines):
-- Strategy Pattern implementation
-- Routes messages to appropriate handlers
-- Manages conversation lifecycle (start, continue, complete)
-- Handles result processing and state management
-
-**Benefits**:
-- ✅ Strategy Pattern for conversation types
-- ✅ Unified conversation flow management
-- ✅ Type-safe DTOs (ConversationContext, ConversationResult)
-- ✅ Handler reduced by ~423 lines (870 → 447 lines, 48.6% reduction)
-- ✅ Total handler reduction: 68% (1,406 → 447 lines)
-
-**Documentation**: `TELEGRAM_REFACTORING_PHASE4_CHANGELOG.md`
-
-#### Upcoming Phases
-
-**Phase 5: Code Cleanup** (Next - ~3-4 hours)
-- Remove old commented code from handler (~447 → ~150-200 lines)
-- Delete deprecated Nutgram files
-- Create developer guide for adding commands/callbacks/conversations
-- Clean technical debt before business logic implementation
-
-**Rationale for Phase Reordering**: Originally Phase 5 was Business Logic and Phase 6 was Cleanup. We **swapped these phases** to clean the codebase first, providing cleaner baseline for business logic, easier code reviews, and reduced maintenance burden during development.
-
-**Phase 6: Business Logic Integration** (~5-6 hours)
-- Create Action interfaces (SaveMeasurement, SaveWeight, SaveMacro, PerformFatSecretSync)
-- Implement Action classes with database persistence
-- Bind Actions in service provider
-- Replace TODO comments in conversation handlers with actual persistence
-- Connect to database layer
-
-**Phase 7: Testing & Validation** (~7-10 hours)
-- Write comprehensive unit tests (target >80% coverage)
-- Integration testing with end-to-end flows
-- Manual testing checklist
-- Performance validation
-- Final production readiness verification
-
-**Goal**: Complete migration with handler at ~150 lines while maintaining all functionality and achieving comprehensive test coverage
+- `ConversationStateService.php` - Conversation state management (294 lines)
 
 #### Development Guidelines for Telegram Bot
 

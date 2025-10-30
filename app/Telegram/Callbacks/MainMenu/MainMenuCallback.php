@@ -36,7 +36,7 @@ class MainMenuCallback implements CallbackHandler
     public function handle(TelegraphChat $chat, ?int $messageId = null): void
     {
         $chat->edit($messageId)
-            ->html('🏠 Главное меню FitnessCoach')
+            ->markdown('🏠 Главное меню FitnessCoach')
             ->keyboard($this->keyboardFactory->mainMenu())
             ->send();
     }

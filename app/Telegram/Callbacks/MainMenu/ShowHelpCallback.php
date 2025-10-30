@@ -45,7 +45,7 @@ class ShowHelpCallback implements CallbackHandler
             "**Пример:** 25.12.2024 или 25/12/2024";
 
         $chat->edit($messageId)
-            ->html($message)
+            ->markdown($message)
             ->keyboard($this->keyboardFactory->help())
             ->send();
     }

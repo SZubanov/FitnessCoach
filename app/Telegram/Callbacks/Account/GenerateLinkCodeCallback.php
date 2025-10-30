@@ -47,7 +47,7 @@ class GenerateLinkCodeCallback implements CallbackHandler
             "⚠️ **Внимание:** При создании нового кода, старый перестает действовать";
 
         $chat->edit($messageId)
-            ->html($message)
+            ->markdown($message)
             ->keyboard($this->keyboardFactory->accountBack())
             ->send();
     }

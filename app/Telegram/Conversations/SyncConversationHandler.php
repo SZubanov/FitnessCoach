@@ -112,7 +112,7 @@ class SyncConversationHandler implements ConversationHandler
         }
 
         // Show processing message
-        $chat->html("🔄 Выполняется синхронизация...")->send();
+        $chat->markdown("🔄 Выполняется синхронизация...")->send();
 
         // Execute sync immediately
         return $this->executeSynchronization(

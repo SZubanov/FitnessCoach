@@ -74,7 +74,7 @@ class ShowSyncCallback implements CallbackHandler
             "⚠️ **Требуется подключение к FatSecret**";
 
         $chat->edit($messageId)
-            ->html($instructionsText)
+            ->markdown($instructionsText)
             ->keyboard($this->keyboardFactory->syncMenu())
             ->send();
     }

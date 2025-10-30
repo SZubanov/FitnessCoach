@@ -46,7 +46,7 @@ class CheckLinkStatusCallback implements CallbackHandler
               "Используйте кнопку \"Получить код для привязки\" для создания кода";
 
         $chat->edit($messageId)
-            ->html($statusMessage)
+            ->markdown($statusMessage)
             ->keyboard($this->keyboardFactory->accountBack())
             ->send();
     }

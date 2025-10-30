@@ -77,12 +77,12 @@ class ConnectFatSecretCallback implements CallbackHandler
                 "После авторизации вы будете автоматически перенаправлены обратно в бот";
 
             $chat->edit($messageId)
-                ->html($message)
+                ->markdown($message)
                 ->keyboard($this->keyboardFactory->fatSecretBack())
                 ->send();
         } catch (\Exception $e) {
             $chat->edit($messageId)
-                ->html('❌ Ошибка при создании ссылки для подключения FatSecret. Попробуйте позже.')
+                ->markdown('❌ Ошибка при создании ссылки для подключения FatSecret. Попробуйте позже.')
                 ->keyboard($this->keyboardFactory->fatSecretBack())
                 ->send();
         }

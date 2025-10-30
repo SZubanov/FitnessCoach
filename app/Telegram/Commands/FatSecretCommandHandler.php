@@ -65,7 +65,7 @@ class FatSecretCommandHandler implements TelegramCommandHandler
             ->build();
 
         // Send message with FatSecret menu keyboard
-        $chat->html($message)
+        $chat->markdown($message)
             ->keyboard($this->keyboardFactory->fatSecretMenu())
             ->send();
     }

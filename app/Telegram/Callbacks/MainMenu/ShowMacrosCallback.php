@@ -71,7 +71,7 @@ class ShowMacrosCallback implements CallbackHandler
             "💡 **К** - Калории, **Б** - Белки, **Ж** - Жиры, **У** - Углеводы";
 
         $chat->edit($messageId)
-            ->html($message)
+            ->markdown($message)
             ->keyboard($this->keyboardFactory->macros())
             ->send();
     }

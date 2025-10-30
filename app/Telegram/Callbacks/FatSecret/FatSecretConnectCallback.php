@@ -36,7 +36,7 @@ class FatSecretConnectCallback implements CallbackHandler
     public function handle(TelegraphChat $chat, ?int $messageId = null): void
     {
         $chat->edit($messageId)
-            ->html('🔗 Привязка FatSecret')
+            ->markdown('🔗 Привязка FatSecret')
             ->keyboard($this->keyboardFactory->fatSecretMenu())
             ->send();
     }

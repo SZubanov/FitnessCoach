@@ -93,7 +93,7 @@ class SyncCommandHandler implements TelegramCommandHandler
             ->build();
 
         // Send message with sync menu keyboard
-        $chat->html($message)
+        $chat->markdown($message)
             ->keyboard($this->keyboardFactory->syncMenu())
             ->send();
     }

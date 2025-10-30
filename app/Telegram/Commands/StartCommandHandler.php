@@ -53,7 +53,7 @@ class StartCommandHandler implements TelegramCommandHandler
             ->build();
 
         // Send welcome message
-        $chat->html($welcomeMessage)->send();
+        $chat->markdown($welcomeMessage)->send();
 
         // Send main menu with keyboard
         $this->sendMainMenu($chat);
@@ -67,7 +67,7 @@ class StartCommandHandler implements TelegramCommandHandler
      */
     private function sendMainMenu(TelegraphChat $chat): void
     {
-        $chat->html('🏠 Главное меню FitnessCoach')
+        $chat->markdown('🏠 Главное меню FitnessCoach')
             ->keyboard($this->keyboardFactory->mainMenu())
             ->send();
     }

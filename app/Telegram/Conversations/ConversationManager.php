@@ -164,7 +164,7 @@ class ConversationManager
     ): void {
         // Send message if provided
         if ($result->message) {
-            $messageBuilder = $chat->html($result->message);
+            $messageBuilder = $chat->markdown($result->message);
 
             if ($result->keyboard) {
                 $messageBuilder->keyboard($result->keyboard);

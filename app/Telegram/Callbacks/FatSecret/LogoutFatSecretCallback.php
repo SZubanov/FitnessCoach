@@ -42,7 +42,7 @@ class LogoutFatSecretCallback implements CallbackHandler
 
         if (!$user) {
             $chat->edit($messageId)
-                ->html('❌ Аккаунт не привязан.')
+                ->markdown('❌ Аккаунт не привязан.')
                 ->keyboard($this->keyboardFactory->fatSecretBack())
                 ->send();
             return;
@@ -57,7 +57,7 @@ class LogoutFatSecretCallback implements CallbackHandler
             "❌ Функции синхронизации больше не доступны\n";
 
         $chat->edit($messageId)
-            ->html($message)
+            ->markdown($message)
             ->keyboard($this->keyboardFactory->fatSecretBack())
             ->send();
     }

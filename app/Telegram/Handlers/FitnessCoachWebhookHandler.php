@@ -108,7 +108,7 @@ class FitnessCoachWebhookHandler extends WebhookHandler
         try {
             $this->conversationManager->route($this->chat, $text);
         } catch (NoActiveConversationException $e) {
-            $this->chat->html(
+            $this->chat->markdown(
                 "💬 Я понимаю только команды.\n\n" .
                 "Используйте /help для списка доступных команд\n" .
                 "или нажмите /start для главного меню."

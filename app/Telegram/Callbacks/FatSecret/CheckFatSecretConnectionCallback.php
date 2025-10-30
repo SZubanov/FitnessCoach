@@ -46,7 +46,7 @@ class CheckFatSecretConnectionCallback implements CallbackHandler
             : "❌ **Статус привязки**\n\nВаш аккаунт не авторизован в FatSecret\n\n";
 
         $chat->edit($messageId)
-            ->html($statusMessage)
+            ->markdown($statusMessage)
             ->keyboard($this->keyboardFactory->fatSecretBack())
             ->send();
     }

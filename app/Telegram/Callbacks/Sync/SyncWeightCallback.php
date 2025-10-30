@@ -72,7 +72,7 @@ class SyncWeightCallback implements CallbackHandler
 
         // Show date input instructions
         $instructions = $this->dateValidation->getDateInputInstructions();
-        $chat->html("⚖️ **{$syncType['name']}**\n\n" . $instructions)->send();
+        $chat->markdown("⚖️ **{$syncType['name']}**\n\n" . $instructions)->send();
     }
 
     /**
