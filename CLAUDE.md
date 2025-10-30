@@ -279,21 +279,29 @@ The Telegram bot is undergoing a systematic refactoring from a monolithic handle
 
 #### Upcoming Phases
 
-**Phase 5: Business Logic Integration** (Next - ~2-3 days)
-- Create Action interfaces for data persistence
-- Implement SaveMeasurement, SaveWeight, SaveMacro actions
+**Phase 5: Code Cleanup** (Next - ~3-4 hours)
+- Remove old commented code from handler (~447 → ~150-200 lines)
+- Delete deprecated Nutgram files
+- Create developer guide for adding commands/callbacks/conversations
+- Clean technical debt before business logic implementation
+
+**Rationale for Phase Reordering**: Originally Phase 5 was Business Logic and Phase 6 was Cleanup. We **swapped these phases** to clean the codebase first, providing cleaner baseline for business logic, easier code reviews, and reduced maintenance burden during development.
+
+**Phase 6: Business Logic Integration** (~5-6 hours)
+- Create Action interfaces (SaveMeasurement, SaveWeight, SaveMacro, PerformFatSecretSync)
+- Implement Action classes with database persistence
+- Bind Actions in service provider
 - Replace TODO comments in conversation handlers with actual persistence
 - Connect to database layer
-- Comprehensive integration testing
 
-**Phase 6: Final Cleanup & Documentation** (~1-2 days)
-- Remove commented old code
-- Delete deprecated Nutgram files
+**Phase 7: Testing & Validation** (~7-10 hours)
 - Write comprehensive unit tests (target >80% coverage)
-- Update developer documentation
-- Final validation and performance testing
+- Integration testing with end-to-end flows
+- Manual testing checklist
+- Performance validation
+- Final production readiness verification
 
-**Goal**: Complete migration with handler at ~150 lines while maintaining all functionality
+**Goal**: Complete migration with handler at ~150 lines while maintaining all functionality and achieving comprehensive test coverage
 
 #### Development Guidelines for Telegram Bot
 

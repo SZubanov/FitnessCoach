@@ -1891,12 +1891,161 @@ private function handleWeightConversation(...) { ... }
 
 ---
 
-## Phase 5: Business Logic Integration
+## Phase 5: Code Cleanup
 
-**Duration**: 2-3 days
-**Goal**: Create Action interfaces and implementations, connect TODOs to actual persistence.
+**Duration**: 3-4 hours
+**Goal**: Clean codebase, remove deprecated code, and create developer documentation before adding business logic.
 
-### Task 5.1: Create Action Interfaces
+**Rationale**: Cleaning up technical debt first provides a cleaner baseline for business logic implementation, easier code reviews, and reduces maintenance burden.
+
+---
+
+### Task 5.1: Remove Old Code from Handler
+
+**Priority**: HIGH
+**Estimated Time**: 1 hour
+
+**Update**: `app/Telegram/Handlers/FitnessCoachWebhookHandler.php`
+
+**Current State**: 447 lines with commented old code
+**Target State**: ~150-200 lines, production-ready
+
+**Delete**:
+- All commented old command methods (safely removed - now delegated to command handlers)
+- All commented old callback methods (safely removed - now delegated to callback handlers)
+- All commented old conversation handler methods (safely removed - now delegated to conversation handlers)
+- Old guard methods comments (replaced by middleware)
+- Any remaining TODO comments in handler
+
+**Keep**:
+- `onFailure()` error handler
+- `handleChatMessage()` (delegates to ConversationManager)
+- `handleCallbackQuery()` (delegates to CallbackRegistry)
+- Command delegation methods (delegate to CommandRegistry)
+- Constructor with all dependencies
+
+**Verification**:
+```bash
+docker exec coach_fpm php artisan about
+# Should pass without errors
+```
+
+---
+
+### Task 5.2: Remove Deprecated Nutgram Files
+
+**Priority**: HIGH
+**Estimated Time**: 30 minutes
+
+**Delete directories** (Old Nutgram framework artifacts):
+```
+app/Telegram/Commands/         # Old Nutgram commands (NOT Phase 2 commands!)
+app/Telegram/Menus/            # Old Nutgram menus
+app/Telegram/Constants/        # Old callback constants
+```
+
+**⚠️ IMPORTANT - DO NOT DELETE:**
+- `app/Telegram/Commands/` with Phase 2 handlers (StartCommandHandler, etc.)
+- `app/Telegram/Callbacks/` (Phase 3 callback handlers)
+- `app/Telegram/Conversations/` (Phase 4 conversation handlers)
+
+**How to identify old vs new:**
+- **OLD (Nutgram)**: Files extending Nutgram base classes, using Nutgram-specific patterns
+- **NEW (Telegraph)**: Files implementing our custom interfaces (TelegramCommandHandler, CallbackHandler, ConversationHandler)
+
+**Verification**:
+```bash
+# Search for any remaining Nutgram references
+grep -r "SergiX44\\Nutgram" app/Telegram/
+# Should return no results
+```
+
+---
+
+### Task 5.3: Create Developer Guide
+
+**Priority**: MEDIUM
+**Estimated Time**: 2 hours
+
+**Create**: `docs/TELEGRAM_BOT_DEVELOPER_GUIDE.md`
+
+**Contents**:
+
+1. **Architecture Overview** (15 min)
+   - High-level architecture diagram
+   - Design patterns summary
+   - Component relationships
+
+2. **How to Add a New Command** (20 min)
+   - Create handler class implementing TelegramCommandHandler
+   - Register in TelegramBotServiceProvider
+   - Add delegation method to FitnessCoachWebhookHandler
+   - Testing checklist
+   - Code example
+
+3. **How to Add a New Callback** (20 min)
+   - Create handler class implementing CallbackHandler
+   - Register in CallbackRegistry
+   - Add button to keyboard
+   - Testing checklist
+   - Code example
+
+4. **How to Add a New Conversation** (30 min)
+   - Create handler class implementing ConversationHandler
+   - Implement step-based flow
+   - Register in ConversationManager
+   - Add conversation initiator callback
+   - Testing checklist
+   - Code example
+
+5. **How to Add Middleware** (15 min)
+   - Create middleware implementing TelegramMiddleware
+   - Use in MiddlewarePipeline
+   - Runtime properties pattern
+   - Code example
+
+6. **Testing Guidelines** (20 min)
+   - Unit testing handlers
+   - Mocking Telegraph framework
+   - Integration testing
+   - Manual testing checklist
+
+7. **Common Patterns & Best Practices** (10 min)
+   - MessageResponseBuilder usage
+   - KeyboardFactory usage
+   - Error handling
+   - Validation patterns
+
+8. **Troubleshooting** (10 min)
+   - Common errors and solutions
+   - Debugging tips
+   - Where to find logs
+
+**Format**: Clear markdown with code examples, diagrams, and step-by-step instructions.
+
+---
+
+### Task 5.4: Update CLAUDE.md
+
+**Priority**: LOW
+**Estimated Time**: 0 minutes
+
+**Status**: ✅ **ALREADY COMPLETED** in Phase 4 documentation update
+
+No action needed - CLAUDE.md already reflects Phase 4 completion with accurate architecture documentation.
+
+---
+
+## Phase 6: Business Logic Integration
+
+**Duration**: 5-6 hours
+**Goal**: Connect conversation handlers to actual data persistence, implement Actions for database operations.
+
+**Rationale**: With clean codebase in place, adding business logic becomes clearer and easier to review.
+
+---
+
+### Task 6.1: Create Action Interfaces
 
 **Priority**: HIGH
 **Estimated Time**: 1 hour
@@ -1929,9 +2078,15 @@ interface SaveMeasurement
 }
 ```
 
+**All Interfaces**:
+- Follow Action-Interface pattern from project standards
+- Return model instances or appropriate DTOs
+- Accept array parameters for flexibility
+- Include comprehensive PHPDoc
+
 ---
 
-### Task 5.2: Create Action Implementations
+### Task 6.2: Create Action Implementations
 
 **Priority**: HIGH
 **Estimated Time**: 3-4 hours
@@ -1952,30 +2107,36 @@ namespace App\Actions\Telegram;
 
 use App\Contracts\Actions\Telegram\SaveMeasurement;
 use App\Models\Measurement;
-use App\Models\User;
 use Carbon\Carbon;
 
 class SaveMeasurementAction implements SaveMeasurement
 {
+    public function __invoke(array $data): Measurement
+    {
+        return $this->handle($data);
+    }
+
     public function handle(array $data): Measurement
     {
         // Validate data
         $validated = $this->validate($data);
 
-        // Create measurement
-        return Measurement::create([
-            'user_id' => $validated['user_id'],
-            'type' => $validated['type'],
-            'value' => $validated['value'],
-            'measured_at' => $validated['date'],
-        ]);
+        // Create or update measurement
+        return Measurement::updateOrCreate(
+            [
+                'user_id' => $validated['user_id'],
+                'type' => $validated['type'],
+                'measured_at' => $validated['date'],
+            ],
+            [
+                'value' => $validated['value'],
+            ]
+        );
     }
 
     private function validate(array $data): array
     {
-        // Add validation logic
-        // Could use Laravel validator here
-
+        // Add validation logic using Laravel validator
         return [
             'user_id' => $data['user_id'],
             'type' => $data['type'],
@@ -1986,25 +2147,37 @@ class SaveMeasurementAction implements SaveMeasurement
 }
 ```
 
+**Implementation Notes**:
+- All actions should implement `__invoke()` for invokable pattern
+- Use `updateOrCreate` to avoid duplicate entries for same date
+- Validate all inputs properly
+- Handle exceptions gracefully
+- Consider using Laravel's validator for complex validation
+
 ---
 
-### Task 5.3: Bind Actions in Service Provider
+### Task 6.3: Bind Actions in Service Provider
 
 **Priority**: HIGH
 **Estimated Time**: 15 minutes
 
-**Update**: `app/Telegram/Providers/TelegramServiceProvider.php` or main `AppServiceProvider`
+**Update**: `app/Providers/TelegramBotServiceProvider.php`
 
 ```php
 use App\Contracts\Actions\Telegram\SaveMeasurement;
+use App\Contracts\Actions\Telegram\SaveWeight;
+use App\Contracts\Actions\Telegram\SaveMacro;
+use App\Contracts\Actions\Telegram\PerformFatSecretSync;
 use App\Actions\Telegram\SaveMeasurementAction;
-// ... other imports
+use App\Actions\Telegram\SaveWeightAction;
+use App\Actions\Telegram\SaveMacroAction;
+use App\Actions\Telegram\PerformFatSecretSyncAction;
 
 public function register(): void
 {
     // ... existing code
 
-    // Bind Action interfaces
+    // Bind Telegram Action interfaces
     $this->app->bind(SaveMeasurement::class, SaveMeasurementAction::class);
     $this->app->bind(SaveWeight::class, SaveWeightAction::class);
     $this->app->bind(SaveMacro::class, SaveMacroAction::class);
@@ -2012,41 +2185,82 @@ public function register(): void
 }
 ```
 
+**Verification**:
+```bash
+docker exec coach_fpm php artisan tinker
+# Test DI resolution
+>>> app(App\Contracts\Actions\Telegram\SaveMeasurement::class)
+# Should return SaveMeasurementAction instance
+```
+
 ---
 
-### Task 5.4: Update Conversation Handlers to Use Actions
+### Task 6.4: Update Conversation Handlers to Use Actions
 
 **Priority**: HIGH
 **Estimated Time**: 1 hour
 
-**Update**: All conversation handler files
+**Update**: All conversation handler files (4 files)
 
-**Replace TODO comments with action calls**:
+**Files to Modify**:
+1. `app/Telegram/Conversations/MeasurementConversationHandler.php`
+2. `app/Telegram/Conversations/WeightConversationHandler.php`
+3. `app/Telegram/Conversations/MacroConversationHandler.php`
+4. `app/Telegram/Conversations/SyncConversationHandler.php`
 
+**Pattern - Add to Constructor**:
 ```php
-// OLD
-// TODO: Save to database
-// $this->measurementService->saveMeasurement(...);
+public function __construct(
+    private readonly DateValidationService $dateValidation,
+    private readonly KeyboardFactory $keyboardFactory,
+    private readonly MessageResponseBuilder $messageBuilder,
+    private readonly SaveMeasurement $saveMeasurementAction, // NEW
+) {}
+```
 
-// NEW
+**Pattern - Replace TODO**:
+```php
+// BEFORE (Phase 4)
+// TODO: Phase 5 - Replace with actual sync service
+// $syncResult = $this->fatSecretSyncService->performSync(...);
+
+// AFTER (Phase 6)
 $measurement = $this->saveMeasurementAction->handle([
     'user_id' => $context->user->id,
     'type' => $context->data['measurement_type'],
     'value' => $value,
     'date' => $context->data['date'],
 ]);
+
+// Update success message to show saved data
+return ConversationResult::complete(
+    message: $this->messageBuilder
+        ->create()
+        ->icon('✅')
+        ->title('Замер сохранен')
+        ->addField('ID', "#{$measurement->id}")
+        ->addField('Тип', $measurement->type)
+        ->addField('Значение', "{$measurement->value} см")
+        ->addField('Дата', $measurement->measured_at->format('d.m.Y'))
+        ->build(),
+    keyboard: $this->keyboardFactory->mainMenu()
+);
 ```
 
 **Validation**:
+- Remove all `// TODO:` comments
 - Test that data persists to database
 - Verify all conversation flows save correctly
+- Check database has correct data after each conversation
 
 ---
 
-## Phase 6: Cleanup & Finalization
+## Phase 7: Testing & Validation
 
-**Duration**: 1-2 days
-**Goal**: Remove old code, optimize, document, test.
+**Duration**: 7-10 hours
+**Goal**: Comprehensive testing, final validation, and production readiness verification.
+
+**Rationale**: With clean code and working business logic, we can now test end-to-end flows comprehensively.
 
 ### Task 6.1: Remove Old Code from Handler
 
@@ -2247,25 +2461,36 @@ git checkout HEAD -- app/Telegram/Handlers/FitnessCoachWebhookHandler.php
 **Total Handler Reduction**: 1,406 → 447 lines (68% reduction overall)
 **Documentation**: `TELEGRAM_REFACTORING_PHASE4_CHANGELOG.md`
 
-### Phase 5: Business Logic ⏳ NEXT
-- [ ] Task 5.1: Create Action Interfaces
-- [ ] Task 5.2: Create Action Implementations
-- [ ] Task 5.3: Bind Actions in Service Provider
-- [ ] Task 5.4: Update Handlers to Use Actions
+### Phase 5: Code Cleanup ⏳ NEXT
+- [ ] Task 5.1: Remove Old Code from Handler
+- [ ] Task 5.2: Remove Deprecated Nutgram Files
+- [ ] Task 5.3: Create Developer Guide
+- [ ] Task 5.4: ~~Update CLAUDE.md~~ (✅ Already done in Phase 4)
 
-**Status**: ⏳ Pending
-**Estimated Duration**: 2-3 days
+**Status**: ⏳ Next Phase
+**Estimated Duration**: 3-4 hours
+**Rationale**: Clean codebase before adding business logic for easier reviews and reduced maintenance
 
-### Phase 6: Cleanup ⏳ FUTURE
-- [ ] Task 6.1: Remove Old Code from Handler
-- [ ] Task 6.2: Remove Deprecated Nutgram Files
-- [ ] Task 6.3: Write Unit Tests
-- [ ] Task 6.4: Update CLAUDE.md
-- [ ] Task 6.5: Create Developer Guide
-- [ ] Task 6.6: Final Validation
+### Phase 6: Business Logic Integration ⏳ FUTURE
+- [ ] Task 6.1: Create Action Interfaces
+- [ ] Task 6.2: Create Action Implementations
+- [ ] Task 6.3: Bind Actions in Service Provider
+- [ ] Task 6.4: Update Conversation Handlers to Use Actions
 
-**Status**: ⏳ Pending
-**Estimated Duration**: 1-2 days
+**Status**: ⏳ Pending (after Phase 5)
+**Estimated Duration**: 5-6 hours
+**Rationale**: Connect conversation handlers to actual database persistence
+
+### Phase 7: Testing & Validation ⏳ FUTURE
+- [ ] Task 7.1: Write Unit Tests
+- [ ] Task 7.2: Integration Testing
+- [ ] Task 7.3: Manual Testing Checklist
+- [ ] Task 7.4: Performance Validation
+- [ ] Task 7.5: Final Validation
+
+**Status**: ⏳ Pending (after Phase 6)
+**Estimated Duration**: 7-10 hours
+**Rationale**: Comprehensive end-to-end testing with actual database persistence
 
 ---
 
