@@ -125,11 +125,11 @@ class UpdateUserAction implements UpdateUser
     - `FatSecretRepository.php` - Data persistence
     - `FatSecretServiceLoggerDecorator.php` - Logging decorator
 
-### 5. Telegram Bot Architecture ⚡ REFACTORING IN PROGRESS (Phase 1/6 Complete - Oct 2025)
+### 5. Telegram Bot Architecture ⚡ REFACTORING IN PROGRESS (Phase 4/6 Complete - Oct 2025)
 
-**CURRENT STATE: Phase 1 Foundation Complete ✅**
+**CURRENT STATE: Phase 4 Conversation Handlers Complete ✅**
 
-The Telegram bot is undergoing a systematic refactoring from a monolithic handler (1,406 lines) to a SOLID-compliant, pattern-based architecture. **Phase 1 infrastructure is complete** with 20 foundational files implementing 6 design patterns.
+The Telegram bot is undergoing a systematic refactoring from a monolithic handler (1,406 lines) to a SOLID-compliant, pattern-based architecture. **Phases 1-4 are complete** with handler reduced from 1,406 lines to 447 lines (68% reduction).
 
 #### Phase 1: Foundation & Infrastructure (✅ COMPLETED)
 
@@ -213,34 +213,87 @@ The Telegram bot is undergoing a systematic refactoring from a monolithic handle
 - `app/Telegram/Menus/` - Old Nutgram menus
 - `app/Telegram/Constants/CallbackData.php` - String constants
 
+#### Phase 2: Commands Migration (✅ COMPLETED)
+
+**Result**: Extracted 5 command handlers (~247 lines) + registry (63 lines)
+
+**Command Handlers Created**:
+- `StartCommandHandler.php` - Welcome message with features list
+- `HelpCommandHandler.php` - Command documentation
+- `AccountCommandHandler.php` - Account linking menu
+- `FatSecretCommandHandler.php` - FatSecret OAuth menu
+- `SyncCommandHandler.php` - Synchronization options with middleware guards
+
+**Benefits**:
+- ✅ O(1) command lookup via registry pattern
+- ✅ Middleware-based authorization (no guard methods needed)
+- ✅ Handler reduced by ~180 lines
+
+**Documentation**: `TELEGRAM_REFACTORING_PHASE2_CHANGELOG.md`
+
+#### Phase 3: Callback System (✅ COMPLETED)
+
+**Result**: Extracted 25 callback handlers (1,896 lines) organized by feature domains
+
+**Callback Categories**:
+1. **Main Menu** (6 handlers): Navigation and feature access
+2. **Account Management** (4 handlers): Account linking, code generation
+3. **FatSecret Integration** (4 handlers): OAuth connection management
+4. **Sync Operations** (4 handlers): FatSecret sync workflows
+5. **Measurements** (2 handlers): Body measurements tracking
+6. **Weight Tracking** (2 handlers): Weight entry workflows
+7. **Macro Nutrients** (5 handlers): КБЖУ tracking (calories, proteins, fats, carbs)
+
+**Benefits**:
+- ✅ O(1) callback lookup via registry pattern
+- ✅ Direct delegation (no magic methods)
+- ✅ Feature-based organization
+- ✅ Handler reduced by ~435 lines (98 → 23 lines for callback routing)
+
+**Documentation**: `TELEGRAM_REFACTORING_PHASE3_CHANGELOG.md`
+
+#### Phase 4: Conversation Handlers (✅ COMPLETED)
+
+**Result**: Extracted 4 conversation handlers (899 lines) with ConversationManager orchestration
+
+**Conversation Handlers Created**:
+- `MeasurementConversationHandler.php` - Body measurements (1-300 cm range)
+- `WeightConversationHandler.php` - Weight tracking (20-300 kg, decimal support)
+- `MacroConversationHandler.php` - Macro nutrients with type-specific validation
+- `SyncConversationHandler.php` - FatSecret sync with immediate execution pattern
+
+**ConversationManager** (238 lines):
+- Strategy Pattern implementation
+- Routes messages to appropriate handlers
+- Manages conversation lifecycle (start, continue, complete)
+- Handles result processing and state management
+
+**Benefits**:
+- ✅ Strategy Pattern for conversation types
+- ✅ Unified conversation flow management
+- ✅ Type-safe DTOs (ConversationContext, ConversationResult)
+- ✅ Handler reduced by ~423 lines (870 → 447 lines, 48.6% reduction)
+- ✅ Total handler reduction: 68% (1,406 → 447 lines)
+
+**Documentation**: `TELEGRAM_REFACTORING_PHASE4_CHANGELOG.md`
+
 #### Upcoming Phases
 
-**Phase 2: Commands Migration** (Next - ~4-6 hours)
-- Extract 5 command handlers: start, help, account, fatsecret, sync
-- Register in TelegramCommandRegistry
-- Reduce handler by ~200-250 lines
+**Phase 5: Business Logic Integration** (Next - ~2-3 days)
+- Create Action interfaces for data persistence
+- Implement SaveMeasurement, SaveWeight, SaveMacro actions
+- Replace TODO comments in conversation handlers with actual persistence
+- Connect to database layer
+- Comprehensive integration testing
 
-**Phase 3: Callback System** (~6-8 hours)
-- Extract 12+ callback handlers
-- Implement callback registry
-- Reduce handler by ~300-400 lines
+**Phase 6: Final Cleanup & Documentation** (~1-2 days)
+- Remove commented old code
+- Delete deprecated Nutgram files
+- Write comprehensive unit tests (target >80% coverage)
+- Update developer documentation
+- Final validation and performance testing
 
-**Phase 4: Conversation Manager** (~8-10 hours)
-- Extract 4 conversation handlers
-- Implement conversation manager
-- Reduce handler by ~400-500 lines
-
-**Phase 5: Integration & Testing** (~4-6 hours)
-- Wire all components together
-- Comprehensive testing
-- Performance validation
-
-**Phase 6: Final Migration** (~2-3 hours)
-- Remove old handler
-- Update configuration
-- Final cleanup
-
-**Goal**: Reduce handler from 1,406 lines to ~150 lines while improving testability and maintainability
+**Goal**: Complete migration with handler at ~150 lines while maintaining all functionality
 
 #### Development Guidelines for Telegram Bot
 
